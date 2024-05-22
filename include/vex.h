@@ -16,6 +16,8 @@
 
 using namespace vex;
 
+Drive chassis;
+
 
 #define waitUntil(condition)                                                   \
   do {                                                                         \

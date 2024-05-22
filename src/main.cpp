@@ -25,9 +25,9 @@ Drive chassis;
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
 
-void pre_auton(void) {
-
-  
+void pre_auton(void) 
+{
+  constants();  
 }
 
 
