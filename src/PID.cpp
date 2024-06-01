@@ -19,7 +19,7 @@
 */
 
 
-PID::PID(float Kp, float Ki, float Kd, float integral, int settle_time, float settle_error)
+PID::PID(float Kp, float Ki, float Kd, float integral, float settle_time, float settle_error, float timeout)
 {
     this->Kp = Kp;
     this->Ki = Ki;
@@ -27,6 +27,7 @@ PID::PID(float Kp, float Ki, float Kd, float integral, int settle_time, float se
     this->integral = integral;
     this->settle_time = settle_time;
     this->settle_error = settle_error;
+    this->timeout = timeout;
 }
 
 float PID::compute(float error)
@@ -35,18 +36,24 @@ float PID::compute(float error)
     float output = (Kp * error) + (Ki * integral) + (Kd * (error - prevError));
 
     prevError = error;
-    current_time++;
 
-    if(fabs(error) < settle_error)
-        current_settle = true;
+    if(fabs(error)<settle_error)
+        time_spent_settled += 10;
+    else
+        time_spent_settled = 0;
+
+    current_time++;
 
     return output;
 }
 
 bool PID::isSettled()
 {
-    if(current_time > settle_time || current_settle)
+    if (current_time > timeout && timeout != 0)
         return true;
-    else
-        return false;
+
+    if (time_spent_settled > settle_time)
+        return true;
+
+  return false;
 }

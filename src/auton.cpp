@@ -1,15 +1,72 @@
-#include "vex.h"
+#include "auton.h"
 
 void constants()
 {
-    chassis.set_turn_constants(0.4, .03, 3, 15, 3000, 2, 12);
-    chassis.set_drive_constants(1.5, 0, 10, 0, 5000, 1.5, 12);
-    chassis.set_swing_constants(0.3, 0.001, 2, 15, 3000, 1, 12);
-    chassis.set_arch_constants(0.3, 0.001, 2, 15, 3000, 1, 12);
-    chassis.set_heading_constants(0.4, 0, 1, 0, 3000, 2, 12);
+    chassis.set_turn_constants
+    (
+        0.4,    //Kp
+        0.03,   //Ki
+        3,      //Kd
+        15,     //Start i
+        3000,   //Settle Time
+        2,      //Settle Error
+        30000,  //Timeout
+        10      //Max Voltage
+    );
+
+    chassis.set_drive_constants
+    (
+        1.5,    //Kp
+        0,      //Ki
+        10,     //Kd
+        0,      //Start i
+        5000,   //Settle Time
+        1.5,    //Settle Error
+        50000,  //Timeout
+        12      //Max Voltage
+    );
+
+    chassis.set_swing_constants
+    (
+        0.3,    //Kp
+        0.001,  //Ki
+        2,      //Kd
+        15,     //Start i
+        3000,   //Settle Time
+        1,      //Settle Error
+        30000,  //Timeout
+        12      //Max Voltage
+    );
+
+    chassis.set_arch_constants
+    (
+        0.3,    //Kp
+        0.001,  //Ki
+        2,      //Kd
+        15,     //Start i
+        3000,   //Settle Time
+        1,      //Settle Error
+        30000,  //Timeout
+        12      //Max Voltage
+    );
+
+    chassis.set_heading_constants
+    (
+        0.4,    //Kp
+        0,      //Ki
+        1,      //Kd
+        0,      //Start i
+        3000,   //Settle Time
+        2,      //Settle Error
+        50000,  //Timeout
+        12      //Max Voltage
+    );
 }
 
-void autonomous(void)
+void ProgAuto(void)
 {
-    chassis.drive_distance(10);    
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1,1);
+    Brain.Screen.print("Is Running Auton");
+    chassis.turn_to_angle(180);  
 }

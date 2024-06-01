@@ -1,16 +1,15 @@
-#pragma once
 #include "Drive.h"
 
-    Drive::Drive(motor_group right_motor_drive, motor_group left_motor_drive, inertial & Gyro, float wheel_diameter, float wheel_ratio) : 
+    Drive::Drive(motor_group right_motor_drive, motor_group left_motor_drive, int gyro_port, float wheel_diameter, float wheel_ratio) : 
         right_motor_drive(right_motor_drive),
         left_motor_drive(left_motor_drive),
-        Gyro(Gyro),
         wheel_diameter(wheel_diameter),
-        wheel_ratio(wheel_ratio)
+        wheel_ratio(wheel_ratio),
+        Gyro(inertial(gyro_port))
     {}
 
     //Setters
-    void Drive::set_turn_constants(float turn_Kp, float turn_Ki, float turn_Kd, float turn_starti, float turn_settle, float turn_settle_error, float turn_max_voltage)
+    void Drive::set_turn_constants(float turn_Kp, float turn_Ki, float turn_Kd, float turn_starti, float turn_settle, float turn_settle_error, float turn_timeout, float turn_max_voltage)
     {
         this->turn_Kp = turn_Kp;
         this->turn_Ki = turn_Ki;
@@ -18,10 +17,11 @@
         this->turn_starti = turn_starti;
         this->turn_settle = turn_settle;
         this->turn_settle_error = turn_settle_error;
+        this->turn_timeout = turn_timeout;
         this->turn_max_voltage = turn_max_voltage;
     }
 
-    void Drive::set_drive_constants(float drive_Kp, float drive_Ki, float drive_Kd, float drive_starti, float drive_settle, float drive_settle_error, float drive_max_voltage)
+    void Drive::set_drive_constants(float drive_Kp, float drive_Ki, float drive_Kd, float drive_starti, float drive_settle, float drive_settle_error, float drive_timeout, float drive_max_voltage)
     {
         this->drive_Kp = drive_Kp;
         this->drive_Ki = drive_Ki;
@@ -29,10 +29,11 @@
         this->drive_starti = drive_starti;
         this->drive_settle = drive_settle;
         this->drive_settle_error = drive_settle_error;
+        this->drive_timeout = drive_timeout;
         this->drive_max_voltage = drive_max_voltage;
     }
 
-    void Drive::set_swing_constants(float swing_Kp, float swing_Ki, float swing_Kd, float swing_starti, float swing_settle, float swing_settle_error, float swing_max_voltage)
+    void Drive::set_swing_constants(float swing_Kp, float swing_Ki, float swing_Kd, float swing_starti, float swing_settle, float swing_settle_error, float swing_timeout, float swing_max_voltage)
     {
         this->swing_Kp = swing_Kp;
         this->swing_Ki = swing_Ki;
@@ -40,10 +41,11 @@
         this->swing_starti = swing_starti;
         this->swing_settle = swing_settle;
         this->swing_settle_error = swing_settle_error;
+        this->swing_timeout = swing_timeout;
         this->swing_max_voltage = swing_max_voltage;
     }
 
-    void Drive::set_arch_constants(float arch_Kp, float arch_Ki, float arch_Kd, float arch_starti, float arch_settle, float arch_settle_error, float arch_max_voltage)
+    void Drive::set_arch_constants(float arch_Kp, float arch_Ki, float arch_Kd, float arch_starti, float arch_settle, float arch_settle_error, float arch_timeout, float arch_max_voltage)
     {
         this->arch_Kp = arch_Kp;
         this->arch_Ki = arch_Ki;
@@ -51,10 +53,11 @@
         this->arch_starti = arch_starti;
         this->arch_settle = arch_settle;
         this->arch_settle_error = arch_settle_error;
+        this->arch_timeout = arch_timeout;
         this->arch_max_voltage = arch_max_voltage;
     }
 
-    void Drive::set_heading_constants(float heading_Kp, float heading_Ki, float heading_Kd, float heading_starti, float heading_settle, float heading_settle_error, float heading_max_voltage)
+    void Drive::set_heading_constants(float heading_Kp, float heading_Ki, float heading_Kd, float heading_starti, float heading_settle, float heading_settle_error, float heading_timeout, float heading_max_voltage)
     {
         this->heading_Kp = heading_Kp;
         this->heading_Ki = heading_Ki;
@@ -62,6 +65,7 @@
         this->heading_starti = heading_starti;
         this->heading_settle = heading_settle;
         this->heading_settle_error = heading_settle_error;
+        this->heading_timeout = heading_timeout;
         this->heading_max_voltage = heading_max_voltage;
     }
 
@@ -109,7 +113,7 @@
     void Drive::turn_to_angle(float angle, float turn_max_voltage)
     {
         //Creates a PID formula with the set constants
-        PID turnPID(turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle, turn_settle_error);
+        PID turnPID(turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle, turn_settle_error, turn_timeout);
 
         //Loops through till the inertial sensor is facing the given angle
         while(!turnPID.isSettled())
@@ -118,6 +122,15 @@
             output = clamp(output, -turn_max_voltage, turn_max_voltage);
 
             drive_with_voltage(output, -output);
+
+            Brain.Screen.clearScreen();
+            Brain.Screen.setCursor(1,1);
+            Brain.Screen.print("Heading:\t");
+            Brain.Screen.print(Gyro.rotation());
+
+            Brain.Screen.setCursor(4, 1);
+            Brain.Screen.print("Voltage:\t");
+            Brain.Screen.print(output);
 
             task::sleep(10);
         }
@@ -137,7 +150,7 @@
     void Drive::turn_angle_amount(float angle, float turn_max_voltage)
     {
         //Creates a PID formula with the set constants
-        PID turnPID(turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle, turn_settle_error);
+        PID turnPID(turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle, turn_settle_error, turn_timeout);
 
         //Loops through till the inertial sensor is facing the given angle
         while(!turnPID.isSettled())
@@ -165,8 +178,8 @@
     void Drive::drive_distance(float distance, float drive_max_voltage, float heading_max_voltage)
     {
         //Creates the PID formulas with the set constants
-        PID drivePID(drive_Kp, drive_Ki, drive_Kd, drive_starti, drive_settle, drive_settle_error);
-        PID headingPID(heading_Kp, heading_Ki, heading_Kd, heading_starti, heading_settle, heading_settle_error);
+        PID drivePID(drive_Kp, drive_Ki, drive_Kd, drive_starti, drive_settle, drive_settle_error, drive_timeout);
+        PID headingPID(heading_Kp, heading_Ki, heading_Kd, heading_starti, heading_settle, heading_settle_error, heading_timeout);
 
         //Creates the starting position and the current position throughout of the drive trains
         float starting_position = (get_left_drive_position() + get_right_drive_position()) / 2.0;
@@ -199,7 +212,7 @@
     //Swings with left drive and limits the max voltage to swing_max_voltage
     void Drive::left_swing_to_angle(float angle, float swing_max_voltage)
     {
-        PID swingPID(swing_Kp, swing_Ki, swing_Kd, swing_starti, swing_settle, swing_settle_error);
+        PID swingPID(swing_Kp, swing_Ki, swing_Kd, swing_starti, swing_settle, swing_settle_error, swing_timeout);
 
         while(!swingPID.isSettled())
         {
@@ -227,7 +240,7 @@
     //Swings with right drive and limits the max voltage to swing_max_voltage
     void Drive::right_swing_to_angle(float angle, float swing_max_voltage)
     {
-        PID swingPID(swing_Kp, swing_Ki, swing_Kd, swing_starti, swing_settle, swing_settle_error);
+        PID swingPID(swing_Kp, swing_Ki, swing_Kd, swing_starti, swing_settle, swing_settle_error, swing_timeout);
 
         while(!swingPID.isSettled())
         {
@@ -255,8 +268,8 @@
     //Drives in an arch leftwards and limits voltage to arch_max_voltage
     void Drive::drive_left_arch(float distance, float angle, float arch_speed, float arch_max_voltage)
     {
-        PID left_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error);
-        PID right_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error);
+        PID left_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
+        PID right_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
 
         float left_start_position = get_left_drive_position();
         float right_start_position = get_right_drive_position();
@@ -292,8 +305,8 @@
     //Drives in an arch rightwards and limits voltage to arch_max_voltage
     void Drive::drive_right_arch(float distance, float angle, float arch_speed, float arch_max_angle)
     {
-        PID left_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error);
-        PID right_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error);
+        PID left_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
+        PID right_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
 
         float left_start_position = get_left_drive_position();
         float right_start_position = get_right_drive_position();
@@ -330,8 +343,8 @@
     void Drive::drive_with_function(float distance, void (*func)(), float drive_max_voltage)
     {
         //Creates the PID formulas with the set constants
-        PID drivePID(drive_Kp, drive_Ki, drive_Kd, drive_starti, drive_settle, drive_settle_error);
-        PID headingPID(heading_Kp, heading_Ki, heading_Kd, heading_starti, heading_settle, heading_settle_error);
+        PID drivePID(drive_Kp, drive_Ki, drive_Kd, drive_starti, drive_settle, drive_settle_error, drive_timeout);
+        PID headingPID(heading_Kp, heading_Ki, heading_Kd, heading_starti, heading_settle, heading_settle_error, heading_timeout);
 
         //Creates the starting position and the current position throughout of the drive trains
         float starting_position = (get_left_drive_position() + get_right_drive_position()) / 2.0;
@@ -367,7 +380,7 @@
     void Drive::turn_with_function(float angle, void (*func)(), float turn_max_voltage)
     {
         //Creates a PID formula with the set constants
-        PID turnPID(turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle, turn_settle_error);
+        PID turnPID(turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle, turn_settle_error,turn_timeout);
 
         //Loops through till the inertial sensor is facing the given angle
         while(!turnPID.isSettled())

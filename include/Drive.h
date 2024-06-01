@@ -1,6 +1,8 @@
 #pragma once
 #include "vex.h"
 
+using namespace vex;
+
 class Drive
 {
     private:
@@ -15,6 +17,7 @@ class Drive
         float turn_starti;
         float turn_settle;
         float turn_settle_error;
+        float turn_timeout;
         float turn_max_voltage;
 
         //Drive Constants
@@ -24,6 +27,7 @@ class Drive
         float drive_starti;
         float drive_settle;
         float drive_settle_error;
+        float drive_timeout;
         float drive_max_voltage;
 
         //Swing Constants
@@ -33,6 +37,7 @@ class Drive
         float swing_starti;
         float swing_settle;
         float swing_settle_error;
+        float swing_timeout;
         float swing_max_voltage;
 
         //Arch Constants
@@ -42,6 +47,7 @@ class Drive
         float arch_starti;
         float arch_settle;
         float arch_settle_error;
+        float arch_timeout;
         float arch_max_voltage;
 
         //Heading Constants
@@ -51,6 +57,7 @@ class Drive
         float heading_starti;
         float heading_settle;
         float heading_settle_error;
+        float heading_timeout;
         float heading_max_voltage;
         
         //States
@@ -63,18 +70,18 @@ class Drive
     motor_group right_motor_drive;
     motor_group left_motor_drive;
 
-    inertial Gyro;
-
     public:
 
-    Drive(motor_group right_motor_drive, motor_group left_motor_drive, inertial & Gyro, float wheel_diameter, float wheel_ratio);
+    inertial Gyro;
+
+    Drive(motor_group right_motor_drive, motor_group left_motor_drive, int gyro_port, float wheel_diameter, float wheel_ratio);
 
     //Setters
-    void set_turn_constants(float turn_Kp, float turn_Ki, float turn_Kd, float turn_starti, float turn_settle, float turn_settle_error, float turn_max_voltage);
-    void set_drive_constants(float drive_Kp, float drive_Ki, float drive_Kd, float drive_starti, float drive_settle, float drive_settle_error, float drive_max_voltage);
-    void set_swing_constants(float swing_Kp, float swing_Ki, float swing_Kd, float swing_starti, float swing_settle, float swing_settle_error, float swing_max_voltage);
-    void set_arch_constants(float arch_Kp, float arch_Ki, float arch_Kd, float arch_starti, float arch_settle, float arch_settle_error, float arch_max_voltage);
-    void set_heading_constants(float heading_Kp, float heading_Ki, float heading_Kd, float heading_starti, float heading_settle, float heading_settle_error, float heading_max_voltage);
+    void set_turn_constants(float turn_Kp, float turn_Ki, float turn_Kd, float turn_starti, float turn_settle, float turn_settle_error, float turn_timeout, float turn_max_voltage);
+    void set_drive_constants(float drive_Kp, float drive_Ki, float drive_Kd, float drive_starti, float drive_settle, float drive_settle_error, float drive_timeout, float drive_max_voltage);
+    void set_swing_constants(float swing_Kp, float swing_Ki, float swing_Kd, float swing_starti, float swing_settle, float swing_settle_error, float swing_timeout, float swing_max_voltage);
+    void set_arch_constants(float arch_Kp, float arch_Ki, float arch_Kd, float arch_starti, float arch_settle, float arch_settle_error, float arch_timeout, float arch_max_voltage);
+    void set_heading_constants(float heading_Kp, float heading_Ki, float heading_Kd, float heading_starti, float heading_settle, float heading_settle_error, float heading_timeout, float heading_max_voltage);
 
     //Getters
     float get_left_drive_position();

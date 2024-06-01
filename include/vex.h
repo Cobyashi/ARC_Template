@@ -14,11 +14,6 @@
 #include "Drive.h"
 #include "quickTools.h"
 
-using namespace vex;
-
-Drive chassis;
-
-
 #define waitUntil(condition)                                                   \
   do {                                                                         \
     wait(5, msec);                                                             \

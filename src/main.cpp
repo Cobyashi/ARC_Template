@@ -9,11 +9,13 @@
 
 #include "vex.h"
 
+using namespace vex;
+
 // A global instance of competition
 competition Competition;
 
 // define your global instances of motors and other devices here
-Drive chassis;
+Drive chassis(motor_group(OneR, TwoR), motor_group(OneL, TwoL), PORT6, 2.75, 1.0);
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -44,18 +46,21 @@ void pre_auton(void)
 void usercontrol(void) {
   // User control code here, inside the loop
   while (1) {
-    // This is the main execution loop for the user control program.
-    // Each time through the loop your program should update motor + servo
-    // values based on feedback from the joysticks.
 
-    // ........................................................................
-    // Insert user code here. This is where you use the joystick values to
-    // update your motors, etc.
-    // ........................................................................
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print(chassis.Gyro.heading());
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
+}
+
+void autonomous(void)
+{
+  inertialSensor.calibrate();
+
+  ProgAuto();
 }
 
 //
