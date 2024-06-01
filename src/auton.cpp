@@ -11,5 +11,5 @@ void constants()
 
 void autonomous(void)
 {
-
+    chassis.drive_distance(10);    
 }
