@@ -6,32 +6,27 @@ using namespace vex;
 class PID
 {
     private:
-
-    //Constants
-    float Kp;
-    float Ki;
-    float Kd;
+    float error;
+    float kp;
+    float ki;
+    float kd;
     float starti;
-
-    //Temps
-    float integral, prevError;
-    
-    //Settles
     float settle_error;
     float settle_time;
-    float current_time;
     float timeout;
-
-    float time_spent_settled = 0;
+    float accumulated_error;
+    float previous_error;
+    float output;
+    float time_spent_settled;
+    float time_spent_running;
 
     public:
 
-    //Constructor
-    PID(float Kp, float Ki, float Kd, float integral, float settle_time, float settle_error, float timeout);
+    PID(float error, float kp, float ki, float kd, float starti, float settle_error, float settle_time, float timeout);
 
-    //PID Compute Formula Function
+    PID(float error, float kp, float ki, float kd, float starti);
+
     float compute(float error);
 
-    //Determines if PID loop is settled
-    bool isSettled();
+    bool is_settled();
 };

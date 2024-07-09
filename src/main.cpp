@@ -15,7 +15,7 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
-Drive chassis(motor_group(OneR, TwoR), motor_group(OneL, TwoL), PORT6, 2.75, 1.0);
+Drive chassis(motor_group(OneR, TwoR), motor_group(OneL, TwoL), PORT6, 3.25, 1.0);
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */

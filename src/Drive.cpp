@@ -112,11 +112,12 @@
     //Turns to the given angle and limits the max voltage to turn_max_voltage
     void Drive::turn_to_angle(float angle, float turn_max_voltage)
     {
+
         //Creates a PID formula with the set constants
-        PID turnPID(turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle, turn_settle_error, turn_timeout);
+        PID turnPID(reduce_to_180s(angle - Gyro.heading()), turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle_error, turn_settle, turn_timeout);
 
         //Loops through till the inertial sensor is facing the given angle
-        while(!turnPID.isSettled())
+        while(!turnPID.is_settled())
         {
             float output = turnPID.compute(reduce_to_180s(angle - Gyro.heading()));
             output = clamp(output, -turn_max_voltage, turn_max_voltage);
@@ -125,15 +126,19 @@
 
             Brain.Screen.clearScreen();
             Brain.Screen.setCursor(1,1);
-            Brain.Screen.print("Heading:\t");
+            Brain.Screen.print("Heading:     ");
             Brain.Screen.print(Gyro.rotation());
 
             Brain.Screen.setCursor(4, 1);
-            Brain.Screen.print("Voltage:\t");
+            Brain.Screen.print("Voltage:     ");
             Brain.Screen.print(output);
 
             task::sleep(10);
         }
+
+        Brain.Screen.clearScreen();
+        Brain.Screen.setCursor(1,1);
+        Brain.Screen.print("Has braked");
 
         current_heading = angle;
         
@@ -150,10 +155,10 @@
     void Drive::turn_angle_amount(float angle, float turn_max_voltage)
     {
         //Creates a PID formula with the set constants
-        PID turnPID(turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle, turn_settle_error, turn_timeout);
+        PID turnPID(reduce_to_180s(angle - Gyro.heading()), turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle, turn_settle_error, turn_timeout);
 
         //Loops through till the inertial sensor is facing the given angle
-        while(!turnPID.isSettled())
+        while(!turnPID.is_settled())
         {
             float output = turnPID.compute(reduce_to_180s(angle - Gyro.rotation()));
             output = clamp(output, -turn_max_voltage, turn_max_voltage);
@@ -178,15 +183,15 @@
     void Drive::drive_distance(float distance, float drive_max_voltage, float heading_max_voltage)
     {
         //Creates the PID formulas with the set constants
-        PID drivePID(drive_Kp, drive_Ki, drive_Kd, drive_starti, drive_settle, drive_settle_error, drive_timeout);
-        PID headingPID(heading_Kp, heading_Ki, heading_Kd, heading_starti, heading_settle, heading_settle_error, heading_timeout);
+        PID drivePID(distance, drive_Kp, drive_Ki, drive_Kd, drive_starti, drive_settle, drive_settle_error, drive_timeout);
+        PID headingPID(reduce_to_180s(current_heading - Gyro.heading()), heading_Kp, heading_Ki, heading_Kd, heading_starti, heading_settle, heading_settle_error, heading_timeout);
 
         //Creates the starting position and the current position throughout of the drive trains
         float starting_position = (get_left_drive_position() + get_right_drive_position()) / 2.0;
         float current_position = starting_position;
 
         //Loops through till the given distance has been reached
-        while(!drivePID.isSettled())
+        while(!drivePID.is_settled())
         {
             current_position = (get_left_drive_position() + get_right_drive_position()) / 2.0;
             float drive_output = drivePID.compute((distance + starting_position) - current_position);
@@ -212,9 +217,9 @@
     //Swings with left drive and limits the max voltage to swing_max_voltage
     void Drive::left_swing_to_angle(float angle, float swing_max_voltage)
     {
-        PID swingPID(swing_Kp, swing_Ki, swing_Kd, swing_starti, swing_settle, swing_settle_error, swing_timeout);
+        PID swingPID(reduce_to_180s(angle - Gyro.heading()), swing_Kp, swing_Ki, swing_Kd, swing_starti, swing_settle, swing_settle_error, swing_timeout);
 
-        while(!swingPID.isSettled())
+        while(!swingPID.is_settled())
         {
             float output = swingPID.compute(reduce_to_180s(angle - Gyro.heading()));
 
@@ -240,9 +245,9 @@
     //Swings with right drive and limits the max voltage to swing_max_voltage
     void Drive::right_swing_to_angle(float angle, float swing_max_voltage)
     {
-        PID swingPID(swing_Kp, swing_Ki, swing_Kd, swing_starti, swing_settle, swing_settle_error, swing_timeout);
+        PID swingPID(reduce_to_180s(angle - Gyro.heading()), swing_Kp, swing_Ki, swing_Kd, swing_starti, swing_settle, swing_settle_error, swing_timeout);
 
-        while(!swingPID.isSettled())
+        while(!swingPID.is_settled())
         {
             float output = swingPID.compute(reduce_to_180s(angle - Gyro.heading()));
 
@@ -268,15 +273,15 @@
     //Drives in an arch leftwards and limits voltage to arch_max_voltage
     void Drive::drive_left_arch(float distance, float angle, float arch_speed, float arch_max_voltage)
     {
-        PID left_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
-        PID right_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
+        PID left_archPID(distance, arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
+        PID right_archPID(distance, arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
 
         float left_start_position = get_left_drive_position();
         float right_start_position = get_right_drive_position();
         float left_current_position = left_start_position;
         float right_current_position = right_start_position;
 
-        while(!left_archPID.isSettled())
+        while(!left_archPID.is_settled())
         {
             float left_current_position = get_left_drive_position();
             float right_current_position = get_right_drive_position();
@@ -305,15 +310,15 @@
     //Drives in an arch rightwards and limits voltage to arch_max_voltage
     void Drive::drive_right_arch(float distance, float angle, float arch_speed, float arch_max_angle)
     {
-        PID left_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
-        PID right_archPID(arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
+        PID left_archPID(distance, arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
+        PID right_archPID(distance, arch_Kp, arch_Ki, arch_Kd, arch_starti, arch_settle, arch_settle_error, arch_timeout);
 
         float left_start_position = get_left_drive_position();
         float right_start_position = get_right_drive_position();
         float left_current_position = left_start_position;
         float right_current_position = right_start_position;
 
-        while(!left_archPID.isSettled())
+        while(!left_archPID.is_settled())
         {
             float left_current_position = get_left_drive_position();
             float right_current_position = get_right_drive_position();
@@ -343,15 +348,15 @@
     void Drive::drive_with_function(float distance, void (*func)(), float drive_max_voltage)
     {
         //Creates the PID formulas with the set constants
-        PID drivePID(drive_Kp, drive_Ki, drive_Kd, drive_starti, drive_settle, drive_settle_error, drive_timeout);
-        PID headingPID(heading_Kp, heading_Ki, heading_Kd, heading_starti, heading_settle, heading_settle_error, heading_timeout);
+        PID drivePID(distance, drive_Kp, drive_Ki, drive_Kd, drive_starti, drive_settle, drive_settle_error, drive_timeout);
+        PID headingPID(reduce_to_180s(current_heading - Gyro.heading()), heading_Kp, heading_Ki, heading_Kd, heading_starti, heading_settle, heading_settle_error, heading_timeout);
 
         //Creates the starting position and the current position throughout of the drive trains
         float starting_position = (get_left_drive_position() + get_right_drive_position()) / 2.0;
         float current_position = starting_position;
 
         //Loops through till the given distance has been reached
-        while(!drivePID.isSettled())
+        while(!drivePID.is_settled())
         {
             current_position = (get_left_drive_position() + get_right_drive_position()) / 2.0;
             float drive_output = drivePID.compute((distance + starting_position) - current_position);
@@ -380,10 +385,10 @@
     void Drive::turn_with_function(float angle, void (*func)(), float turn_max_voltage)
     {
         //Creates a PID formula with the set constants
-        PID turnPID(turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle, turn_settle_error,turn_timeout);
+        PID turnPID(reduce_to_180s(angle - Gyro.heading()), turn_Kp, turn_Ki, turn_Kd, turn_starti, turn_settle, turn_settle_error,turn_timeout);
 
         //Loops through till the inertial sensor is facing the given angle
-        while(!turnPID.isSettled())
+        while(!turnPID.is_settled())
         {
             float output = turnPID.compute(reduce_to_180s(angle - Gyro.heading()));
             output = clamp(output, -turn_max_voltage, turn_max_voltage);

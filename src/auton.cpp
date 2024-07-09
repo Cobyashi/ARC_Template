@@ -2,6 +2,7 @@
 
 void constants()
 {
+
     chassis.set_turn_constants
     (
         0.4,    //Kp
@@ -11,7 +12,7 @@ void constants()
         3000,   //Settle Time
         2,      //Settle Error
         30000,  //Timeout
-        10      //Max Voltage
+        6       //Max Voltage
     );
 
     chassis.set_drive_constants
@@ -23,7 +24,7 @@ void constants()
         5000,   //Settle Time
         1.5,    //Settle Error
         50000,  //Timeout
-        12      //Max Voltage
+        6       //Max Voltage
     );
 
     chassis.set_swing_constants
@@ -35,7 +36,7 @@ void constants()
         3000,   //Settle Time
         1,      //Settle Error
         30000,  //Timeout
-        12      //Max Voltage
+        6       //Max Voltage
     );
 
     chassis.set_arch_constants
@@ -47,7 +48,7 @@ void constants()
         3000,   //Settle Time
         1,      //Settle Error
         30000,  //Timeout
-        12      //Max Voltage
+        6       //Max Voltage
     );
 
     chassis.set_heading_constants
@@ -59,14 +60,14 @@ void constants()
         3000,   //Settle Time
         2,      //Settle Error
         50000,  //Timeout
-        12      //Max Voltage
+        6       //Max Voltage
     );
 }
 
 void ProgAuto(void)
 {
-    Brain.Screen.clearScreen();
-    Brain.Screen.setCursor(1,1);
-    Brain.Screen.print("Is Running Auton");
-    chassis.turn_to_angle(180);  
+    inertialSensor.calibrate();
+    waitUntil(!inertialSensor.isCalibrating());
+
+    chassis.turn_to_angle(90);
 }
