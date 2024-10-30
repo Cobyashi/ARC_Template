@@ -93,6 +93,19 @@ void Drive::drive_distance(float distance)
     brake();
 }
 
-void Drive::turn_angle(){}
+void Drive::turn_angle(float targetX, float targetY){
+    Odom drive_angle(forward1, forward2, lateral);
+    float curY = deg_to_inches(get_current_Y_position(forward1, forward2));
+    float curX = deg_to_inches(get_current_X_position(lateral));
+
+    if(targetX < curX)
+    {
+        while(curX < targetX && curY < targetY){
+            
+        }
+    }
+    
+
+}
 
 void Drive::turn_to_angle(){}
