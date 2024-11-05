@@ -93,18 +93,66 @@ void Drive::drive_distance(float distance)
     brake();
 }
 
-void Drive::turn_angle(float targetX, float targetY){
-    Odom drive_angle(forward1, forward2, lateral);
-    float curY = deg_to_inches(get_current_Y_position(forward1, forward2));
-    float curX = deg_to_inches(get_current_X_position(lateral));
-
-    if(targetX < curX)
-    {
-        while(curX < targetX && curY < targetY){
-            
-        }
-    }
+/// @brief Turns the robot a set amount of degrees
+/// @param turnDegrees The number of degrees the robot turns (0-259)
+void Drive::turn(float turnDegrees){
     
+    Odom sensors(forward1, forward2, lateral);
+    PID turn_PID(1.00, 0.00, 0.00, 100);
+
+    float output;
+    float angle;
+    int numRotations;
+
+    while(true){
+        
+        angle = lateral.position(degrees);
+        numRotations = lateral.position(rev);
+        angle = angle - (numRotations*360);
+
+        output = turn_PID.compute(angle);
+        output = clamp(output, -max_voltage, max_voltage);
+
+        if(fabs(angle/4.0) >= (fabs(turnDegrees))){
+            break;
+        }
+            
+        if(turnDegrees > 0){
+            right_drive.spin(forward, output, volt);
+            left_drive.spin(reverse, output, volt);
+        }
+        else{
+            left_drive.spin(forward, output, volt);
+            right_drive.spin(reverse, output, volt);
+        }
+
+        task::sleep(20);
+
+    }
+}
+
+
+/// @brief Drives the robot to a set position on the field
+/// @param newY Desired ending y-position
+/// @param newX Desired ending x-position
+/// @param facingDir Desired ending facing direction
+void Drive::moveTurn(float newY, float newX, float facingDir){
+
+    Odom sensors(forward1, forward2, lateral);
+    
+    float curX = sensors.get_current_X_position(lateral);
+    float curY = sensors.get_current_Y_position(forward1, forward2);
+
+    float distX = newX - curX;
+    float distY = newY - curY;
+    
+    float driveDist = sqrt(pow(distY,2.0) + pow(distX,2.0));
+    float driveAngle = (atan(distX/distY))*180/M_PI;
+
+    turn(driveAngle);
+    drive_distance(driveDist);
+    turn((-1.0*driveAngle) + facingDir);
+
 
 }
 
