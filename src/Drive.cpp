@@ -93,8 +93,8 @@ void Drive::drive_distance(float distance)
     brake();
 }
 
-/// @brief Turns the robot a set amount of degrees
-/// @param turnDegrees The number of degrees the robot turns (0-259)
+/// @brief Turns the robot a set amount of degrees using odometry
+/// @param turnDegrees The number of degrees the robot turns (0-359)
 void Drive::turn(float turnDegrees){
     
     Odom sensors(forward1, forward2, lateral);
@@ -149,8 +149,11 @@ void Drive::moveTurn(float newY, float newX, float facingDir){
     float driveDist = sqrt(pow(distY,2.0) + pow(distX,2.0));
     float driveAngle = (atan(distX/distY))*180/M_PI;
 
+    //Turn initial angle
     turn(driveAngle);
+    //Drive hypotenuse
     drive_distance(driveDist);
+    //Turn to ending facing
     turn((-1.0*driveAngle) + facingDir);
 
 

@@ -14,10 +14,10 @@ float Odom::get_current_Y_position(rotation forward1, rotation forward2){
     return (forward1.position(degrees) + forward2.position(degrees))/2.0;
 }
 
-void Odom::go_to_position(float x_pos, float y_pos, rotation forward1, rotation forward2, rotation lateral){
-    float avgFwdPos;
+// void Odom::go_to_position(float x_pos, float y_pos, rotation forward1, rotation forward2, rotation lateral){
+//     float avgFwdPos;
 
-}
+// }
 
 void Odom::reset_position(rotation lateral){
     lateral.setPosition(0, degrees);
