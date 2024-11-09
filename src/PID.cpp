@@ -1,5 +1,3 @@
-
-
 #include "PID.h"
 
 /// @brief Constructor
@@ -14,21 +12,32 @@ PID::PID(float Kp, float Ki, float Kd, float timeToSettle):Kp(Kp), Ki(Ki), Kd(Kd
 /// @brief Uses the given error a puts it through a PID formula the output is the result
 /// @param error The desired position minus the current position
 /// @return the output of the PID formula
-float PID::compute(float error)
+float PID::compute(float error, float deltaTime)
 {
-    integral = integral + error;
+    // Apply dead zone
+    if (abs(error) < 0.05) error = 0;
 
-    if(error <= 0)
-        integral = 0;
+    // Integral with anti-windup
+    float integralLimit = 100.0;
+    integral += error * deltaTime;
+    if (integral > integralLimit) integral = integralLimit;
+    if (integral < -integralLimit) integral = -integralLimit;
 
-    derivative = error - prevError;
+    // Derivative with filtering
+    float alpha = 0.9;
+    derivative = alpha * derivative + (1 - alpha) * ((error - prevError) / deltaTime);
     prevError = error;
 
-    float output = error*Kp + integral*Ki + derivative*Kd;
+    // Calculate output and apply rate limiting
+    float newOutput = error * Kp + integral * Ki + derivative * Kd;
+    float maxChange = 0.5;
+    if (newOutput - output > maxChange) newOutput = output + maxChange;
+    if (newOutput - output < -maxChange) newOutput = output - maxChange;
+    output = newOutput;
 
+    // Check if settled within a smaller range near the target
     if(output < 0.7 && output > -0.7)
         timeSpentSettled++;
-
     
     return output;
 }
