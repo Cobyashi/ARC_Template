@@ -8,28 +8,30 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include <fstream>
 
 using namespace vex;
 
 // A global instance of competition
 competition Competition;
-Debug debug;
-
-std::ofstream ofs;
 
 Drive chassis(motor_group(LBack, LFront), motor_group(RBack, RFront), 3.25, 12);
 
 inertial_group test(inertialSensors, inertialSize);
 
-void pre_auton(void) {
+Debug debug("./usd/test.txt", {"Data"});
 
-  
+void pre_auton(void) {
 }
 
 
 
 void autonomous(void) {
 
+  //Brain.Screen.print(debug.add_data({5}));
+  if(Brain.SDcard.exists("test.txt"))
+    Brain.Screen.print("The file exists");
+  
 }
 
 
