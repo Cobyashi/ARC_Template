@@ -28,5 +28,5 @@ class Drive
 
     void turn(float turnDegrees);
     void moveTurn(float fwdDist, float latDist, float facingDir);
-    void turn_to_angle();
+    void move_to_position();
 };

@@ -29,6 +29,20 @@ void pre_auton(void) {
 
 
 void autonomous(void) {
+  std::ofstream data;
+  uint8_t* bitInfo;
+
+  data.open("/test.txt", std::ios::app);
+  Brain.SDcard.loadfile("/test.txt", bitInfo, sizeof(bitInfo));
+
+  if(data.is_open())
+    data << "Testing...";
+  else    
+    Brain.Screen.print("Error opening file");
+  data.close();
+
+  
+  Brain.Screen.print("Done");
 
 }
 

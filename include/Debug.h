@@ -13,7 +13,7 @@ class Debug
 
     public:
 
-    void log(std::string info);
+    void log(char* info);
     void error(std::string info);
     void warning(std::string info);
 };
