@@ -7,15 +7,16 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-#include "vex.h"
+#include "include/vex.h"
 
 using namespace vex;
+using namespace std;
 
 // A global instance of competition
 competition Competition;
 Debug debug;
 
-std::ofstream ofs;
+ofstream ofs;
 
 Drive chassis(motor_group(LBack, LFront), motor_group(RBack, RFront), 3.25, 12);
 
