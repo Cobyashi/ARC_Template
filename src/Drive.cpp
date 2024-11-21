@@ -61,6 +61,7 @@ void Drive::drive_distance(float distance)
     float average_distance = (current_left_position + current_right_position) / 2;
 
     distance = distance + average_distance;
+    Brain.Screen.print("Is in drive");
 
     //  While loop should end when PID is complete
     while(!drive_PID.isSettled())

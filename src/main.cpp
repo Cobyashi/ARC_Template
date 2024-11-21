@@ -28,8 +28,11 @@ void pre_auton(void) {
 
 
 
-void autonomous(void) {
-
+void autonomous(void) 
+{
+    Brain.Screen.setCursor(1,1);
+    Brain.Screen.print("Is in auton");
+    chassis.drive_distance(30);
 }
 
 
@@ -37,6 +40,9 @@ void autonomous(void) {
 void usercontrol(void) {
   // User control code here, inside the loop
   while (1) {
+
+    Brain.Screen.setCursor(1,1);
+    Brain.Screen.print("Is in driver");
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
@@ -46,6 +52,9 @@ void usercontrol(void) {
 
 
 int main() {
+
+  Brain.Screen.setCursor(1,1);
+    Brain.Screen.print("Is in main");
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);

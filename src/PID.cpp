@@ -9,13 +9,18 @@ PID::PID(float Kp, float Ki, float Kd, float timeToSettle):Kp(Kp), Ki(Ki), Kd(Kd
 {
 }
 
+float PID::compute(float error)
+{
+    return compute(error, 1);
+}
+
 /// @brief Uses the given error a puts it through a PID formula the output is the result
 /// @param error The desired position minus the current position
 /// @return the output of the PID formula
 float PID::compute(float error, float deltaTime)
 {
     // Apply dead zone
-    if (abs(error) < 0.05) error = 0;
+    if (std::abs(error) < 0.05) error = 0;
 
     // Integral with anti-windup
     float integralLimit = 100.0;
@@ -38,6 +43,20 @@ float PID::compute(float error, float deltaTime)
     // Check if settled within a smaller range near the target
     if(output < 0.7 && output > -0.7)
         timeSpentSettled++;
+
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1,1);
+    Brain.Screen.print("Proportion: ");
+    Brain.Screen.print(error);
+    Brain.Screen.setCursor(2,1);
+    Brain.Screen.print("Integral: ");
+    Brain.Screen.print(integral);
+    Brain.Screen.setCursor(3,1);
+    Brain.Screen.print("Derivative: ");
+    Brain.Screen.print(derivative);
+    Brain.Screen.setCursor(4,1);
+    Brain.Screen.print("Output: ");
+    Brain.Screen.print(output);
     
     return output;
 }
