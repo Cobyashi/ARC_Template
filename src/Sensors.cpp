@@ -45,21 +45,18 @@
     //Find a way to work with more than two sensors
     float inertial_group::getHeading()
     {
-        //Sets the heading to an int since % only works with int
-        int m1 = sensors[0].heading();
-        int m2 = sensors[1].heading();
-        Brain.Screen.setCursor(1,1);
-        Brain.Screen.print(m1);
-        Brain.Screen.setCursor(2,1);
-        Brain.Screen.print(m1);
+        float output = 0;
 
-        int d1 = (m2 - m1) % 360;
-        int d2 = (m1 - m2) % 360;
+        //Gets the average rotation of the sensors
+        for(int i = 0; i < size; i++)
+            output = sensors[i].rotation(degrees);
+        output = output / size;
 
-        if(d1 < d2)
-            return m1 + (d1/2);
-        else
-            return m2 + (d2/2);
+        //Converts the rotation into terms of 0 to 360
+        output = fmod(output, 360.0);
+        if(output < 0) output += 360.0;
+        
+        return output;
     }   
 
     /// @brief Resets the rotation of the sensors to 0
