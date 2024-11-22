@@ -88,7 +88,15 @@
         return totalRotation / size;
     }
 
+    /// @brief Gets the acceleration of a specific axis of the Inertial Sensors
+    /// @param axis the inertial sensor axis to use
+    /// @return value of the inertial sensor access acceleration
     float inertial_group::acceleration(axisType axis)
     {
-        return 0;
+        float output = 0;
+
+        for(int i = 0; i < size; i++)
+            output = sensors[i].acceleration(axis);
+
+        return output / size;
     }
