@@ -1,5 +1,6 @@
 #include "Sensors.h"
 
+    //INERTIAL GROUP CONSTRUCTOR
     inertial_group::inertial_group(inertial * sensorArray, int arraySize)
     {
         sensors = sensorArray;
