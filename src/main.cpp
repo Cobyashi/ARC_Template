@@ -28,9 +28,7 @@ void pre_auton(void) {
 
 void autonomous(void) {
 
-  //Brain.Screen.print(debug.add_data({5}));
-  if(Brain.SDcard.exists("test.txt"))
-    Brain.Screen.print("The file exists");
+  Brain.Screen.print("Is in autonomous.");
   
 }
 
