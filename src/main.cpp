@@ -10,13 +10,11 @@
 #include "vex.h"
 
 using namespace vex;
-using namespace std;
+
 
 // A global instance of competition
 competition Competition;
 Debug debug;
-
-ofstream ofs;
 
 Drive chassis(motor_group(LBack, LFront), motor_group(RBack, RFront), 3.25, 12);
 
@@ -30,7 +28,7 @@ void pre_auton(void) {
 
 
 void autonomous(void) {
-
+  chassis.drive_distance(10);
 }
 
 

@@ -73,10 +73,8 @@ void Drive::drive_distance(float distance)
 
         Brain.Screen.clearScreen();
 
-        float output = drive_PID.compute(error);
+        float output = drive_PID.compute(error, 1);
 
-        Brain.Screen.setCursor(1,1);
-        Brain.Screen.print(error);
         Brain.Screen.setCursor(2,1);
         Brain.Screen.print(output);
 

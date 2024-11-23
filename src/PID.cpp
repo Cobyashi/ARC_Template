@@ -15,7 +15,7 @@ PID::PID(float Kp, float Ki, float Kd, float timeToSettle):Kp(Kp), Ki(Ki), Kd(Kd
 float PID::compute(float error, float deltaTime)
 {
     // Apply dead zone
-    if (abs(error) < 0.05) error = 0;
+    if (fabs(error) < 0.05) error = 0;
 
     // Integral with anti-windup
     float integralLimit = 100.0;

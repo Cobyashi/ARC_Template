@@ -18,7 +18,7 @@ class PID
 
     PID(float Kp, float Ki, float Kd, float timeToSettle);
 
-    float compute(float error);
+    float compute(float error, float deltatime);
 
     bool isSettled();
 };
