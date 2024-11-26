@@ -159,6 +159,50 @@ void Drive::moveTurn(float newY, float newX, float facingDir){
 
 }
 
-void Drive::move_to_position(){
+/// @brief Turns sharply to a specific location and moves to it
+/// @param desX Desired X position
+/// @param desY Desired Y position
+void Drive::move_to_position(float desX, float desY){
+    Odom sensors(forward1, forward2, lateral, 3.25);
+    float angle_to_turn, dist_to_drive;
+    float curX = sensors.getX();
+    float curY = sensors.getY();
+    float distX = desX-curX;
+    float distY = desY-curY;
+
+    sensors.update_field_position();
+
+    angle_to_turn = (atan(distX/distY))*180/M_PI;
+    dist_to_drive = sqrt(pow(distY, 2.0) + pow(distX, 2.0));
+    turn(angle_to_turn);
+    drive_distance(dist_to_drive);
     
+}
+
+/// @brief Turns along a set curve
+/// @param curX The current X position of the robot
+/// @param curY The current Y position of the robot
+/// @param midX The X position of the middle point of the curve
+/// @param midY The Y position of the middle point of the curve
+/// @param desX The desired ending X position
+/// @param desY The desired ending Y position
+/// @param numPts The number of points along the curve to go to
+void Drive::bezier_turn(float curX, float curY, float midX, float midY, float desX, float desY, int numPts){
+    float pts[numPts+1];
+    float nextX, nextY;
+    
+    //Populate the t-values (0-1)
+    pts[numPts] = 1;
+    for(int i=0;i<numPts;i++){
+        pts[i] = (1.0/static_cast<float>(numPts+1)) * i;
+    }
+
+    //Calculate X and Y values along the curve based on pts[i] and move to that position
+    for(int i=0;i<numPts+1;i++){
+        nextX = (pow(1-pts[i], 2)*curX) + (2*(1-pts[i])*pts[i]*midX) + (pow(pts[i], 2)*desX);
+        nextY = (pow(1-pts[i], 2)*curY) + (2*(1-pts[i])*pts[i]*midY) + (pow(pts[i], 2)*desY);  
+        move_to_position(nextX, nextY);
+    }
+
+
 }

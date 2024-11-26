@@ -5,31 +5,32 @@
     /// @param info The information written into the debug file
     void Debug::log(char* info)
     {
-        uint8_t* bitInfo;
-        std::ofstream data;
-        data.open("test.txt", std::ios::app);
-        // if(data.is_open())
-        //     data << "Testing...";
-        // else    
-        //     Brain.Screen.print("Error opening file");
-        // data.close();
-
-        // Brain.Screen.print("Done");
-
-
-        bitInfo = reinterpret_cast<uint8_t*>(info);
-
-        Brain.SDcard.savefile("test.txt", bitInfo, 'utf-8');
-        if(!Brain.SDcard.isInserted()){
-            Brain.Screen.print("SD Card not inserted");
+        //data = reinterpret_cast<uint8_t*>(info);
+        for(int i=0;i<100;i++){
+            data[i] = i * 2;
         }
-        if(!Brain.SDcard.exists("test.txt")){
-            Brain.Screen.print("File does not exist");
+        
+        int bytesWritten = Brain.SDcard.savefile("test.h", data, sizeof(data));
+
+        if(bytesWritten > 0){
+            Brain.Screen.print("We wrote %d bytes to the SD Card", bytesWritten);
+
+            int bytesRead = Brain.SDcard.loadfile("test.h", data, sizeof(data));
+            Brain.Screen.setCursor(2,1);
+            Brain.Screen.print("We read %d bytes to the SD Card", bytesRead);
+
+            Brain.Screen.setCursor(4,1);
+            
+
+            Brain.Screen.setCursor(6,2);
+            for(int i=0;i<100;i++){
+                Brain.Screen.print("%02X ", read);
+            }
+            
         }
-
-
-        //Brain.SDcard.savefile("test.txt", bitInfo, sizeof(bitInfo));
-        Brain.Screen.print("  Hopefully saved to file");
+        else{
+            Brain.Screen.printAt(10, 40, "Error writing to SD Card");
+        }
 
 
     }

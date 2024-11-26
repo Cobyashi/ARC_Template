@@ -28,5 +28,6 @@ class Drive
 
     void turn(float turnDegrees);
     void moveTurn(float fwdDist, float latDist, float facingDir);
-    void move_to_position();
+    void move_to_position(float, float);
+    void bezier_turn(float, float, float, float, float, float, int);
 };

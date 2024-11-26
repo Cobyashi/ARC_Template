@@ -44,7 +44,8 @@ void Odom::update_field_position(){
     current_Y_position -= ((headingForwardLeftDist+headingForwardRightDist)/2.0);
 }
 
-void Odom::update_heading(){
+/// @brief Updates the heading given two forward rotation sensors
+void Odom::update_heading_2_fwd(){
     // (change in left wheel movement - change in right wheel movement)/
     // (dist L pod is from center + dist R pod is from center)
     float changeL = forward1.position(degrees)/(360.0*(ODOM_WHEEL_DIAMETER*M_PI)) - LDriveOld;
@@ -53,4 +54,27 @@ void Odom::update_heading(){
     change_in_heading *= (180.0/M_PI);
     LDriveOld = forward1.position(degrees)/(360.0*(ODOM_WHEEL_DIAMETER*M_PI));
     RDriveOld = forward2.position(degrees)/(360.0*(ODOM_WHEEL_DIAMETER*M_PI));
+}
+
+/// @brief Updates the heading given one lateral rotation sensor
+void Odom::update_heading(){
+    
+}
+
+/// @brief Gets the current X position of the robot
+/// @return current_X_position
+float Odom::getX(){
+    return current_X_position;
+}
+
+/// @brief Gets the current Y position of the robot
+/// @return current_Y_position 
+float Odom::getY(){
+    return current_Y_position;
+}
+
+/// @brief Gets the current heading of the robot
+/// @return change_in_heading
+float Odom::getHeading(){
+    return change_in_heading;
 }
