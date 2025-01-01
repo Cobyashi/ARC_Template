@@ -9,15 +9,10 @@ PID::PID(float Kp, float Ki, float Kd, float timeToSettle):Kp(Kp), Ki(Ki), Kd(Kd
 {
 }
 
-float PID::compute(float error)
-{
-    return compute(error, 1);
-}
-
 /// @brief Uses the given error a puts it through a PID formula the output is the result
 /// @param error The desired position minus the current position
 /// @return the output of the PID formula
-float PID::compute(float error, float deltaTime)
+float PID::compute(float error)
 {
     // Apply dead zone
     if (std::abs(error) < 0.05) error = 0;

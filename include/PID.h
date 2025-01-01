@@ -8,6 +8,8 @@ class PID
     
     float Kp, Ki, Kd;
 
+    DeltaTime deltaTime;
+
     float prevError;
     float integral = 0, derivative;
     float output;
@@ -19,7 +21,6 @@ class PID
     PID(float Kp, float Ki, float Kd, float timeToSettle);
 
     float compute(float error);
-    float compute(float error, float deltaTime);
 
     bool isSettled();
 };
