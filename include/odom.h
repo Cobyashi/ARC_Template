@@ -7,39 +7,45 @@ using namespace vex;
 class Odom
 {
     private:
-    float x_pos, y_pos;
-    float forwardRightDistFromCenter, forwardLeftDistFromCenter, lateralDistFromCenter;
-    rotation forward1;
-    rotation forward2;
-    rotation lateral;
+        float lateral_degrees;
+        float forward_degreesR;
+        float forward_degreesL;
 
-    const float ODOM_WHEEL_DIAMETER;
-    float current_heading, new_heading;
-    float change_in_heading; 
-    float headingForwardLeftDist, headingForwardRightDist; //Number of inches the rotation moved based on the change in heading
-    float headingLateralDist; //Number of inches the rotation moved based on the change in heading
-    float current_X_position, current_Y_position;
-    float LDriveOld, RDriveOld;
+        float x_position;
+        float y_position;
+        float heading;
 
-    public:
-
-
-
-    float get_current_X_rotation(rotation lateral);
-    float get_current_Y_rotation(rotation forward1, rotation forward2);
+        rotation forwardR;
+        rotation forwardL;
+        rotation lateral;
     
-    void reset_position(rotation lateral);
-    void reset_position(rotation forward1, rotation forward2);
+    public:
+        float forward_right_wheel_diameter;
+        float forward_left_wheel_diameter;
+        float lateral_wheel_diameter;
 
-    void set_starting_position(float, float, float);
-    void update_field_position();
-    void update_heading_2_fwd();
-    void update_heading();
+        float forward_right_rotation_distance;
+        float forward_left_rotation_distance;
+        float lateral_rotation_distance;
 
-    float getX();
-    float getY();
-    float getHeading();
+        Odom(rotation forwardR, rotation forwardL, rotation lateral, float forward_right_wheel_diameter, float forward_left_wheel_diameter, float lateral_wheel_diameter, float forward_right_rotation_distance, float forward_left_rotation_distance, float lateral_rotation_distance);
 
-    Odom(rotation forward1, rotation forward2, rotation lateral, const float ODOM_WHEEL_DIAMETER);
+        void reset_rotation();
+
+        float get_x_position();
+        float get_y_position();
+        float get_heading();
+
+        float get_lateral_degrees();
+        float get_forward_right_degrees();
+        float get_forward_left_degrees();
+
+        void update_heading(rotation forwardR, rotation forwardL, rotation lateral);
+        void update_position_two_forward(rotation forwardR, rotation forwardL, rotation lateral);
+        void update_position_one_forward(rotation forward, rotation lateral, inertial heading_gyro);
+
+        void set_position(float x_position, float y_position, float heading = 0.0);
+        void set_heading(float heading);
+
 
 };

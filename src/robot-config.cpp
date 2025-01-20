@@ -11,7 +11,6 @@ motor LBack = motor(PORT10, ratio36_1, true);
 inertial inertialSensors[2] = {inertial(PORT16), inertial(PORT17)};
 const int inertialSize = sizeof(inertialSensors) / sizeof(inertialSensors[0]);
 
-rotation forward1 = rotation(PORT14);
-rotation forward2 = rotation(PORT15);
+rotation forward = rotation(PORT14);
 rotation lateral = rotation(PORT16);
 

@@ -18,6 +18,5 @@ extern motor LBack;
 extern inertial inertialSensors[];
 extern const int inertialSize;
 
-extern rotation forward1;
-extern rotation forward2;
+extern rotation forward;
 extern rotation lateral;
