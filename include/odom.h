@@ -16,12 +16,6 @@ class Odom
         float x_position;
         float y_position;
         float heading;
-
-        //Hardware variables
-        rotation forwardR;
-        rotation forwardL;
-        rotation lateral;
-        inertial heading_gyro;
     
     public:
         //Wheel diameters for the odometry pods
@@ -34,8 +28,8 @@ class Odom
         float forward_left_rotation_distance;
         float lateral_rotation_distance;
 
-        Odom(rotation forwardR, rotation forwardL, rotation lateral, float forward_right_wheel_diameter, float forward_left_wheel_diameter, float lateral_wheel_diameter, float forward_right_rotation_distance, float forward_left_rotation_distance, float lateral_rotation_distance);
-        Odom(rotation forward, rotation lateral, inertial heading_gyro, float forward_wheel_diameter, float lateral_wheel_diameter, float forward_rotation_distance, float lateral_rotation_distance);
+        Odom(float forward_right_wheel_diameter, float forward_left_wheel_diameter, float lateral_wheel_diameter, float forward_right_rotation_distance, float forward_left_rotation_distance, float lateral_rotation_distance);
+        Odom(float forward_wheel_diameter, float lateral_wheel_diameter, float forward_rotation_distance, float lateral_rotation_distance);
 
         void reset_rotation();
 
@@ -57,9 +51,8 @@ class Odom
         void set_lateral_degrees(float lateral_degrees);
 
         //Updaters
-        void update_position_two_forward(rotation forwardR, rotation forwardL, rotation lateral);
-        void update_position_one_forward(rotation forward, rotation lateral, inertial heading_gyro);
-
+        void update_position_two_forward(float current_forward_right_position, float current_forward_left_position, float current_lateral_position);
+        void update_position_one_forward(float current_forward_position, float current_lateral_position, float heading_gyro);
         
 
 

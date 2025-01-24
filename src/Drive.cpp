@@ -97,7 +97,6 @@ void Drive::drive_distance(float distance)
 /// @param turnDegrees The number of degrees the robot turns (0-359)
 void Drive::turn(float turnDegrees){
     
-    Odom sensors(forward1, forward2, lateral, 3.25);
     PID turn_PID(1.00, 0.00, 0.00, 100);
 
     float output;
@@ -138,24 +137,13 @@ void Drive::turn(float turnDegrees){
 /// @param facingDir Desired ending facing direction
 void Drive::moveTurn(float newY, float newX, float facingDir){
 
-    Odom sensors(forward1, forward2, lateral, 3.25);
-    
-    float curX = sensors.get_current_X_rotation(lateral);
-    float curY = sensors.get_current_Y_rotation(forward1, forward2);
 
-    float distX = newX - curX;
-    float distY = newY - curY;
-    
-    float driveDist = sqrt(pow(distY,2.0) + pow(distX,2.0));
-    float driveAngle = (atan(distX/distY))*180/M_PI;
+}
 
-    //Turn initial angle
-    turn(driveAngle);
-    //Drive hypotenuse
-    drive_distance(driveDist);
-    //Turn to ending facing
-    turn((-1.0*driveAngle) + facingDir);
-
+/// @brief Turns to an absolute specific angle
+/// @param desired_heading Desired facing angle
+/// @param current_heading Current facing angle
+void Drive::turn_to_angle(float desired_heading, float current_heading){
 
 }
 
@@ -163,19 +151,7 @@ void Drive::moveTurn(float newY, float newX, float facingDir){
 /// @param desX Desired X position
 /// @param desY Desired Y position
 void Drive::move_to_position(float desX, float desY){
-    Odom sensors(forward1, forward2, lateral, 3.25);
-    float angle_to_turn, dist_to_drive;
-    float curX = sensors.getX();
-    float curY = sensors.getY();
-    float distX = desX-curX;
-    float distY = desY-curY;
-
-    sensors.update_field_position();
-
-    angle_to_turn = (atan(distX/distY))*180/M_PI;
-    dist_to_drive = sqrt(pow(distY, 2.0) + pow(distX, 2.0));
-    turn(angle_to_turn);
-    drive_distance(dist_to_drive);
+    
     
 }
 
