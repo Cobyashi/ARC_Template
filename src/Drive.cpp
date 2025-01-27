@@ -144,15 +144,28 @@ void Drive::moveTurn(float newY, float newX, float facingDir){
 /// @param desired_heading Desired facing angle
 /// @param current_heading Current facing angle
 void Drive::turn_to_angle(float desired_heading, float current_heading){
-
+    if((current_heading-desired_heading)+180.0 < (current_heading-desired_heading)-180.0){
+        //Turn clockwise
+    }else{
+        //Turn counterclockwise
+    }
 }
 
 /// @brief Turns sharply to a specific location and moves to it
 /// @param desX Desired X position
 /// @param desY Desired Y position
 void Drive::move_to_position(float desX, float desY){
+    Odom odometry(1,1,1,1,1,1); //FIXME - Put correct values in
     
-    
+    //Update position
+    float deltaX = odometry.get_x_position()-desX;
+    float deltaY = odometry.get_y_position()-desY;
+    float distance = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
+    float angle = atan(deltaX/deltaY) * (180.0/M_PI);
+
+    turn_to_angle(angle, odometry.get_heading());
+    drive_distance(distance);
+    //Update position    
 }
 
 /// @brief Turns along a set curve
