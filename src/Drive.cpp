@@ -144,10 +144,24 @@ void Drive::moveTurn(float newY, float newX, float facingDir){
 /// @param desired_heading Desired facing angle
 /// @param current_heading Current facing angle
 void Drive::turn_to_angle(float desired_heading, float current_heading){
+    PID turnPID(0, 0, 0, 100);
+    float output;
     if((current_heading-desired_heading)+180.0 < (current_heading-desired_heading)-180.0){
         //Turn clockwise
+        output = turnPID.compute(desired_heading-current_heading);
+        while(!turnPID.isSettled()){
+            left_drive.spin(forward, output, volt);
+            right_drive.spin(reverse, output, volt);
+            task::sleep(10);
+        }
     }else{
         //Turn counterclockwise
+        output = turnPID.compute(desired_heading-current_heading);
+        while(!turnPID.isSettled()){
+            left_drive.spin(reverse, output, volt);
+            right_drive.spin(forward, output, volt);
+            task::sleep(10);
+        }
     }
 }
 

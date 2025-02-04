@@ -1,5 +1,3 @@
-
-
 #include "PID.h"
 
 /// @brief Constructor
@@ -16,20 +14,23 @@ PID::PID(float Kp, float Ki, float Kd, float timeToSettle):Kp(Kp), Ki(Ki), Kd(Kd
 /// @return the output of the PID formula
 float PID::compute(float error)
 {
-    integral = integral + error;
-
-    if(error <= 0)
+    if(fabs(error) <= 0){
+        integral += error;
+    }
+    if((error <= 0 && prevError >= 0) || (error >= 0 && prevError <= 0)){
         integral = 0;
+    }
 
     derivative = error - prevError;
     prevError = error;
 
-    float output = error*Kp + integral*Ki + derivative*Kd;
+    output = error*Kp + integral*Ki + derivative*Kd;
 
-    if(output < 0.7 && output > -0.7)
-        timeSpentSettled++;
+    if(fabs(error) < 0)
+        timeSpentSettled += 10;
+    else
+        timeSpentSettled = 0;
 
-    
     return output;
 }
 
@@ -42,4 +43,3 @@ bool PID::isSettled()
     else
         return false;
 }
-
