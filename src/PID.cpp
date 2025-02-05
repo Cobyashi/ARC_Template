@@ -38,8 +38,5 @@ float PID::compute(float error)
 /// @return Returns TRUE if settled, Returns FALSE if not settled
 bool PID::isSettled()
 {
-    if(timeSpentSettled > timeToSettle)
-        return true;
-    else
-        return false;
+    return timeSpentSettled > timeToSettle;
 }

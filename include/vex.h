@@ -20,6 +20,8 @@
 #include "Drive.h"
 #include "Odom.h"
 
+#include "Drivetrain.h"
+
 #define waitUntil(condition)                                                   \
   do {                                                                         \
     wait(5, msec);                                                             \
