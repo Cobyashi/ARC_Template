@@ -1,13 +1,15 @@
 #include "Drive.h"
 
 /// @brief Constructor
-/// @param left_drive Left side motors of the drive base
-/// @param right_drive Right side motors of the drive base
+/// @param leftDrive Left side motors of the drive base
+/// @param rightDrive Right side motors of the drive base
+/// @param gyro The Port where the inertial sensor is 
 /// @param wheel_diameter The diameter size of the wheel in inches
 /// @param max_voltage The maximum amount of the voltage used in the drivebase (1 - 12)
-Drive::Drive(motor_group left_drive, motor_group right_drive, float wheelDiameter, float wheelRatio, float maxVoltage) : 
-left_drive(left_drive), 
-right_drive(right_drive)
+Drive::Drive(motor_group leftDrive, motor_group rightDrive, int gyro, float wheelDiameter, float wheelRatio, float maxVoltage) : 
+leftDrive(leftDrive), 
+rightDrive(rightDrive),
+gyro(inertial(gyro))
 {
     this->wheelDiameter = wheelDiameter;
     this->wheelRatio = wheelRatio;
@@ -26,7 +28,7 @@ void Drive::tank(){}
 /// @brief Changes a the degree of a wheel rotation to inches driven
 /// @param deg The degree of rotation of a wheel
 /// @return The inches driven
-float Drive::deg_to_inches(float deg)
+float Drive::degToInches(float deg)
 {
     return (deg / 360) * pi() * wheelDiameter;
 }
@@ -35,10 +37,46 @@ float Drive::deg_to_inches(float deg)
 /// @return Returns the position in inches
 float Drive::getCurrentPosition()
 {
-    float left_position = deg_to_inches(right_drive.position(degrees));
-    float right_position = deg_to_inches(right_drive.position(degrees));
+    float left_position = degToInches(rightDrive.position(degrees));
+    float right_position = degToInches(rightDrive.position(degrees));
 
     return (left_position + right_position) / 2;
+}
+
+/// @brief Spins the drive train motors given the values, this function defaults to using volts
+/// @param leftUnit Units of movement in volts for the left side of the drive train
+/// @param rightUnit Units of movement in volts for the right side of the drive train
+void Drive::driveMotors(float leftUnit, float rightUnit)
+{
+    driveMotors(leftUnit, rightUnit, VOLTS);
+}
+
+/// @brief Spins depending on the spin type with the given values
+/// @param leftUnit Units of movement for the left side of the drive train
+/// @param rightUnit Units of movement for the right side of the drive train
+/// @param spinType The type used to spin the motors, can be: VOLTS, PERCENTAGE, DPS, or RPM
+void Drive::driveMotors(float leftUnit, float rightUnit, MotorSpinType spinType)
+{
+    if(spinType == VOLTS)
+    {
+        leftDrive.spin(forward, leftUnit, volt);
+        rightDrive.spin(forward, rightUnit, volt);
+    }
+    else if(spinType == PERCENTAGE)
+    {
+        leftDrive.spin(forward, leftUnit, pct);
+        rightDrive.spin(forward, rightUnit, pct);
+    }
+    else if(spinType == DPS)
+    {
+        leftDrive.spin(forward, leftUnit, dps);
+        rightDrive.spin(forward, rightUnit, dps);
+    }
+    else if(spinType == RPM)
+    {
+        leftDrive.spin(forward, leftUnit, rpm);
+        rightDrive.spin(forward, rightUnit, rpm);
+    }
 }
 
 /// @brief Brakes the drivetrain 
@@ -47,20 +85,36 @@ void Drive::brake()
     brake(true, true);
 }
 
-/// @brief Brakes individual sides of the drive train
+/// @brief Brakes the drivetrain
+/// @param type The type of brakeType
+void Drive::brake(brakeType type)
+{
+    brake(true, true, type);
+}
+
+/// @brief Brakes individual sides of the drive train using hold by default
 /// @param left Left side of the drive train brake
 /// @param right Right side of the drive train brake
 void Drive::brake(bool left, bool right)
 {
+    brake(left, right, hold);
+}
+
+/// @brief Brakes individual sides of the drive train using braketype
+/// @param left Left side of the drive train brake
+/// @param right Right side of the drive train brake
+/// @param type The type of brakeType
+void Drive::brake(bool left, bool right, brakeType type)
+{
     if(left)
-        left_drive.stop(hold);
+        leftDrive.stop(type);
     if(right)
-        right_drive.stop(hold);
+        rightDrive.stop(type);
 }
 
 /// @brief Uses the drivetrain to drive the given distance in inches
 /// @param distance The distance to drive in inches
-void Drive::drive_distance(float distance)
+void Drive::driveDistance(float distance)
 {
     PID drivePID(2, 0.0, 1.5, 1.5, 300);
     PID angularPID(0.4, 0, 1, 1, 300);
@@ -68,29 +122,23 @@ void Drive::drive_distance(float distance)
     float startPosition = getCurrentPosition();
     float currentPosition = startPosition;
 
+    float startHeading = gyro.heading();
     distance = distance + currentPosition;
 
     //  While loop should end when PID is complete
     while(!drivePID.isSettled())
     {
         currentPosition = getCurrentPosition();
-        float error = distance - currentPosition;
+        float linearError = distance - currentPosition;
+        float angularError = degTo180(startHeading - gyro.heading());
 
-            Brain.Screen.clearScreen();
+        float linearOutput = drivePID.compute(linearError);
+        float angularOutput = angularPID.compute(angularError);
 
-        float output = drivePID.compute(error);
+        linearOutput = clamp(linearOutput, -maxVoltage, maxVoltage);
+        angularOutput = clamp(angularOutput, -maxVoltage, maxVoltage);
 
-            Brain.Screen.setCursor(1,1);
-            Brain.Screen.print("ERROR: ");
-            Brain.Screen.print(error);
-            Brain.Screen.setCursor(2,1);
-            Brain.Screen.print("Output: ");
-            Brain.Screen.print(output);
-
-        output = clamp(output, -maxVoltage, maxVoltage);
-
-        left_drive.spin(forward, output, volt);
-        right_drive.spin(forward, output, volt);
+        driveMotors(linearOutput - angularOutput, linearOutput + angularOutput);
 
         wait(10, msec);
     }
@@ -98,6 +146,6 @@ void Drive::drive_distance(float distance)
     brake();
 }
 
-void Drive::turn_angle(){}
+void Drive::turnAngle(){}
 
-void Drive::turn_to_angle(){}
+void Drive::turnToAngle(){}

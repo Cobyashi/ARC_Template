@@ -4,30 +4,37 @@
 
 using namespace vex;
 
+enum MotorSpinType {VOLTS, PERCENTAGE, DPS, RPM};
+
 class Drive
 {
     private:
 
-    motor_group left_drive, right_drive;
-    //gyro Gyro;
+    motor_group leftDrive, rightDrive;
+    inertial gyro;
     float maxVoltage;
     float wheelRatio, wheelDiameter;
 
     public:
 
-    Drive(motor_group left_drive, motor_group right_drive, float wheelDiameter, float wheelRatio, float maxVoltage);
+    Drive(motor_group leftDrive, motor_group rightDrive, int gyro, float wheelDiameter, float wheelRatio, float maxVoltage);
 
     void arcade();
     void tank();
 
-    float deg_to_inches(float deg);
+    float degToInches(float deg);
     float getCurrentPosition();
 
+    void driveMotors(float leftVolts, float rightVolts);
+    void driveMotors(float leftVolts, float rightVolts, MotorSpinType spinType);
+
     void brake();
+    void brake(brakeType);
     void brake(bool left, bool right);
+    void brake(bool left, bool right, brakeType);
 
-    void drive_distance(float distance);
+    void driveDistance(float distance);
 
-    void turn_angle();
-    void turn_to_angle();
+    void turnAngle();
+    void turnToAngle();
 };

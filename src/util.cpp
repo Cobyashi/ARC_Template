@@ -20,3 +20,19 @@ const float pi()
 {
     return atan(1.0) * 4.0;
 }
+
+float degTo360(float angle)
+{
+    return fmod(angle, 360);
+}
+
+float degTo180(float angle) 
+{
+    angle = degTo360(angle);
+
+    if(angle < -180)
+        angle += 360;
+    if(angle >= 180)
+        angle -= 360;
+    return angle;
+}
