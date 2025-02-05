@@ -15,26 +15,3 @@ float clamp(float input, float min, float max);
 /// @brief Gives the accurate value of pi, probably not neccessary but cool :)
 /// @return Returns pi
 const float pi();
-
-
-class DeltaTime
-{
-    private:
-
-        float preTime;
-        float time;
-
-        brain clock;
-
-    public:
-
-        DeltaTime();
-
-        float updateTime();
-
-        operator float();
-        bool operator==(DeltaTime&DELTATIME);
-        bool operator==(float DELTATIME);
-        bool operator==(double DELTATIME);
-        bool operator==(int DELTATIME);
-};

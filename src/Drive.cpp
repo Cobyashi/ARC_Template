@@ -5,12 +5,14 @@
 /// @param right_drive Right side motors of the drive base
 /// @param wheel_diameter The diameter size of the wheel in inches
 /// @param max_voltage The maximum amount of the voltage used in the drivebase (1 - 12)
-Drive::Drive(motor_group left_drive, motor_group right_drive, float wheel_diameter, float max_voltage) : 
+Drive::Drive(motor_group left_drive, motor_group right_drive, float wheelDiameter, float wheelRatio, float maxVoltage) : 
 left_drive(left_drive), 
-right_drive(right_drive), 
-wheel_diameter(wheel_diameter), 
-max_voltage(max_voltage)
-{}
+right_drive(right_drive)
+{
+    this->wheelDiameter = wheelDiameter;
+    this->wheelRatio = wheelRatio;
+    this->maxVoltage = maxVoltage;
+}
 
 
 void Drive::arcade()
@@ -26,7 +28,17 @@ void Drive::tank(){}
 /// @return The inches driven
 float Drive::deg_to_inches(float deg)
 {
-    return (deg / 360) * pi() * wheel_diameter;
+    return (deg / 360) * pi() * wheelDiameter;
+}
+
+/// @brief Gets the current position of the drive base
+/// @return Returns the position in inches
+float Drive::getCurrentPosition()
+{
+    float left_position = deg_to_inches(right_drive.position(degrees));
+    float right_position = deg_to_inches(right_drive.position(degrees));
+
+    return (left_position + right_position) / 2;
 }
 
 /// @brief Brakes the drivetrain 
@@ -41,54 +53,46 @@ void Drive::brake()
 void Drive::brake(bool left, bool right)
 {
     if(left)
-        left_drive.stop();
+        left_drive.stop(hold);
     if(right)
-        right_drive.stop();
+        right_drive.stop(hold);
 }
 
 /// @brief Uses the drivetrain to drive the given distance in inches
 /// @param distance The distance to drive in inches
 void Drive::drive_distance(float distance)
 {
-    PID drive_PID(1.25, 0.01, .35, 100);
+    PID drivePID(2, 0.0, 1.5, 1.5, 300);
+    PID angularPID(0.4, 0, 1, 1, 300);
     
-    float start_left_position = deg_to_inches(left_drive.position(degrees));
-    float start_right_position = deg_to_inches(right_drive.position(degrees));
+    float startPosition = getCurrentPosition();
+    float currentPosition = startPosition;
 
-    float current_left_position = deg_to_inches(left_drive.position(degrees));
-    float current_right_position = deg_to_inches(right_drive.position(degrees));
-
-    float average_distance = (current_left_position + current_right_position) / 2;
-
-    distance = distance + average_distance;
-    Brain.Screen.print("Is in drive");
+    distance = distance + currentPosition;
 
     //  While loop should end when PID is complete
-    while(!drive_PID.isSettled())
+    while(!drivePID.isSettled())
     {
-        current_left_position =  deg_to_inches(left_drive.position(degrees)) - start_left_position;
-        current_right_position = deg_to_inches(right_drive.position(degrees)) - start_right_position;
+        currentPosition = getCurrentPosition();
+        float error = distance - currentPosition;
 
-        average_distance = (current_left_position + current_right_position) / 2;
-        float error = distance - average_distance;
+            Brain.Screen.clearScreen();
 
-        Brain.Screen.clearScreen();
+        float output = drivePID.compute(error);
 
-        float output = drive_PID.compute(error);
+            Brain.Screen.setCursor(1,1);
+            Brain.Screen.print("ERROR: ");
+            Brain.Screen.print(error);
+            Brain.Screen.setCursor(2,1);
+            Brain.Screen.print("Output: ");
+            Brain.Screen.print(output);
 
-        Brain.Screen.setCursor(1,1);
-        Brain.Screen.print(error);
-        Brain.Screen.setCursor(2,1);
-        Brain.Screen.print(output);
-
-        output = clamp(output, -max_voltage, max_voltage);
+        output = clamp(output, -maxVoltage, maxVoltage);
 
         left_drive.spin(forward, output, volt);
         right_drive.spin(forward, output, volt);
 
-
-        wait(15, msec);
-
+        wait(10, msec);
     }
 
     brake();

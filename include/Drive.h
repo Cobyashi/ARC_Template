@@ -10,17 +10,19 @@ class Drive
 
     motor_group left_drive, right_drive;
     //gyro Gyro;
-    float wheel_diameter;
-    float max_voltage;
+    float maxVoltage;
+    float wheelRatio, wheelDiameter;
 
     public:
 
-    Drive(motor_group left_drive, motor_group right_drive, float wheel_diameter, float max_voltage);
+    Drive(motor_group left_drive, motor_group right_drive, float wheelDiameter, float wheelRatio, float maxVoltage);
 
     void arcade();
     void tank();
 
     float deg_to_inches(float deg);
+    float getCurrentPosition();
+
     void brake();
     void brake(bool left, bool right);
 

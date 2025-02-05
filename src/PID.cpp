@@ -4,9 +4,42 @@
 /// @param Kp Proportional
 /// @param Ki Integral
 /// @param Kd Derivative
-/// @param timeToSettle The maximum amount of time the sytem waits to settle after settle point has been reached
-PID::PID(float Kp, float Ki, float Kd, float timeToSettle):Kp(Kp), Ki(Ki), Kd(Kd), timeToSettle(timeToSettle)
+PID::PID(float Kp, float Ki, float Kd, float settleError)
 {
+    this->Kp = Kp;
+    this->Ki = Ki;
+    this->Kd = Kd;
+    this->settleError = settleError;
+}
+
+/// @brief Constructor
+/// @param Kp Proportional
+/// @param Ki Integral
+/// @param Kd Derivative
+/// @param timeToSettle The maximum amount of time the sytem waits to settle after settle point has been reached
+PID::PID(float Kp, float Ki, float Kd, float settleError, float timeToSettle)
+{
+    this->Kp = Kp;
+    this->Ki = Ki;
+    this->Kd = Kd;
+    this->settleError = settleError;
+    this->timeToSettle = timeToSettle;
+}
+
+/// @brief Constructor
+/// @param Kp Proportional
+/// @param Ki Integral
+/// @param Kd Derivative
+/// @param timeToSettle The maximum amount of time the sytem waits to settle after settle point has been reached
+/// @param endTime The maximum amount of time the system will run, updates in terms deltaTime
+PID::PID(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime)
+{
+    this->Kp = Kp;
+    this->Ki = Ki;
+    this->Kd = Kd;
+    this->settleError = settleError;
+    this->timeToSettle = timeToSettle;
+    this->endTime = endTime;
 }
 
 /// @brief Uses the given error a puts it through a PID formula the output is the result
@@ -14,44 +47,23 @@ PID::PID(float Kp, float Ki, float Kd, float timeToSettle):Kp(Kp), Ki(Ki), Kd(Kd
 /// @return the output of the PID formula
 float PID::compute(float error)
 {
-    // Apply dead zone
-    if (std::abs(error) < 0.05) error = 0;
+    integral += error;
+    derivative = error - prevError;
 
-    // Integral with anti-windup
-    float integralLimit = 100.0;
-    integral += error * deltaTime;
-    if (integral > integralLimit) integral = integralLimit;
-    if (integral < -integralLimit) integral = -integralLimit;
+    // Checks if the error has crossed 0, and if it has, it eliminates the integral term.
+    if ((error > 0 && prevError < 0) || (error < 0 && prevError > 0)){ 
+        integral = 0; 
+    }
 
-    // Derivative with filtering
-    float alpha = 0.9;
-    derivative = alpha * derivative + (1 - alpha) * ((error - prevError) / deltaTime);
+    output = Kp*error + Ki*integral + Kd*derivative;
     prevError = error;
 
-    // Calculate output and apply rate limiting
-    float newOutput = error * Kp + integral * Ki + derivative * Kd;
-    float maxChange = 0.5;
-    if (newOutput - output > maxChange) newOutput = output + maxChange;
-    if (newOutput - output < -maxChange) newOutput = output - maxChange;
-    output = newOutput;
+    if(fabs(error) < settleError)
+        timeSpentSettled += deltaTime;
+    else
+        timeSpentSettled = 0;
 
-    // Check if settled within a smaller range near the target
-    if(output < 0.7 && output > -0.7)
-        timeSpentSettled++;
-
-    Brain.Screen.clearScreen();
-    Brain.Screen.setCursor(1,1);
-    Brain.Screen.print("Proportion: ");
-    Brain.Screen.print(error);
-    Brain.Screen.setCursor(2,1);
-    Brain.Screen.print("Integral: ");
-    Brain.Screen.print(integral);
-    Brain.Screen.setCursor(3,1);
-    Brain.Screen.print("Derivative: ");
-    Brain.Screen.print(derivative);
-    Brain.Screen.setCursor(4,1);
-    Brain.Screen.print("Output: ");
-    Brain.Screen.print(output);
+    runTime += deltaTime;
     
     return output;
 }
@@ -60,6 +72,9 @@ float PID::compute(float error)
 /// @return Returns TRUE if settled, Returns FALSE if not settled
 bool PID::isSettled()
 {
+    if(runTime > endTime && endTime != 0)
+        return true;
+
     if(timeSpentSettled > timeToSettle)
         return true;
     else
