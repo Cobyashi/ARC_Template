@@ -130,15 +130,11 @@ void Drive::turn(float turnDegrees){
     }
 }
 
-
-/// @brief Drives the robot to a set position on the field
-/// @param newY Desired ending y-position
-/// @param newX Desired ending x-position
-/// @param facingDir Desired ending facing direction
-void Drive::moveTurn(float newY, float newX, float facingDir){
-
-
+void Drive::turn_degrees(float degrees){
+    // float curHeading = getHeading();
+    // turn_to_angle(curHeading+degrees, curHeading);
 }
+
 
 /// @brief Turns to an absolute specific angle
 /// @param desired_heading Desired facing angle
@@ -191,7 +187,7 @@ void Drive::move_to_position(float desX, float desY){
 /// @param desY The desired ending Y position
 /// @param numPts The number of points along the curve to go to
 void Drive::bezier_turn(float curX, float curY, float midX, float midY, float desX, float desY, int numPts){
-    float pts[numPts+1];
+    float* pts = new float[numPts+1];
     float nextX, nextY;
     
     //Populate the t-values (0-1)
@@ -207,5 +203,6 @@ void Drive::bezier_turn(float curX, float curY, float midX, float midY, float de
         move_to_position(nextX, nextY);
     }
 
+    delete [] pts;
 
 }
