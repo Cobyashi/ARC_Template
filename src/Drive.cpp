@@ -35,7 +35,7 @@ float Drive::degToInches(float deg)
 
 /// @brief Gets the current position of the drive base
 /// @return Returns the position in inches
-float Drive::getCurrentPosition()
+float Drive::getCurrentMotorPosition()
 {
     float left_position = degToInches(rightDrive.position(degrees));
     float right_position = degToInches(rightDrive.position(degrees));
@@ -116,33 +116,40 @@ void Drive::brake(bool left, bool right, brakeType type)
 /// @param distance The distance to drive in inches
 void Drive::driveDistance(float distance)
 {
-    PID drivePID(2, 0.0, 1.5, 1.5, 300);
+    // Creates PID objects for linear and angular output
+    PID linearPID(2, 0.0, 1.5, 1.5, 300);
     PID angularPID(0.4, 0, 1, 1, 300);
     
-    float startPosition = getCurrentPosition();
+    // Sets the starting variables for the Position and Heading
+    float startPosition = getCurrentMotorPosition();
     float currentPosition = startPosition;
-
     float startHeading = gyro.heading();
+
+    // Updates the distance to match the current position of the robot
     distance = distance + currentPosition;
 
-    //  While loop should end when PID is complete
-    while(!drivePID.isSettled())
+    //  Loops while the linear PID has not yet settled
+    while(!linearPID.isSettled())
     {
-        currentPosition = getCurrentPosition();
-        float linearError = distance - currentPosition;
+        // Updates the Error for the linear values and the angular values
+        float linearError = distance - getCurrentMotorPosition();
         float angularError = degTo180(startHeading - gyro.heading());
 
-        float linearOutput = drivePID.compute(linearError);
+        // Sets the linear output and angular output to the output of the error passed through the PID compute functions
+        float linearOutput = linearPID.compute(linearError);
         float angularOutput = angularPID.compute(angularError);
 
+        // Clamps the values of the output to fit within the -12 to 12 volt limit of the vex motors
         linearOutput = clamp(linearOutput, -maxVoltage, maxVoltage);
         angularOutput = clamp(angularOutput, -maxVoltage, maxVoltage);
 
+        // Drives motors according to the linear Output and includes the linear Output to keep the robot in a straight path relative to is start heading
         driveMotors(linearOutput - angularOutput, linearOutput + angularOutput);
 
         wait(10, msec);
     }
 
+    // Stops the motors once PID has settled
     brake();
 }
 

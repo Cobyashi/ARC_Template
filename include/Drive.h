@@ -15,6 +15,9 @@ class Drive
     float maxVoltage;
     float wheelRatio, wheelDiameter;
 
+    float driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime;
+    float turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime;
+
     public:
 
     Drive(motor_group leftDrive, motor_group rightDrive, int gyro, float wheelDiameter, float wheelRatio, float maxVoltage);
@@ -23,7 +26,7 @@ class Drive
     void tank();
 
     float degToInches(float deg);
-    float getCurrentPosition();
+    float getCurrentMotorPosition();
 
     void driveMotors(float leftVolts, float rightVolts);
     void driveMotors(float leftVolts, float rightVolts, MotorSpinType spinType);
