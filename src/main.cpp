@@ -18,7 +18,7 @@ Debug debug;
 
 Drive chassis(motor_group(L1, L2, L3, L4), motor_group(R1, R2, R3, R4), PORT10, 2.5, 1, 12);
 
-inertial_group test(inertialSensors, inertialSize);
+inertial_group test(inertial(PORT10), inertial(PORT11));
 
 void pre_auton(void) {
 
