@@ -16,8 +16,23 @@ float clamp(float input, float min, float max)
 
 /// @brief Gives the accurate value of pi, probably not neccessary but cool :)
 /// @return Returns pi
-float pi()
+const float pi()
 {
     return atan(1.0) * 4.0;
 }
 
+float degTo360(float angle)
+{
+    return fmod(angle, 360);
+}
+
+float degTo180(float angle) 
+{
+    angle = degTo360(angle);
+
+    if(angle < -180)
+        angle += 360;
+    if(angle >= 180)
+        angle -= 360;
+    return angle;
+}

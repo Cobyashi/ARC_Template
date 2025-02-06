@@ -16,7 +16,7 @@ using namespace vex;
 competition Competition;
 Debug debug;
 
-Drive chassis(motor_group(LBack, LFront), motor_group(RBack, RFront), 3.25, 12);
+Drive chassis(motor_group(L1, L2, L3, L4), motor_group(R1, R2, R3, R4), PORT10, 2.5, 1, 12);
 
 inertial_group test(inertialSensors, inertialSize);
 
@@ -26,16 +26,15 @@ void pre_auton(void) {
 }
 
 
-
 void autonomous(void) {
-  chassis.drive_distance(10);
+  chassis.driveDistance(10);
 }
-
 
 
 void usercontrol(void) {
   // User control code here, inside the loop
   while (1) {
+
 
     wait(20, msec); // Sleep the task for a short amount of time to
     Brain.Screen.clearScreen();
@@ -44,6 +43,7 @@ void usercontrol(void) {
 
 
 int main() {
+
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);

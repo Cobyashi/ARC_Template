@@ -1,11 +1,19 @@
 #include "Sensors.h"
 
-    //INERTIAL GROUP CONSTRUCTOR
+    /// @brief Constructor for inertial_group
+    /// @param sensorArray An array of inertial sensors
+    /// @param arraySize How many inertial sensors are in the array
     inertial_group::inertial_group(inertial * sensorArray, int arraySize)
     {
         sensors = sensorArray;
         size = arraySize;
     }
+
+    // template <typename... Args>
+    //   inertial_group( vex::motor &m1, Args &... m2 ) : inertial_group() {
+    //     _addMotor( m1 );
+    //     _addMotor( m2... );
+    //   }
 
     /// @brief Calibrates all of the inertial sensors within the inertial group
     void inertial_group::calibrate()
