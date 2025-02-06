@@ -1,10 +1,19 @@
 #include "Sensors.h"
 
+    /// @brief Constructor for inertial_group
+    /// @param sensorArray An array of inertial sensors
+    /// @param arraySize How many inertial sensors are in the array
     inertial_group::inertial_group(inertial * sensorArray, int arraySize)
     {
         sensors = sensorArray;
         size = arraySize;
     }
+
+    template <typename... Args>
+      inertial_group( vex::motor &m1, Args &... m2 ) : inertial_group() {
+        _addMotor( m1 );
+        _addMotor( m2... );
+      }
 
     /// @brief Calibrates all of the inertial sensors within the inertial group
     void inertial_group::calibrate()
@@ -56,10 +65,12 @@
         int d1 = (m2 - m1) % 360;
         int d2 = (m1 - m2) % 360;
 
-        if(d1 < d2)
-            return m1 + (d1/2);
-        else
-            return m2 + (d2/2);
+        // if(d1 < d2)
+        //     return m1 + (d1/2);
+        // else
+        //     return m2 + (d2/2);
+
+        return d1 < d2 ? (m1+ (d1/2)) : (m2 + (d2/2));
     }   
 
     /// @brief Resets the rotation of the sensors to 0

@@ -6,7 +6,6 @@ struct DeltaTime
     private:
 
         float preTime;
-        float time;
 
         vex::brain clock;
 
@@ -16,7 +15,7 @@ struct DeltaTime
 
         float updateTime() 
         {
-            time = clock.Timer.time() - preTime;
+            float time = clock.Timer.time() - preTime;
             preTime = clock.Timer.time();
             return time;
         }
