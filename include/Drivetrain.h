@@ -7,7 +7,9 @@
 // ie. wheel diameter, odom distance, gear ratios, etc. 
 class Drivetrain{
     private:
-
+        float heading;
+        float x_position;
+        float y_position;
     public:
 
 
