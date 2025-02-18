@@ -1,8 +1,6 @@
 #pragma once
-
-#include "vex.h"
-
-using namespace vex;
+#include <ostream>
+#include <math.h>
 
 /// @brief Clamps the input inbetween the min and max value
 /// @param input The value being clamped
@@ -13,4 +11,8 @@ float clamp(float input, float min, float max);
 
 /// @brief Gives the accurate value of pi, probably not neccessary but cool :)
 /// @return Returns pi
-float pi();
+const float pi();
+
+float degTo360(float angle);
+
+float degTo180(float angle);

@@ -1,15 +1,16 @@
 {
 	"extension": {
 		"version": "0.6.1",
+		"version": "0.6.1",
 		"json": 2
 	},
 	"project": {
 		"name": "ARC_TEMPLATE",
 		"description": "",
-		"creationDate": "Tue, 18 Feb 2025 06:45:29 GMT",
+		"creationDate": "Wed, 20 Nov 2024 00:18:19 GMT",
 		"platform": "V5",
 		"language": "cpp",
-		"slot": 1,
+		"slot": 8,
 		"sdkVersion": "V5_20240802_15_00_00",
 		"cpp": {
 			"includePath": [],
