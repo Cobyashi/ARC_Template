@@ -19,7 +19,7 @@ Drive chassis(motor_group(LBack, LFront), motor_group(RBack, RFront), 3.25, 12);
 
 inertial_group test(inertialSensors, inertialSize);
 
-Debug debug("./usd/test.txt", {"Data"});
+Debug debug("Test.txt");
 
 void pre_auton(void) {
 }
@@ -36,11 +36,13 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
+
+  
+
   while (1) {
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
-    Brain.Screen.clearScreen();
   }
 }
 
@@ -49,6 +51,8 @@ int main() {
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
+
+  debug.log("User control started.");
 
   // Run the pre-autonomous function.
   pre_auton();

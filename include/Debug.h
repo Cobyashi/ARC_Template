@@ -1,8 +1,9 @@
 #pragma once
 
 #include "vex.h"
-#include <fstream>
-#include <vector>
+#include <cstring>
+#include <iostream>
+#include <string>
 
 class Debug
 {
@@ -10,14 +11,16 @@ class Debug
 
     brain Brain;
     std::ofstream data_log;
-    std::string file;
+    const char* file;
 
     public:
 
-    Debug(std::string file_name, std::vector<std::string> column_names);
+    Debug(std::string file_name);
     ~Debug();
 
-    int add_data(std::vector<double> row);
+    char* stringToChar(std::string str);
+    uint8_t* stringToUint8(std::string str);
+
     void log(std::string info);
     void error(std::string info);
     void warning(std::string info);
