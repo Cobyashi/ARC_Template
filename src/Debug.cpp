@@ -1,8 +1,17 @@
 #include "../include/Debug.h"
 
-Debug::Debug(std::string file_name)
+Debug::Debug(std::string file)
 {
-    file = stringToChar(file_name);
+    this->file = file;
+
+    std::ofstream csvFile(file, std::ios::out | std::ios::trunc); // overwrite file
+
+    if (csvFile.is_open()) {
+        csvFile << "Time,Name,Description" << std::endl;
+        csvFile.close();
+    } else {
+        Brain.Screen.print("Error creating CSV file");
+    }
 }
 
 Debug::~Debug() 
@@ -18,63 +27,53 @@ char* Debug::stringToChar(std::string str)
     return charStr;
 }
 
-uint8_t* Debug::stringToUint8(std::string str)
-{
-    int size = str.length() + 1;
-
-    uint8_t* uint8Data = new uint8_t[size];
-    for(int i=0; i<size ; i++) 
-    {
-        uint8Data[i] = static_cast<uint8_t>(i < str.length() ? str[i] : '\0');
-    }
-
-    return uint8Data;
-
-}
-
 void Debug::log(std::string info)
 {
-    int size = info.length() + 1;
-    uint8_t * writeData = stringToUint8(info);
+    std::fstream myfile(file, std::ios::out | std::ios::app);
+ 
+    if(myfile.is_open()) {
 
-    uint8_t     myReadBuffer[ 1000 ];
-    
-    // write test data to SD Card
-    int nWritten = Brain.SDcard.savefile( file, writeData, size);
+        myfile << Brain.Timer.time() << ","; // Time
+        myfile << "Log: " << logCount << ","; // Name
+        myfile << info << std::endl;
+        myfile.close();
 
-    // did that work ?
-    if( nWritten > 0) {
-        // display on screen how many bytes we wrote
-        Brain.Screen.setCursor( 2, 2 );
-        Brain.Screen.print( "We wrote %d bytes to the SD Card", nWritten );
-
-        // now read it back into a different buffer
-        int nRead = Brain.SDcard.loadfile( file, myReadBuffer, sizeof(myReadBuffer) );
-
-        // display on screen how many bytes we read
-        Brain.Screen.setCursor( 3, 2 );
-        Brain.Screen.print( "We read %d bytes from the SD Card", nRead );
-
-        // and display some of the data
-        Brain.Screen.setCursor( 6, 2 );
-        for(int i=0;i<8;i++)
-            Brain.Screen.print("%02X ", myReadBuffer[i]);
+        logCount++;
     }
     else {
-        Brain.Screen.printAt( 10, 40, "Error writing to the SD Card" );        
+        Brain.Screen.print("Error opening file");
     }
-
-    delete [] writeData;
 }
 
 /// @brief 
 /// @param info 
 void Debug::error(std::string info)
 {
+    char *charInfo = stringToChar(info);
 
     Brain.Screen.setPenColor(white);
     Brain.Screen.setFillColor(red);
-    Brain.Screen.drawRectangle(240, 130, 100, 50);
+    Brain.Screen.drawRectangle(100, 70, 300, 100);
+
+    Brain.Screen.setCursor(5, 12);
+    Brain.Screen.print(charInfo);
+
+    delete [] charInfo;
+
+    std::fstream myfile(file, std::ios::out | std::ios::app);
+ 
+    if(myfile.is_open()) {
+
+        myfile << Brain.Timer.time() << ","; // Time
+        myfile << "Error: " << errorCount << ","; // Name
+        myfile << info << std::endl;
+        myfile.close();
+
+        errorCount++;
+    }
+    else {
+        Brain.Screen.print("Error opening file");
+    }
 }
 
 /// @brief 

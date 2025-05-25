@@ -2,6 +2,7 @@
 
 #include "vex.h"
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -11,11 +12,15 @@ class Debug
 
     brain Brain;
     std::ofstream data_log;
-    const char* file;
+    std::string file;
+
+    int logCount = 1;
+    int errorCount = 1; 
+    int warningCount = 1;
 
     public:
 
-    Debug(std::string file_name);
+    Debug(std::string file);
     ~Debug();
 
     char* stringToChar(std::string str);

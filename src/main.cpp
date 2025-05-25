@@ -19,7 +19,7 @@ Drive chassis(motor_group(LBack, LFront), motor_group(RBack, RFront), 3.25, 12);
 
 inertial_group test(inertialSensors, inertialSize);
 
-Debug debug("Test.txt");
+Debug debug("Test.csv");
 
 void pre_auton(void) {
 }
@@ -52,7 +52,10 @@ int main() {
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
 
-  debug.log("User control started.");
+  debug.log("This is a log");
+  debug.error("This is an error");
+  debug.log("This is another log");
+
 
   // Run the pre-autonomous function.
   pre_auton();
