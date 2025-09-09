@@ -12,7 +12,6 @@
 #include "v5.h"
 #include "v5_vcs.h"
 
-#include "InertialGroup.h"
 #include "robot-config.h"
 #include "util.h"
 

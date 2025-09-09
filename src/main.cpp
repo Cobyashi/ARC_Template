@@ -17,8 +17,6 @@ competition Competition;
 
 Drive chassis(motor_group(L1, L2), motor_group(R1, R2), PORT6, 2.5, 1, 12);
 
-inertial_group test(inertial(PORT10), inertial(PORT11));
-
 
 void pre_auton(void) {
 }
