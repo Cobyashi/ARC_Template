@@ -19,11 +19,19 @@ gyro(inertial(gyro))
 
 void Drive::arcade()
 {
-    
+    int leftY = Controller1.Axis3.position(percent);
+    int rightX = Controller1.Axis1.position(percent);
+    leftDrive.spin(forward, leftY+rightX, percent);
+    rightDrive.spin(forward, leftY-rightX, percent);
 }
 
 
-void Drive::tank(){}
+void Drive::tank(){
+    int leftY = Controller1.Axis3.position(percent);
+    int rightY = Controller1.Axis2.position(percent);
+    leftDrive.spin(forward, leftY, percent);
+    rightDrive.spin(forward, rightY, percent);
+}
 
 /// @brief Changes a the degree of a wheel rotation to inches driven
 /// @param deg The degree of rotation of a wheel
@@ -170,19 +178,19 @@ void Drive::turn(float turnDegrees){
         angle = angle - (numRotations*360);
 
         output = turn_PID.compute(angle);
-        output = clamp(output, -max_voltage, max_voltage);
+        output = clamp(output, -maxVoltage, maxVoltage);
 
         if(fabs(angle/4.0) >= (fabs(turnDegrees))){
             break;
         }
             
         if(turnDegrees > 0){
-            right_drive.spin(forward, output, volt);
-            left_drive.spin(reverse, output, volt);
+            rightDrive.spin(forward, output, volt);
+            leftDrive.spin(reverse, output, volt);
         }
         else{
-            left_drive.spin(forward, output, volt);
-            right_drive.spin(reverse, output, volt);
+            leftDrive.spin(forward, output, volt);
+            rightDrive.spin(reverse, output, volt);
         }
 
         task::sleep(20);
@@ -206,16 +214,16 @@ void Drive::turn_to_angle(float desired_heading, float current_heading){
         //Turn clockwise
         output = turnPID.compute(desired_heading-current_heading);
         while(!turnPID.isSettled()){
-            left_drive.spin(forward, output, volt);
-            right_drive.spin(reverse, output, volt);
+            leftDrive.spin(forward, output, volt);
+            rightDrive.spin(reverse, output, volt);
             task::sleep(10);
         }
     }else{
         //Turn counterclockwise
         output = turnPID.compute(desired_heading-current_heading);
         while(!turnPID.isSettled()){
-            left_drive.spin(reverse, output, volt);
-            right_drive.spin(forward, output, volt);
+            leftDrive.spin(reverse, output, volt);
+            rightDrive.spin(forward, output, volt);
             task::sleep(10);
         }
     }
@@ -234,7 +242,7 @@ void Drive::move_to_position(float desX, float desY){
     float angle = atan(deltaX/deltaY) * (180.0/M_PI);
 
     turn_to_angle(angle, odometry.get_heading());
-    drive_distance(distance);
+    driveDistance(distance);
     //Update position    
 }
 

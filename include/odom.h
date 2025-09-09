@@ -43,7 +43,7 @@ class Odom
         float get_forward_left_degrees();
 
         //Mutators
-        void set_position(float x_position, float y_position, float heading = 0.0);
+        void set_position(float x_position, float y_position, float heading);
         void set_heading(float heading);
 
         void set_forward_right_degrees(float forward_degreesR);

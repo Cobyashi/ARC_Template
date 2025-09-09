@@ -13,7 +13,6 @@
 #include "v5_vcs.h"
 
 #include "InertialGroup.h"
-#include "Debug.h"
 #include "robot-config.h"
 #include "util.h"
 
@@ -21,7 +20,6 @@
 #include "Drive.h"
 #include "Odom.h"
 
-#include "Drivetrain.h"
 
 #define waitUntil(condition)                                                   \
   do {                                                                         \
