@@ -1,15 +1,22 @@
 #pragma once
 
 #include "vex.h"
-
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 class Debug
 {
     private:
 
-    std::string fileName = "debug.txt";
     brain Brain;
-    float runTime = 0;
+    std::ofstream data_log;
+    std::string file;
+
+    int logCount = 1;
+    int errorCount = 1; 
+    int warningCount = 1;
 
     public:
     uint8_t data[ 100 ];

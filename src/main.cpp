@@ -8,6 +8,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include <fstream>
 
 using namespace vex;
 
@@ -20,19 +21,24 @@ Drive chassis(motor_group(L1, L2, L3, L4), motor_group(R1, R2, R3, R4), PORT10, 
 
 inertial_group test(inertialSensors, inertialSize);
 
-void pre_auton(void) {
+Debug debug("Test.csv");
 
-  
+void pre_auton(void) {
 }
 
 
 void autonomous(void) {
 
+  Brain.Screen.print("Is in autonomous.");
+  
 }
 
 
 void usercontrol(void) {
   // User control code here, inside the loop
+
+  
+
   while (1) {
 
 
@@ -47,6 +53,11 @@ int main() {
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
+
+  debug.log("This is a log");
+  debug.error("This is an error");
+  debug.log("This is another log");
+
 
   // Run the pre-autonomous function.
   pre_auton();
