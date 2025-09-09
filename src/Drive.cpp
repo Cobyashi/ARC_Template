@@ -45,10 +45,10 @@ float Drive::degToInches(float deg)
 /// @return Returns the position in inches
 float Drive::getCurrentMotorPosition()
 {
-    float left_position = degToInches(rightDrive.position(degrees));
-    float right_position = degToInches(rightDrive.position(degrees));
+    float leftPosition = degToInches(rightDrive.position(degrees));
+    float rightPosition = degToInches(rightDrive.position(degrees));
 
-    return (left_position + right_position) / 2;
+    return (leftPosition + rightPosition) / 2;
 }
 
 /// @brief Spins the drive train motors given the values, this function defaults to using volts
@@ -198,21 +198,21 @@ void Drive::turn(float turnDegrees){
     }
 }
 
-void Drive::turn_degrees(float degrees){
+void Drive::turnDegrees(float degrees){
     // float curHeading = getHeading();
     // turn_to_angle(curHeading+degrees, curHeading);
 }
 
 
 /// @brief Turns to an absolute specific angle
-/// @param desired_heading Desired facing angle
-/// @param current_heading Current facing angle
-void Drive::turn_to_angle(float desired_heading, float current_heading){
+/// @param desiredHeading Desired facing angle
+/// @param currentHeading Current facing angle
+void Drive::turnToAngle(float desiredHeading, float currentHeading){
     PID turnPID(0, 0, 0, 100);
     float output;
-    if((current_heading-desired_heading)+180.0 < (current_heading-desired_heading)-180.0){
+    if((currentHeading-desiredHeading)+180.0 < (currentHeading-desiredHeading)-180.0){
         //Turn clockwise
-        output = turnPID.compute(desired_heading-current_heading);
+        output = turnPID.compute(desiredHeading-currentHeading);
         while(!turnPID.isSettled()){
             leftDrive.spin(forward, output, volt);
             rightDrive.spin(reverse, output, volt);
@@ -220,7 +220,7 @@ void Drive::turn_to_angle(float desired_heading, float current_heading){
         }
     }else{
         //Turn counterclockwise
-        output = turnPID.compute(desired_heading-current_heading);
+        output = turnPID.compute(desiredHeading-currentHeading);
         while(!turnPID.isSettled()){
             leftDrive.spin(reverse, output, volt);
             rightDrive.spin(forward, output, volt);
@@ -232,16 +232,16 @@ void Drive::turn_to_angle(float desired_heading, float current_heading){
 /// @brief Turns sharply to a specific location and moves to it
 /// @param desX Desired X position
 /// @param desY Desired Y position
-void Drive::move_to_position(float desX, float desY){
+void Drive::moveToPosition(float desX, float desY){
     Odom odometry(1,1,1,1,1,1); //FIXME - Put correct values in
     
     //Update position
-    float deltaX = odometry.get_x_position()-desX;
-    float deltaY = odometry.get_y_position()-desY;
+    float deltaX = odometry.getXPosition()-desX;
+    float deltaY = odometry.getYPosition()-desY;
     float distance = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
     float angle = atan(deltaX/deltaY) * (180.0/M_PI);
 
-    turn_to_angle(angle, odometry.get_heading());
+    turnToAngle(angle, odometry.getHeading());
     driveDistance(distance);
     //Update position    
 }
@@ -254,7 +254,7 @@ void Drive::move_to_position(float desX, float desY){
 /// @param desX The desired ending X position
 /// @param desY The desired ending Y position
 /// @param numPts The number of points along the curve to go to
-void Drive::bezier_turn(float curX, float curY, float midX, float midY, float desX, float desY, int numPts){
+void Drive::bezierTurn(float curX, float curY, float midX, float midY, float desX, float desY, int numPts){
     float* pts = new float[numPts+1];
     float nextX, nextY;
     
@@ -268,7 +268,7 @@ void Drive::bezier_turn(float curX, float curY, float midX, float midY, float de
     for(int i=0;i<numPts+1;i++){
         nextX = (pow(1-pts[i], 2)*curX) + (2*(1-pts[i])*pts[i]*midX) + (pow(pts[i], 2)*desX);
         nextY = (pow(1-pts[i], 2)*curY) + (2*(1-pts[i])*pts[i]*midY) + (pow(pts[i], 2)*desY);  
-        move_to_position(nextX, nextY);
+        moveToPosition(nextX, nextY);
     }
 
     delete [] pts;

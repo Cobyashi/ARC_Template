@@ -1,128 +1,128 @@
 #include "Odom.h"
 
 /// @brief Constructor for odometry with two forward rotation sensors
-/// @param forward_right_wheel_diameter Right side forward rotation wheel diameter
-/// @param forward_left_wheel_diameter Left side forward rotation wheel diameter
-/// @param lateral_wheel_diameter Lateral rotation wheel diameter
-/// @param forward_right_rotation_distance Distance the forward right wheel is from the center (in)
-/// @param forward_left_rotation_distance Distance the forward left wheel is from the center (in)
-/// @param lateral_rotation_distance Distance the lateral wheel is from the center (in)
-Odom::Odom(float forward_right_wheel_diameter, float forward_left_wheel_diameter, float lateral_wheel_diameter, float forward_right_rotation_distance, float forward_left_rotation_distance, float lateral_rotation_distance){
-    this->forward_right_wheel_diameter = forward_right_wheel_diameter;
-    this->forward_left_wheel_diameter = forward_left_wheel_diameter;
-    this->lateral_wheel_diameter = lateral_wheel_diameter;
+/// @param forwardRightWheelDiameter Right side forward rotation wheel diameter
+/// @param forwardLeftWheelDiameter Left side forward rotation wheel diameter
+/// @param lateralWheelDiameter Lateral rotation wheel diameter
+/// @param forwardRightRotationDistance Distance the forward right wheel is from the center (in)
+/// @param forwardLeftRotationDistance Distance the forward left wheel is from the center (in)
+/// @param lateralRotationDistance Distance the lateral wheel is from the center (in)
+Odom::Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, float lateralWheelDiameter, float forwardRightRotationDistance, float forwardLeftRotationDistance, float lateralRotationDistance){
+    this->forwardRightWheelDiameter = forwardRightWheelDiameter;
+    this->forwardLeftWheelDiameter = forwardLeftWheelDiameter;
+    this->lateralWheelDiameter = lateralWheelDiameter;
 }
 
 /// @brief Constructor for odometry with one forward rotation sensor
-/// @param forward_wheel_diameter Forward rotation wheel diameter 
-/// @param lateral_wheel_diameter Lateral rotation wheel diameter
-/// @param forward_rotation_distance Distance the forward wheel is from the center (in)
-/// @param lateral_rotation_distance Distance the lateral wheel is from the center (in)
-Odom::Odom(float forward_wheel_diameter, float lateral_wheel_diameter, float forward_rotation_distance, float lateral_rotation_distance){
-    this->forward_right_wheel_diameter = forward_wheel_diameter;
-    this->lateral_wheel_diameter = lateral_wheel_diameter;
-    this->forward_right_rotation_distance = forward_rotation_distance;
-    this->lateral_rotation_distance = lateral_rotation_distance;
+/// @param forwardWheelDiameter Forward rotation wheel diameter 
+/// @param lateralWheelDiameter Lateral rotation wheel diameter
+/// @param forwardRotationDistance Distance the forward wheel is from the center (in)
+/// @param lateralRotationDistance Distance the lateral wheel is from the center (in)
+Odom::Odom(float forwardWheelDiameter, float lateralWheelDiameter, float forwardRotationDistance, float lateralRotationDistance){
+    this->forwardRightWheelDiameter = forwardWheelDiameter;
+    this->lateralWheelDiameter = lateralWheelDiameter;
+    this->forwardRightRotationDistance = forwardRotationDistance;
+    this->lateralRotationDistance = lateralRotationDistance;
 }
 
 
 /// @brief Sets all rotation degrees to 0.0
-void Odom::reset_rotation(){
-    forward_degreesL = 0.0;
-    forward_degreesR = 0.0;
-    lateral_degrees = 0.0;
+void Odom::resetRotation(){
+    forwardDegreesL = 0.0;
+    forwardDegreesR = 0.0;
+    lateralDegrees = 0.0;
 }
 
 //Accessors
-float Odom::get_x_position(){ return x_position; }
-float Odom::get_y_position(){ return y_position; }
-float Odom::get_heading(){ return heading;}
-float Odom::get_forward_right_degrees(){ return forward_degreesR; }
-float Odom::get_forward_left_degrees(){ return forward_degreesL; }
-float Odom::get_lateral_degrees(){ return lateral_degrees; }
+float Odom::getXPosition(){ return xPosition; }
+float Odom::getYPosition(){ return yPosition; }
+float Odom::getHeading(){ return heading;}
+float Odom::getForwardRightDegrees(){ return forwardDegreesR; }
+float Odom::getForwardLeftDegrees(){ return forwardDegreesL; }
+float Odom::getLateralDegrees(){ return lateralDegrees; }
 
 //Mutators
-void Odom::set_position(float x_position, float y_position, float heading = 0.0){
-    this->x_position = x_position;
-    this->y_position = y_position;
+void Odom::setPosition(float xPosition, float yPosition, float heading = 0.0){
+    this->xPosition = xPosition;
+    this->yPosition = yPosition;
     this->heading = heading;
 }
-void Odom::set_heading(float heading){
+void Odom::setHeading(float heading){
     this->heading = heading;
 }
-void Odom::set_forward_right_degrees(float forward_degreesR){
-    this->forward_degreesR = forward_degreesR;
+void Odom::setForwardRightDegrees(float forwardDegreesR){
+    this->forwardDegreesR = forwardDegreesR;
 }
-void Odom::set_forward_left_degrees(float forward_degreesL){
-    this->forward_degreesL = forward_degreesL;
+void Odom::setForwardLeftDegrees(float forwardDegreesL){
+    this->forwardDegreesL = forwardDegreesL;
 }
-void Odom::set_lateral_degrees(float lateral_degrees){
-    this->lateral_degrees = lateral_degrees;
+void Odom::setLateralDegrees(float lateralDegrees){
+    this->lateralDegrees = lateralDegrees;
 }
 
 
 /// @brief Updates the coordinate position of the robot with two forward rotation sensors and one lateral
-/// @param forwardR Forward right rotation degrees
-/// @param forwardL Forward left rotation degrees
-/// @param lateral Lateral rotation degrees
-void Odom::update_position_two_forward(float current_forward_right_position, float current_forward_left_position, float current_lateral_position){
+/// @param currentForwardRightPosition Forward right rotation degrees
+/// @param currentForwardLeftPosition Forward left rotation degrees
+/// @param currentLateralPosition Lateral rotation degrees
+void Odom::updatePositionTwoForward(float currentForwardRightPosition, float currentForwardLeftPosition, float currentLateralPosition){
     //Get current positions based on rotation sensors
-    current_forward_right_position = current_forward_right_position/360.0*(M_PI*forward_right_wheel_diameter);
-    current_forward_left_position = current_forward_left_position/360.0*(M_PI*forward_left_wheel_diameter);
-    current_lateral_position = current_lateral_position/360.0*(M_PI*lateral_wheel_diameter);
+    currentForwardRightPosition = currentForwardRightPosition/360.0*(M_PI*forwardRightWheelDiameter);
+    currentForwardLeftPosition = currentForwardLeftPosition/360.0*(M_PI*forwardLeftWheelDiameter);
+    currentLateralPosition = currentLateralPosition/360.0*(M_PI*lateralWheelDiameter);
 
     //Get positions since last update
-    float old_forward_right_position = get_forward_right_degrees()/360.0*(M_PI*forward_right_wheel_diameter);
-    float old_forward_left_position = get_forward_left_degrees()/360.0*(M_PI*forward_left_wheel_diameter);
-    float old_lateral_position = get_lateral_degrees()/360.0*(M_PI*lateral_wheel_diameter);
+    float oldForwardRightPosition = getForwardRightDegrees()/360.0*(M_PI*forwardRightWheelDiameter);
+    float oldForwardLeftPosition = getForwardLeftDegrees()/360.0*(M_PI*forwardLeftWheelDiameter);
+    float oldLateralPosition = getLateralDegrees()/360.0*(M_PI*lateralWheelDiameter);
 
     //Get the change based on rotations
-    float delta_forward_right = current_forward_right_position - old_forward_right_position;
-    float delta_forward_left = current_forward_left_position - old_forward_left_position;
-    float delta_lateral = current_lateral_position-old_lateral_position;
+    float deltaForwardRight = currentForwardRightPosition - oldForwardRightPosition;
+    float deltaForwardLeft = currentForwardLeftPosition - oldForwardLeftPosition;
+    float deltaLateral = currentLateralPosition-oldLateralPosition;
 
     //Gives answer in radians
-    float delta_heading = (delta_forward_left-delta_forward_right)/(forward_left_rotation_distance+forward_right_rotation_distance);
-    float delta_y = 2.0*((delta_forward_right/delta_heading)+forward_right_rotation_distance)*sin(delta_heading/2.0);
-    float delta_x = 2.0*((delta_lateral/delta_heading)+lateral_rotation_distance)*sin(delta_heading/2.0);
+    float deltaHeading = (deltaForwardLeft-deltaForwardRight)/(forwardLeftRotationDistance+forwardRightRotationDistance);
+    float deltaY = 2.0*((deltaForwardRight/deltaHeading)+forwardRightRotationDistance)*sin(deltaHeading/2.0);
+    float deltaX = 2.0*((deltaLateral/deltaHeading)+lateralRotationDistance)*sin(deltaHeading/2.0);
 
     //Update x and y positions and heading
-    set_position((delta_x+get_x_position()), (delta_y+get_y_position()), ((delta_heading*180.0/M_PI)+get_heading()));
+    setPosition((deltaX+getXPosition()), (deltaY+getYPosition()), ((deltaHeading*180.0/M_PI)+getHeading()));
 
     //Update variables to store new location information
-    set_forward_left_degrees(current_forward_left_position);
-    set_forward_right_degrees(current_forward_right_position);
-    set_lateral_degrees(current_lateral_position);
+    setForwardLeftDegrees(currentForwardLeftPosition);
+    setForwardRightDegrees(currentForwardRightPosition);
+    setLateralDegrees(currentLateralPosition);
 
 }
 
 /// @brief Updates the coordinate position of the robot with one forward and one lateral rotation sensor
-/// @param forward Forward rotation degrees
-/// @param lateral Lateral rotation degrees
-/// @param heading_gyro Heading in degrees
-void Odom::update_position_one_forward(float current_forward_position, float current_lateral_position, float heading_gyro){
+/// @param currentForwardPosition Forward rotation degrees
+/// @param currentLateralPosition Lateral rotation degrees
+/// @param headingGyro Heading in degrees
+void Odom::updatePositionOneForward(float currentForwardPosition, float currentLateralPosition, float headingGyro){
     //Get current positions based on rotation sensors
-    current_forward_position = current_forward_position/360.0*(M_PI*forward_right_wheel_diameter);
-    current_lateral_position = current_lateral_position/360.0*(M_PI*lateral_wheel_diameter);
+    currentForwardPosition = currentForwardPosition/360.0*(M_PI*forwardRightWheelDiameter);
+    currentLateralPosition = currentLateralPosition/360.0*(M_PI*lateralWheelDiameter);
 
     //Get positions since last update
-    float old_forward_position = get_forward_right_degrees()/360.0*(M_PI*forward_right_wheel_diameter);
-    float old_lateral_position = get_lateral_degrees()/360.0*(M_PI*lateral_wheel_diameter);
+    float oldForwardPosition = getForwardRightDegrees()/360.0*(M_PI*forwardRightWheelDiameter);
+    float oldLateralPosition = getLateralDegrees()/360.0*(M_PI*lateralWheelDiameter);
 
     //Get the change based on rotations
-    float delta_forward = current_forward_position - old_forward_position;
-    float delta_lateral = current_lateral_position-old_lateral_position;
+    float deltaForward = currentForwardPosition - oldForwardPosition;
+    float deltaLateral = currentLateralPosition-oldLateralPosition;
 
     //Gives answer in radians
-    float delta_heading = heading_gyro-get_heading();
-    float delta_y = 2.0*((delta_forward/delta_heading)+forward_right_rotation_distance)*sin(delta_heading/2.0);
-    float delta_x = 2.0*((delta_lateral/delta_heading)+lateral_rotation_distance)*sin(delta_heading/2.0);
+    float deltaHeading = headingGyro-getHeading();
+    float deltaY = 2.0*((deltaForward/deltaHeading)+forwardRightRotationDistance)*sin(deltaHeading/2.0);
+    float deltaX = 2.0*((deltaLateral/deltaHeading)+lateralRotationDistance)*sin(deltaHeading/2.0);
 
     //Update x and y positions and heading
-    set_position((delta_x+get_x_position()), (delta_y+get_y_position()), (delta_heading+get_heading()));
+    setPosition((deltaX+getXPosition()), (deltaY+getYPosition()), (deltaHeading+getHeading()));
     
     //Update variables to store new location information
-    set_forward_right_degrees(current_forward_position);
-    set_lateral_degrees(current_lateral_position);
-    set_heading(heading_gyro);
+    setForwardRightDegrees(currentForwardPosition);
+    setLateralDegrees(currentLateralPosition);
+    setHeading(headingGyro);
 }

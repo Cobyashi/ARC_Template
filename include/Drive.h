@@ -39,8 +39,8 @@ class Drive
     void driveDistance(float distance);
 
     void turn(float turnDegrees);
-    void turn_degrees(float degrees);
-    void turn_to_angle(float desired_heading, float current_heading);
-    void move_to_position(float, float);
-    void bezier_turn(float, float, float, float, float, float, int);
+    void turnDegrees(float degrees);
+    void turnToAngle(float desired_heading, float current_heading);
+    void moveToPosition(float, float);
+    void bezierTurn(float, float, float, float, float, float, int);
 };
