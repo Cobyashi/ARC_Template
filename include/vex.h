@@ -19,6 +19,9 @@
 
 #include "PID.h"
 #include "Drive.h"
+#include "Odom.h"
+
+#include "Drivetrain.h"
 
 #define waitUntil(condition)                                                   \
   do {                                                                         \

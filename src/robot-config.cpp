@@ -14,7 +14,6 @@ motor R4 = motor(PORT2, ratio6_1, false);
 inertial inertialSensors[2] = {inertial(PORT16), inertial(PORT17)};
 const int inertialSize = sizeof(inertialSensors) / sizeof(inertialSensors[0]);
 
-encoder forwardRight = encoder(Brain.ThreeWirePort.A);
-encoder forwardLeft = encoder(Brain.ThreeWirePort.C);
-encoder lateral = encoder(Brain.ThreeWirePort.E);
+rotation forwardR = rotation(PORT14);
+rotation lateral = rotation(PORT16);
 

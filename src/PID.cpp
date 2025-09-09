@@ -48,6 +48,11 @@ PID::PID(float Kp, float Ki, float Kd, float settleError, float timeToSettle, fl
 float PID::compute(float error)
 {
     integral += error;
+    
+    if((error <= 0 && prevError >= 0) || (error >= 0 && prevError <= 0)){
+        integral = 0;
+    }
+
     derivative = error - prevError;
 
     // Checks if the error has crossed 0, and if it has, it eliminates the integral term.

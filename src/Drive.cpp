@@ -153,6 +153,116 @@ void Drive::driveDistance(float distance)
     brake();
 }
 
-void Drive::turnAngle(){}
+/// @brief Turns the robot a set amount of degrees using odometry
+/// @param turnDegrees The number of degrees the robot turns (0-359)
+void Drive::turn(float turnDegrees){
+    
+    PID turn_PID(1.00, 0.00, 0.00, 100);
 
-void Drive::turnToAngle(){}
+    float output;
+    float angle;
+    int numRotations;
+
+    while(true){
+        
+        angle = lateral.position(degrees);
+        numRotations = lateral.position(rev);
+        angle = angle - (numRotations*360);
+
+        output = turn_PID.compute(angle);
+        output = clamp(output, -max_voltage, max_voltage);
+
+        if(fabs(angle/4.0) >= (fabs(turnDegrees))){
+            break;
+        }
+            
+        if(turnDegrees > 0){
+            right_drive.spin(forward, output, volt);
+            left_drive.spin(reverse, output, volt);
+        }
+        else{
+            left_drive.spin(forward, output, volt);
+            right_drive.spin(reverse, output, volt);
+        }
+
+        task::sleep(20);
+
+    }
+}
+
+void Drive::turn_degrees(float degrees){
+    // float curHeading = getHeading();
+    // turn_to_angle(curHeading+degrees, curHeading);
+}
+
+
+/// @brief Turns to an absolute specific angle
+/// @param desired_heading Desired facing angle
+/// @param current_heading Current facing angle
+void Drive::turn_to_angle(float desired_heading, float current_heading){
+    PID turnPID(0, 0, 0, 100);
+    float output;
+    if((current_heading-desired_heading)+180.0 < (current_heading-desired_heading)-180.0){
+        //Turn clockwise
+        output = turnPID.compute(desired_heading-current_heading);
+        while(!turnPID.isSettled()){
+            left_drive.spin(forward, output, volt);
+            right_drive.spin(reverse, output, volt);
+            task::sleep(10);
+        }
+    }else{
+        //Turn counterclockwise
+        output = turnPID.compute(desired_heading-current_heading);
+        while(!turnPID.isSettled()){
+            left_drive.spin(reverse, output, volt);
+            right_drive.spin(forward, output, volt);
+            task::sleep(10);
+        }
+    }
+}
+
+/// @brief Turns sharply to a specific location and moves to it
+/// @param desX Desired X position
+/// @param desY Desired Y position
+void Drive::move_to_position(float desX, float desY){
+    Odom odometry(1,1,1,1,1,1); //FIXME - Put correct values in
+    
+    //Update position
+    float deltaX = odometry.get_x_position()-desX;
+    float deltaY = odometry.get_y_position()-desY;
+    float distance = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
+    float angle = atan(deltaX/deltaY) * (180.0/M_PI);
+
+    turn_to_angle(angle, odometry.get_heading());
+    drive_distance(distance);
+    //Update position    
+}
+
+/// @brief Turns along a set curve
+/// @param curX The current X position of the robot
+/// @param curY The current Y position of the robot
+/// @param midX The X position of the middle point of the curve
+/// @param midY The Y position of the middle point of the curve
+/// @param desX The desired ending X position
+/// @param desY The desired ending Y position
+/// @param numPts The number of points along the curve to go to
+void Drive::bezier_turn(float curX, float curY, float midX, float midY, float desX, float desY, int numPts){
+    float* pts = new float[numPts+1];
+    float nextX, nextY;
+    
+    //Populate the t-values (0-1)
+    pts[numPts] = 1;
+    for(int i=0;i<numPts;i++){
+        pts[i] = (1.0/static_cast<float>(numPts+1)) * i;
+    }
+
+    //Calculate X and Y values along the curve based on pts[i] and move to that position
+    for(int i=0;i<numPts+1;i++){
+        nextX = (pow(1-pts[i], 2)*curX) + (2*(1-pts[i])*pts[i]*midX) + (pow(pts[i], 2)*desX);
+        nextY = (pow(1-pts[i], 2)*curY) + (2*(1-pts[i])*pts[i]*midY) + (pow(pts[i], 2)*desY);  
+        move_to_position(nextX, nextY);
+    }
+
+    delete [] pts;
+
+}

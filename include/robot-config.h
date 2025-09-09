@@ -20,3 +20,6 @@ extern motor R4;
 
 extern inertial inertialSensors[];
 extern const int inertialSize;
+
+extern rotation forwardR;
+extern rotation lateral;
