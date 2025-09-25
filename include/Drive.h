@@ -11,7 +11,9 @@ class Drive
     private:
 
     motor_group leftDrive, rightDrive;
-    inertial gyro;
+    inertial inertialSensor1;
+    inertial inertialSensor2;
+
     float maxVoltage;
     float wheelRatio, wheelDiameter;
 
@@ -20,7 +22,11 @@ class Drive
 
     public:
 
-    Drive(motor_group leftDrive, motor_group rightDrive, int gyro, float wheelDiameter, float wheelRatio, float maxVoltage);
+    float predictedAngle;
+
+    Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage);
+    Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT1, int inertialPORT2, float wheelDiameter, float wheelRatio, float maxVoltage);
+
 
     void arcade();
     void tank();

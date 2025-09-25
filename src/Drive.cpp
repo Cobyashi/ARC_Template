@@ -6,14 +6,30 @@
 /// @param gyro The Port where the inertial sensor is 
 /// @param wheel_diameter The diameter size of the wheel in inches
 /// @param max_voltage The maximum amount of the voltage used in the drivebase (1 - 12)
-Drive::Drive(motor_group leftDrive, motor_group rightDrive, int gyro, float wheelDiameter, float wheelRatio, float maxVoltage) : 
+Drive::Drive(motor_group leftDrive, motor_group rightDrive, int ineritalPORT, float wheelDiameter, float wheelRatio, float maxVoltage) : 
 leftDrive(leftDrive), 
 rightDrive(rightDrive),
-gyro(inertial(gyro))
+inertialSensor1(inertial(ineritalPORT)),
+inertialSensor2(inertial(ineritalPORT))
 {
     this->wheelDiameter = wheelDiameter;
     this->wheelRatio = wheelRatio;
     this->maxVoltage = maxVoltage;
+
+    predictedAngle = 0;
+}
+
+Drive::Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT1, int inertialPORT2, float wheelDiameter, float wheelRatio, float maxVoltage) :
+leftDrive(leftDrive), 
+rightDrive(rightDrive),
+inertialSensor1(inertial(inertialPORT1)),
+inertialSensor2(inertial(inertialPORT2))
+{
+    this->wheelDiameter = wheelDiameter;
+    this->wheelRatio = wheelRatio;
+    this->maxVoltage = maxVoltage;
+
+    predictedAngle = 0;
 }
 
 
@@ -131,7 +147,7 @@ void Drive::driveDistance(float distance)
     // Sets the starting variables for the Position and Heading
     float startPosition = getCurrentMotorPosition();
     float currentPosition = startPosition;
-    float startHeading = gyro.heading();
+    float startHeading = inertialSensor1.heading();
 
     // Updates the distance to match the current position of the robot
     distance = distance + currentPosition;
@@ -141,7 +157,7 @@ void Drive::driveDistance(float distance)
     {
         // Updates the Error for the linear values and the angular values
         float linearError = distance - getCurrentMotorPosition();
-        float angularError = degTo180(startHeading - gyro.heading());
+        float angularError = degTo180(startHeading - inertialSensor1.heading());
 
         // Sets the linear output and angular output to the output of the error passed through the PID compute functions
         float linearOutput = linearPID.compute(linearError);
