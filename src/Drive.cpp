@@ -9,27 +9,11 @@
 Drive::Drive(motor_group leftDrive, motor_group rightDrive, int ineritalPORT, float wheelDiameter, float wheelRatio, float maxVoltage) : 
 leftDrive(leftDrive), 
 rightDrive(rightDrive),
-inertialSensor1(inertial(ineritalPORT)),
-inertialSensor2(inertial(ineritalPORT))
+inertialSensor(inertial(ineritalPORT))
 {
     this->wheelDiameter = wheelDiameter;
     this->wheelRatio = wheelRatio;
     this->maxVoltage = maxVoltage;
-
-    predictedAngle = 0;
-}
-
-Drive::Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT1, int inertialPORT2, float wheelDiameter, float wheelRatio, float maxVoltage) :
-leftDrive(leftDrive), 
-rightDrive(rightDrive),
-inertialSensor1(inertial(inertialPORT1)),
-inertialSensor2(inertial(inertialPORT2))
-{
-    this->wheelDiameter = wheelDiameter;
-    this->wheelRatio = wheelRatio;
-    this->maxVoltage = maxVoltage;
-
-    predictedAngle = 0;
 }
 
 
@@ -49,20 +33,12 @@ void Drive::tank(){
     rightDrive.spin(forward, rightY, percent);
 }
 
-/// @brief Changes a the degree of a wheel rotation to inches driven
-/// @param deg The degree of rotation of a wheel
-/// @return The inches driven
-float Drive::degToInches(float deg)
-{
-    return (deg / 360) * pi() * wheelDiameter;
-}
-
 /// @brief Gets the current position of the drive base
 /// @return Returns the position in inches
 float Drive::getCurrentMotorPosition()
 {
-    float leftPosition = degToInches(rightDrive.position(degrees));
-    float rightPosition = degToInches(rightDrive.position(degrees));
+    float leftPosition = degToInches(rightDrive.position(degrees), wheelDiameter);
+    float rightPosition = degToInches(rightDrive.position(degrees), wheelDiameter);
 
     return (leftPosition + rightPosition) / 2;
 }
@@ -147,7 +123,7 @@ void Drive::driveDistance(float distance)
     // Sets the starting variables for the Position and Heading
     float startPosition = getCurrentMotorPosition();
     float currentPosition = startPosition;
-    float startHeading = inertialSensor1.heading();
+    float startHeading = inertialSensor.heading();
 
     // Updates the distance to match the current position of the robot
     distance = distance + currentPosition;
@@ -157,7 +133,7 @@ void Drive::driveDistance(float distance)
     {
         // Updates the Error for the linear values and the angular values
         float linearError = distance - getCurrentMotorPosition();
-        float angularError = degTo180(startHeading - inertialSensor1.heading());
+        float angularError = degTo180(startHeading - inertialSensor.heading());
 
         // Sets the linear output and angular output to the output of the error passed through the PID compute functions
         float linearOutput = linearPID.compute(linearError);
