@@ -31,13 +31,27 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
-
+  Odom myOdom(3,3,2.25,1.5);
+  float fwdDeg, latDeg, heading;
+  myOdom.setPosition(0,0,0);
   while (1) {
     chassis.arcade();
+    fwdDeg = forwardR.angle();
+    latDeg = lateral.angle();
+    heading = gyro1.heading();
+    myOdom.updatePositionOneForward(fwdDeg, latDeg, heading);
 
-    Brain.Screen.print("In Control");
+    //Print to screen
+    // Brain.Screen.setCursor(10,10);
+    // Brain.Screen.print("TEST");
+
+    Brain.Screen.setCursor(5,5);
+    Brain.Screen.print(myOdom.getXPosition());
+    Brain.Screen.setCursor(10,10);
+    Brain.Screen.print(myOdom.getYPosition());
 
     wait(20, msec); // Sleep the task for a short amount of time to
+    Brain.Screen.clearScreen();
   }
 }
 

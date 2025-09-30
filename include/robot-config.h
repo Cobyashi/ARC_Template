@@ -17,8 +17,7 @@ extern motor L2;
 extern motor_group rightDrive;
 extern motor_group leftDrive;
 
-extern inertial inertialSensors[];
-extern const int inertialSize;
-
 extern rotation forwardR;
 extern rotation lateral;
+
+extern inertial gyro1;

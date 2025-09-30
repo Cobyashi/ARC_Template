@@ -12,6 +12,7 @@ motor L2 = motor(PORT1, ratio36_1, true);
 motor_group rightDrive(R1, R2);
 motor_group leftDrive(L1, L2);
 
-rotation forwardR = rotation(PORT14);
-rotation lateral = rotation(PORT16);
+rotation forwardR = rotation(PORT5);
+rotation lateral = rotation(PORT4);
 
+inertial gyro1 = inertial(PORT6);
