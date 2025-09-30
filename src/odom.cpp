@@ -131,12 +131,15 @@ void Odom::updatePositionOneForward(float currentForwardDegrees, float currentLa
         deltaY=deltaForward;
         deltaX=deltaLateral;
     }else{
-        deltaY = 2.0*((deltaForward/deltaHeading)+forwardRightRotationDistance)*sin(deltaHeading/2.0);
-        deltaX = 2.0*((deltaLateral/deltaHeading)+lateralRotationDistance)*sin(deltaHeading/2.0);
+        deltaY = 2.0*((deltaForward/deltaHeading)+forwardRightRotationDistance)*sin(degToRad(deltaHeading)/2.0);
+        deltaX = 2.0*((deltaLateral/deltaHeading)+lateralRotationDistance)*sin(degToRad(deltaHeading)/2.0);
     }
 
     //Update x and y positions and heading
-    setPosition((deltaX+getXPosition()), (deltaY+getYPosition()), (deltaHeading+getHeading()));
+    float avgHeading = degToRad(getHeading())+degToRad(deltaHeading)/2.0;
+    float globalDeltaX = deltaX * cos(avgHeading) - deltaY * sin(avgHeading);
+    float globalDeltaY = deltaY * sin(avgHeading) + deltaY * cos(avgHeading);
+    setPosition((globalDeltaX+getXPosition()), (globalDeltaY+getYPosition()), (deltaHeading+getHeading()));
     
     //Update variables to store new location information
     setForwardRightDegrees(currentForwardDegrees);

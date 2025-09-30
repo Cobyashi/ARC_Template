@@ -18,3 +18,5 @@ float degTo360(float angle);
 float degTo180(float angle);
 
 float degToInches(float deg, float wheelDiameter);
+
+float degToRad(float degrees);

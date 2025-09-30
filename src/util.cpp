@@ -18,12 +18,6 @@ float clamp(float input, float min, float max)
     // return input;
 }
 
-/// @brief Gives the accurate value of pi, probably not neccessary but cool :)
-/// @return Returns pi
-const float pi()
-{
-    return atan(1.0) * 4.0;
-}
 
 float degTo360(float angle)
 {
@@ -47,5 +41,12 @@ float degTo180(float angle)
 /// @return Returns the distance in Inches.
 float degToInches(float deg, float wheelDiameter)
 {
-    return (deg / 360) * pi() * wheelDiameter;
+    return (deg / 360) * M_PI * wheelDiameter;
+}
+
+/// @brief Converts degrees to inches
+/// @param degrees 
+/// @return Radians
+float degToRad(float degrees){
+    return degrees*(M_PI/180.0);
 }
