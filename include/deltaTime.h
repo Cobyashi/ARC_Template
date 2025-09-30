@@ -13,6 +13,8 @@ struct DeltaTime
 
         DeltaTime() {preTime = 0; updateTime();}
 
+        /// @brief Updates the time of the DeltaTime variable
+        /// @return Returns the difference in time passed since the last call
         float updateTime() 
         {
             float time = clock.Timer.time() - preTime;

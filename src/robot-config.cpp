@@ -12,9 +12,6 @@ motor L2 = motor(PORT1, ratio36_1, true);
 motor_group rightDrive(R1, R2);
 motor_group leftDrive(L1, L2);
 
-inertial inertialSensors[2] = {inertial(PORT16), inertial(PORT17)};
-const int inertialSize = sizeof(inertialSensors) / sizeof(inertialSensors[0]);
-
 rotation forwardR = rotation(PORT14);
 rotation lateral = rotation(PORT16);
 

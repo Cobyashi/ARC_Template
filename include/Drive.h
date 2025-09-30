@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vex.h"
+#include "util.h"
 
 using namespace vex;
 
@@ -11,8 +12,7 @@ class Drive
     private:
 
     motor_group leftDrive, rightDrive;
-    inertial inertialSensor1;
-    inertial inertialSensor2;
+    inertial inertialSensor;
 
     float maxVoltage;
     float wheelRatio, wheelDiameter;
@@ -25,13 +25,10 @@ class Drive
     float predictedAngle;
 
     Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage);
-    Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT1, int inertialPORT2, float wheelDiameter, float wheelRatio, float maxVoltage);
-
 
     void arcade();
     void tank();
 
-    float degToInches(float deg);
     float getCurrentMotorPosition();
 
     void driveMotors(float leftVolts, float rightVolts);

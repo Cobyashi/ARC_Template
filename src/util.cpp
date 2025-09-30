@@ -40,3 +40,12 @@ float degTo180(float angle)
         angle -= 360;
     return angle;
 }
+
+/// @brief Transforms a wheels rotation into inches traveled
+/// @param deg Current Degree of the motor.
+/// @param wheelDiameter The Diameter of the wheel that is attached to the motor or rotation sensor.
+/// @return Returns the distance in Inches.
+float degToInches(float deg, float wheelDiameter)
+{
+    return (deg / 360) * pi() * wheelDiameter;
+}
