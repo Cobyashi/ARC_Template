@@ -19,6 +19,9 @@ Drive chassis(motor_group(L1, L2), motor_group(R1, R2), PORT6, 2.5, 1, 12);
 
 
 void pre_auton(void) {
+  gyro1.calibrate();
+  forwardR.resetPosition();
+  lateral.resetPosition();
 }
 
 
@@ -31,13 +34,14 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
-  Odom myOdom(3,3,2.25,1.5);
+  Odom myOdom(2.75,2.75,2.25,1.5);
   float fwdDeg, latDeg, heading;
+  myOdom.resetRotation();
   myOdom.setPosition(0,0,0);
   while (1) {
     chassis.arcade();
-    fwdDeg = forwardR.angle();
-    latDeg = lateral.angle();
+    fwdDeg = forwardR.position(degrees);
+    latDeg = lateral.position(degrees);
     heading = gyro1.heading();
     myOdom.updatePositionOneForward(fwdDeg, latDeg, heading);
 
@@ -45,10 +49,18 @@ void usercontrol(void) {
     // Brain.Screen.setCursor(10,10);
     // Brain.Screen.print("TEST");
 
-    Brain.Screen.setCursor(5,5);
+    Brain.Screen.setCursor(1,5);
+    Brain.Screen.print("X Position: ");
     Brain.Screen.print(myOdom.getXPosition());
-    Brain.Screen.setCursor(10,10);
+    Brain.Screen.setCursor(3,5);
+    Brain.Screen.print("Y Position: ");
     Brain.Screen.print(myOdom.getYPosition());
+    Brain.Screen.setCursor(5,5);
+    Brain.Screen.print("Heading: ");
+    Brain.Screen.print(myOdom.getHeading());
+    Brain.Screen.setCursor(8,5);
+    Brain.Screen.print("Forward Rotation: ");
+    Brain.Screen.print(degToInches(forwardR.position(degrees), 2.75));
 
     wait(20, msec); // Sleep the task for a short amount of time to
     Brain.Screen.clearScreen();
