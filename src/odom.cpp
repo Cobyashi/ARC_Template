@@ -127,19 +127,19 @@ void Odom::updatePositionOneForward(float currentForwardDegrees, float currentLa
 
     float deltaHeading = headingGyro-getHeading();
 
-    if(fabs(deltaHeading) < 1e-6){
+    if(fabs(deltaHeading) == 0){
         deltaY=deltaForward;
         deltaX=deltaLateral;
     }else{
-        deltaY = 2.0*((deltaForward/deltaHeading)+forwardRightRotationDistance)*sin(degToRad(deltaHeading)/2.0);
-        deltaX = 2.0*((deltaLateral/deltaHeading)+lateralRotationDistance)*sin(degToRad(deltaHeading)/2.0);
+        deltaY = 2.0*((deltaForward/degToRad(deltaHeading))+forwardRightRotationDistance)*sin(degToRad(deltaHeading)/2.0);
+        deltaX = 2.0*((deltaLateral/degToRad(deltaHeading))+lateralRotationDistance)*sin(degToRad(deltaHeading)/2.0);
     }
 
     //Update x and y positions and heading
-    float avgHeading = degToRad(getHeading())+degToRad(deltaHeading)/2.0;
+    float avgHeading = degToRad(getHeading()+deltaHeading/2.0);
     float globalDeltaX = deltaX * cos(avgHeading) - deltaY * sin(avgHeading);
     float globalDeltaY = deltaX * sin(avgHeading) + deltaY * cos(avgHeading);
-    setPosition((globalDeltaX+getXPosition()), (globalDeltaY+getYPosition()), (deltaHeading+getHeading()));
+    setPosition((globalDeltaX+getXPosition()), (globalDeltaY+getYPosition()), headingGyro);
     
     //Update variables to store new location information
     setForwardRightDegrees(currentForwardDegrees);

@@ -34,10 +34,12 @@ void usercontrol(void) {
   Odom myOdom(3,3,2.25,1.5);
   float fwdDeg, latDeg, heading;
   myOdom.setPosition(0,0,0);
+  forwardR.resetPosition();
+  lateral.resetPosition();
   while (1) {
     chassis.arcade();
-    fwdDeg = forwardR.angle();
-    latDeg = lateral.angle();
+    fwdDeg = forwardR.position(degrees);
+    latDeg = lateral.position(degrees);
     heading = gyro1.heading();
     myOdom.updatePositionOneForward(fwdDeg, latDeg, heading);
 
@@ -47,8 +49,13 @@ void usercontrol(void) {
 
     Brain.Screen.setCursor(5,5);
     Brain.Screen.print(myOdom.getXPosition());
-    Brain.Screen.setCursor(10,10);
+    Brain.Screen.setCursor(10,5);
     Brain.Screen.print(myOdom.getYPosition());
+
+    // Brain.Screen.setCursor(5,5);
+    // Brain.Screen.print(forwardR.position(degrees));
+    // Brain.Screen.setCursor(10,5);
+    // Brain.Screen.print(lateral.position(degrees));
 
     wait(20, msec); // Sleep the task for a short amount of time to
     Brain.Screen.clearScreen();
