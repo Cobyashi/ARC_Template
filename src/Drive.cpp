@@ -117,8 +117,8 @@ void Drive::brake(bool left, bool right, brakeType type)
 void Drive::driveDistance(float distance)
 {
     // Creates PID objects for linear and angular output
-    PID linearPID(2, 0.0, 1.5, 1.5, 300);
-    PID angularPID(0.4, 0, 1, 1, 300);
+    PID linearPID(0.5, 0.0, 15, 1.5, 30);
+    PID angularPID(0.4, 0, 1, 1, 3);
     
     // Sets the starting variables for the Position and Heading
     float startPosition = getCurrentMotorPosition();
@@ -131,6 +131,8 @@ void Drive::driveDistance(float distance)
     //  Loops while the linear PID has not yet settled
     while(!linearPID.isSettled())
     {
+        Brain.Screen.setCursor(8,5);
+        Brain.Screen.print(linearPID.getTimeSpentSettled());
         // Updates the Error for the linear values and the angular values
         float linearError = distance - getCurrentMotorPosition();
         float angularError = degTo180(startHeading - inertialSensor.heading());
@@ -147,6 +149,7 @@ void Drive::driveDistance(float distance)
         driveMotors(linearOutput - angularOutput, linearOutput + angularOutput);
 
         wait(10, msec);
+        Brain.Screen.clearScreen();
     }
 
     // Stops the motors once PID has settled

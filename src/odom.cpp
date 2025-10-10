@@ -137,7 +137,7 @@ void Odom::updatePositionOneForward(float currentForwardDegrees, float currentLa
 
     //Update x and y positions and heading
     float avgHeading = degToRad(getHeading()+deltaHeading/2.0);
-    float globalDeltaX = deltaX * cos(avgHeading) - deltaY * sin(avgHeading);
+    float globalDeltaX = deltaX * cos(avgHeading) + deltaY * sin(avgHeading);
     float globalDeltaY = deltaX * sin(avgHeading) + deltaY * cos(avgHeading);
     setPosition((globalDeltaX+getXPosition()), (globalDeltaY+getYPosition()), headingGyro);
     

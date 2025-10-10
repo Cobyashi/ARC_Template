@@ -15,7 +15,7 @@ using namespace vex;
 // A global instance of competition
 competition Competition;
 
-Drive chassis(motor_group(L1, L2), motor_group(R1, R2), PORT6, 2.5, 1, 12);
+Drive chassis(motor_group(L1, L2), motor_group(R1, R2), PORT6, 3, 1, 6);
 
 
 void pre_auton(void) {
@@ -60,14 +60,11 @@ void usercontrol(void) {
     Brain.Screen.setCursor(5,5);
     Brain.Screen.print("Heading: ");
     Brain.Screen.print(myOdom.getHeading());
-    Brain.Screen.setCursor(8,5);
-    Brain.Screen.print("Forward Rotation: ");
-    Brain.Screen.print(degToInches(forwardR.position(degrees), 2.75));
 
-    // Brain.Screen.setCursor(5,5);
-    // Brain.Screen.print(forwardR.position(degrees));
-    // Brain.Screen.setCursor(10,5);
-    // Brain.Screen.print(lateral.position(degrees));
+    if(Controller1.ButtonA.pressing())
+    {
+      chassis.driveDistance(24);
+    }
 
     wait(20, msec); // Sleep the task for a short amount of time to
     Brain.Screen.clearScreen();

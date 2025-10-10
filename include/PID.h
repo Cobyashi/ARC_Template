@@ -26,4 +26,6 @@ class PID
     float compute(float error);
 
     bool isSettled();
+
+    float getTimeSpentSettled(){return timeSpentSettled;}
 };
