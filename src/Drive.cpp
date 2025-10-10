@@ -21,8 +21,8 @@ void Drive::arcade()
 {
     int leftY = Controller1.Axis3.position(percent);
     int rightX = Controller1.Axis1.position(percent);
-    leftDrive.spin(forward, leftY+rightX, percent);
-    rightDrive.spin(forward, leftY-rightX, percent);
+    leftDrive.spin(forward, leftY-rightX, percent);
+    rightDrive.spin(forward, leftY+rightX, percent);
 }
 
 
@@ -117,8 +117,8 @@ void Drive::brake(bool left, bool right, brakeType type)
 void Drive::driveDistance(float distance)
 {
     // Creates PID objects for linear and angular output
-    PID linearPID(0.5, 0.0, 15, 1.5, 30);
-    PID angularPID(0.4, 0, 1, 1, 3);
+    PID linearPID(10, 0.05, 25, 0.5, 2, 30000);
+    PID angularPID(1.5, 0, 1, 1, 1, 30000);
     
     // Sets the starting variables for the Position and Heading
     float startPosition = getCurrentMotorPosition();
@@ -126,7 +126,7 @@ void Drive::driveDistance(float distance)
     float startHeading = inertialSensor.heading();
 
     // Updates the distance to match the current position of the robot
-    distance = distance + currentPosition;
+    distance += startPosition;
 
     //  Loops while the linear PID has not yet settled
     while(!linearPID.isSettled())

@@ -47,6 +47,7 @@ PID::PID(float Kp, float Ki, float Kd, float settleError, float timeToSettle, fl
 /// @return the output of the PID formula
 float PID::compute(float error)
 {
+    float time = deltaTime;
     integral += error;
 
     derivative = error - prevError;
@@ -60,11 +61,11 @@ float PID::compute(float error)
     prevError = error;
 
     if(fabs(error) < settleError)
-        timeSpentSettled += deltaTime;
+        timeSpentSettled += time;
     else
         timeSpentSettled = 0;
 
-    runTime += deltaTime;
+    runTime += time;
     
     return output;
 }

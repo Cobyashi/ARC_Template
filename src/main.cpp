@@ -15,7 +15,7 @@ using namespace vex;
 // A global instance of competition
 competition Competition;
 
-Drive chassis(motor_group(L1, L2), motor_group(R1, R2), PORT6, 3, 1, 6);
+Drive chassis(motor_group(L1, L2), motor_group(R1, R2), PORT6, 3, 1, 12);
 
 
 void pre_auton(void) {
