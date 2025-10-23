@@ -40,6 +40,9 @@ void usercontrol(void) {
   myOdom.setPosition(0,0,0);
   forwardR.resetPosition();
   lateral.resetPosition();
+
+  writeToCard("test.txt", "THIS IS A TEST");
+
   while (1) {
     chassis.arcade();
     fwdDeg = forwardR.position(degrees);
@@ -60,6 +63,8 @@ void usercontrol(void) {
     Brain.Screen.setCursor(5,5);
     Brain.Screen.print("Heading: ");
     Brain.Screen.print(myOdom.getHeading());
+
+    
 
     if(Controller1.ButtonA.pressing())
     {

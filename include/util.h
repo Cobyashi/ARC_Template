@@ -20,3 +20,5 @@ float degTo180(float angle);
 float degToInches(float deg, float wheelDiameter);
 
 float degToRad(float degrees);
+
+void writeToCard(std::string filename, std::string text);

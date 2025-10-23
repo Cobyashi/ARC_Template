@@ -1,4 +1,6 @@
 #include "util.h"
+#include "robot-config.h"
+#include <fstream>
 
 /// @brief Clamps the input inbetween the min and max value
 /// @param input The value being clamped
@@ -49,4 +51,14 @@ float degToInches(float deg, float wheelDiameter)
 /// @return Radians
 float degToRad(float degrees){
     return degrees*(M_PI/180.0);
+}
+
+/// @brief Saves information to the SD card
+/// @param filename
+/// @param text Text to save
+void writeToCard(std::string filename, std::string text){
+    std::fstream file;
+    file.open(filename, std::ios::out | std::ios::app);
+    file << text << std::endl;
+    file.close();
 }
