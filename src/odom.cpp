@@ -11,6 +11,10 @@ Odom::Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, floa
     this->forwardRightWheelDiameter = forwardRightWheelDiameter;
     this->forwardLeftWheelDiameter = forwardLeftWheelDiameter;
     this->lateralWheelDiameter = lateralWheelDiameter;
+    this->forwardRightRotationDistance = forwardRightRotationDistance;
+    this->forwardLeftRotationDistance = forwardLeftRotationDistance;
+    this->lateralRotationDistance = lateralRotationDistance;     
+
 }
 
 /// @brief Constructor for odometry with one forward rotation sensor
@@ -95,13 +99,16 @@ void Odom::updatePositionTwoForward(float currentForwardRightDegrees, float curr
     }
 
     //Update x and y positions and heading
-    setPosition((deltaX+xPosition), (deltaY+yPosition), ((deltaHeading*180.0/M_PI)+getHeading()));
-
+    float avgHeading = degToRad(getHeading()+deltaHeading/2.0);
+    float globalDeltaX = deltaX * cos(avgHeading) + deltaY * sin(avgHeading);
+    float globalDeltaY = deltaX * sin(avgHeading) + deltaY * cos(avgHeading);
+    setPosition((globalDeltaX+getXPosition()), (globalDeltaY+getYPosition()), (heading+deltaHeading));
+    
     //Update variables to store new location information
-    setForwardLeftDegrees(currentForwardLeftPosition);
-    setForwardRightDegrees(currentForwardRightPosition);
-    setLateralDegrees(currentLateralPosition);
-
+    forwardDegreesR = currentForwardRightDegrees;
+    forwardDegreesL = currentForwardLeftDegrees;
+    lateralDegrees = currentLateralDegrees;
+    heading += deltaHeading;
 }
 
 /// @brief Updates the coordinate position of the robot with one forward and one lateral rotation sensor
