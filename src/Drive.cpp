@@ -6,10 +6,10 @@
 /// @param gyro The Port where the inertial sensor is 
 /// @param wheel_diameter The diameter size of the wheel in inches
 /// @param max_voltage The maximum amount of the voltage used in the drivebase (1 - 12)
-Drive::Drive(motor_group leftDrive, motor_group rightDrive, int ineritalPORT, float wheelDiameter, float wheelRatio, float maxVoltage) : 
+Drive::Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage) : 
 leftDrive(leftDrive), 
 rightDrive(rightDrive),
-inertialSensor(inertial(ineritalPORT))
+inertialSensor(inertial(inertialPORT))
 {
     this->wheelDiameter = wheelDiameter;
     this->wheelRatio = wheelRatio;
@@ -100,7 +100,7 @@ void Drive::brake(bool left, bool right)
     brake(left, right, hold);
 }
 
-/// @brief Brakes individual sides of the drive train using braketype
+/// @brief Brakes individual sides of the drive train using brake type
 /// @param left Left side of the drive train brake
 /// @param right Right side of the drive train brake
 /// @param type The type of brakeType

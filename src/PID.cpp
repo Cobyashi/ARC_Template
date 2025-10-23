@@ -16,7 +16,7 @@ PID::PID(float Kp, float Ki, float Kd, float settleError)
 /// @param Kp Proportional
 /// @param Ki Integral
 /// @param Kd Derivative
-/// @param timeToSettle The maximum amount of time the sytem waits to settle after settle point has been reached
+/// @param timeToSettle The maximum amount of time the system waits to settle after settle point has been reached
 PID::PID(float Kp, float Ki, float Kd, float settleError, float timeToSettle)
 {
     this->Kp = Kp;
@@ -30,7 +30,7 @@ PID::PID(float Kp, float Ki, float Kd, float settleError, float timeToSettle)
 /// @param Kp Proportional
 /// @param Ki Integral
 /// @param Kd Derivative
-/// @param timeToSettle The maximum amount of time the sytem waits to settle after settle point has been reached
+/// @param timeToSettle The maximum amount of time the system waits to settle after settle point has been reached
 /// @param endTime The maximum amount of time the system will run, updates in terms deltaTime
 PID::PID(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime)
 {

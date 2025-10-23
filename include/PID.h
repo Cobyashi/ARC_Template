@@ -11,7 +11,7 @@ class PID
 
     DeltaTime deltaTime;
 
-    float prevError;
+    float prevError = 0;
     float integral = 0, derivative = 0;
     float output = 0;
     float timeToSettle = 0, endTime = 0;
