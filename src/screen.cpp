@@ -23,11 +23,12 @@ Button::Button(std::string name, vex::color color, int x, int y, int width=90, i
 /// @param fontSize a vex::fontType font size
 /// @param text Button label
 void Button::draw(vex::color backgroundColor, vex::color textColor, vex::fontType fontSize, std::string text){
+    Brain.Screen.setPenColor(backgroundColor);
     Brain.Screen.setFillColor(backgroundColor);
     Brain.Screen.drawRectangle(x, y, width, height);
     Brain.Screen.setPenColor(textColor);
     Brain.Screen.setFont(fontSize);
-    Brain.Screen.setCursor(x+1, y+1);
+    Brain.Screen.setCursor((y/20)+1, (x/10)+2);
     Brain.Screen.print(text.c_str());
 }
 
@@ -47,7 +48,7 @@ bool Button::checkPress(){
 /// @param y Y location
 /// @param fontsize a vex::fontType font size
 /// @param textColor a vex::color color
-Text::Text(std::string words, int x, int y, vex::fontType fontsize, vex::color textColor){
+Text::Text(std::string words, int x, int y, vex::fontType fontSize, vex::color textColor){
     this->words = words;
     this->x = x;
     this->y = y;
@@ -81,11 +82,13 @@ void createAutonButtons(vex::color colors[8], std::string names[8], Button butto
 /// @brief Chooses one button for selection
 /// @param button Button selected
 /// @param oldSelected Previously chosen button
-void clickButton(Button button, Button *oldSelected){
-    oldSelected->draw(oldSelected->getColor(), vex::color::white, vex::fontType::mono20, oldSelected->getName());
-    oldSelected->setChosen(false);
-    button.draw(vex::color(0xffe000), vex::color::white, vex::fontType::mono20, button.getName());
-    button.setChosen(true);
+void clickButton(Button selected, Button buttons[9]){
+    for(int i=0;i<9;i++){
+        buttons[i].draw(buttons[i].getColor(), vex::color::white, vex::fontType::mono20, buttons[i].getName());
+        buttons[i].setChosen(false);
+    }
+    selected.draw(vex::color(0xffe000), vex::color::white, vex::fontType::mono20, selected.getName());
+    selected.setChosen(true);
 }
 
 /// @brief Show all the buttons
@@ -93,7 +96,10 @@ void clickButton(Button button, Button *oldSelected){
 void showAutonSelectionScreen(Button buttons[9]){
     Brain.Screen.clearScreen();
     for(int i=0;i<9;i++){
-        buttons[i].draw(buttons[i].getColor(), vex::color::white, vex::fontType::mono20, buttons[i].getName());
+        if(buttons[i].isChosen())
+            buttons[i].draw(vex::color(0xffe000), vex::color::white, vex::fontType::mono20, buttons[i].getName());
+        else
+            buttons[i].draw(buttons[i].getColor(), vex::color::white, vex::fontType::mono20, buttons[i].getName());
     }
 }
 
@@ -101,12 +107,12 @@ void showAutonSelectionScreen(Button buttons[9]){
 /// @param buttons List of 9 buttons to check
 /// @param oldSelected Previously selected button
 /// @return True if a button has been pressed, false otherwise
-bool checkButtonsPress(Button buttons[9], Button *oldSelected){
+int checkButtonsPress(Button buttons[9]){
     for(int i=0;i<9;i++){
         if(buttons[i].checkPress()){
-            clickButton(buttons[i], oldSelected);
-            return true;
+            clickButton(buttons[i], buttons);
+            return i;
         }
     }
-    return false;
+    return -1;
 }

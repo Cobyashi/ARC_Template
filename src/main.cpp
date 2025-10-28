@@ -24,18 +24,22 @@ void pre_auton(void) {
   lateral.resetPosition();
 
   vex::color colors[8] = {vex::color::red, vex::color::red, vex::color::red, vex::color::red, 
-                       vex::color::blue, vex::color::blue, vex::color::blue, vex::color::blue};
+                          vex::color::blue, vex::color::blue, vex::color::blue, vex::color::blue};
   std::string names[8] = {"Auton 1", "Auton 2", "Auton 3", "Auton 4", 
                           "Auton 5", "Auton 6", "Auton 7", "Auton 8"};
   Button buttons[9];
   createAutonButtons(colors, names, buttons);
 
   showAutonSelectionScreen(buttons);
+  buttons[0].setChosen(true);
 
-  Button lastPressed = buttons[0];
+  int lastPressed = 0;
   while(1){
     if(Brain.Screen.pressing()){
-      checkButtonsPress(buttons, &lastPressed);
+      int temp = checkButtonsPress(buttons);
+      if(temp >= 0){
+        lastPressed = temp;
+      }
     }
     wait(10, msec);
   }

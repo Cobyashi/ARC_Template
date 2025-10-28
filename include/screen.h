@@ -39,6 +39,6 @@ class Text{
 };
 
 void createAutonButtons(vex::color colors[8], std::string names[8], Button buttons[9]);
-void clickButton(Button button, Button *oldSelected);
+void clickButton(Button selected, Button buttons[9]);
 void showAutonSelectionScreen(Button buttons[9]);
-bool checkButtonsPress(Button buttons[9], Button* oldSelected);
+int checkButtonsPress(Button buttons[9]);

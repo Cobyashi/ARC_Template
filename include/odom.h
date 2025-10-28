@@ -53,4 +53,6 @@ class Odom
         //Updaters
         void updatePositionTwoForward(float currentForwardRightPosition, float currentForwardLeftPosition, float currentLateralPosition);
         void updatePositionOneForward(float currentForwardPosition, float currentLateralPosition, float headingGyro);
+        void updatePositionTwoAt45(float currentLeftDegrees, float currentRightDegrees, float headingGyro);
+
 };
