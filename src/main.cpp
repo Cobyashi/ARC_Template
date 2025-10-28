@@ -22,6 +22,24 @@ void pre_auton(void) {
   gyro1.calibrate();
   forwardR.resetPosition();
   lateral.resetPosition();
+
+  vex::color colors[8] = {vex::color::red, vex::color::red, vex::color::red, vex::color::red, 
+                       vex::color::blue, vex::color::blue, vex::color::blue, vex::color::blue};
+  std::string names[8] = {"Auton 1", "Auton 2", "Auton 3", "Auton 4", 
+                          "Auton 5", "Auton 6", "Auton 7", "Auton 8"};
+  Button buttons[9];
+  createAutonButtons(colors, names, buttons);
+
+  showAutonSelectionScreen(buttons);
+
+  Button lastPressed = buttons[0];
+  while(1){
+    if(Brain.Screen.pressing()){
+      checkButtonsPress(buttons, &lastPressed);
+    }
+    wait(10, msec);
+  }
+
 }
 
 
