@@ -19,6 +19,7 @@
 #include "Drive.h"
 #include "Odom.h"
 #include "images.h"
+#include "screen.h"
 
 
 #define waitUntil(condition)                                                   \
