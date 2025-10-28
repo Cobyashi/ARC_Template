@@ -18,6 +18,7 @@
 #include "PID.h"
 #include "Drive.h"
 #include "Odom.h"
+#include "images.h"
 
 
 #define waitUntil(condition)                                                   \

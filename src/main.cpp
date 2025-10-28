@@ -28,7 +28,7 @@ void pre_auton(void) {
 void autonomous(void) {
 
   Brain.Screen.print("Is in autonomous.");
-  
+  drawLogo();
 }
 
 
