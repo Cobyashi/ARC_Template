@@ -19,6 +19,9 @@ Drive chassis(motor_group(L1, L2), motor_group(R1, R2), PORT6, 3, 1, 12);
 
 
 void pre_auton(void) {
+  enum preAutonStates{START_SCREEN = 0, SELECTION_SCREEN = 1};
+  int currentScreen = START_SCREEN;
+
   gyro1.calibrate();
   forwardR.resetPosition();
   lateral.resetPosition();
@@ -29,21 +32,43 @@ void pre_auton(void) {
                           "Auton 5", "Auton 6", "Auton 7", "Auton 8"};
   Button buttons[9];
   createAutonButtons(colors, names, buttons);
-
-  showAutonSelectionScreen(buttons);
   buttons[0].setChosen(true);
 
+  Text selectionLabel;
+  Button selectionButton;
+  createPreautonScreen(selectionButton, selectionLabel);
+  
   int lastPressed = 0;
+  int temp;
+
+  // showPreautonScreen(selectionButton, selectionLabel, buttons[lastPressed].getName());
+  // showAutonSelectionScreen(buttons);
+
   while(1){
-    if(Brain.Screen.pressing()){
-      int temp = checkButtonsPress(buttons);
-      if(temp >= 0){
-        lastPressed = temp;
+    showPreautonScreen(selectionButton, selectionLabel, buttons[lastPressed].getName());
+    while(currentScreen == START_SCREEN){
+      if(Brain.Screen.pressing()){
+        if(checkPreautonButton(selectionButton)){
+          currentScreen = SELECTION_SCREEN;
+        }
       }
+      wait(10, msec);
+    }
+
+    showAutonSelectionScreen(buttons);
+    while(currentScreen == SELECTION_SCREEN){
+      if(Brain.Screen.pressing()){
+        temp = checkButtonsPress(buttons);
+        if(temp >= 0 && temp < 8){
+          lastPressed = temp;
+        }
+      }
+      if(temp == 8)
+        currentScreen = START_SCREEN;
+      wait(10, msec);
     }
     wait(10, msec);
   }
-
 }
 
 

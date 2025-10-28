@@ -15,6 +15,7 @@ Button::Button(std::string name, vex::color color, int x, int y, int width=90, i
     this->chosen = false;
     this->color = color;
     this->name = name;
+    this->isBack = false;
 }
 
 /// @brief Draws a rectangle/button with respect to size, location, color, and font
@@ -76,25 +77,30 @@ void createAutonButtons(vex::color colors[8], std::string names[8], Button butto
         buttons[i] = Button(names[i], colors[i], (30 + (90*(i-4)) + (20*(i-4))), 120);
     }
     buttons[8] = Button("Back", vex::color(0xffe000), 30, 180);
+    buttons[8].setBack(true);
     buttons[0].setChosen(true);
 }
 
 /// @brief Chooses one button for selection
 /// @param button Button selected
 /// @param oldSelected Previously chosen button
-void clickButton(Button selected, Button buttons[9]){
-    for(int i=0;i<9;i++){
-        buttons[i].draw(buttons[i].getColor(), vex::color::white, vex::fontType::mono20, buttons[i].getName());
-        buttons[i].setChosen(false);
+void clickButton(Button &selected, Button buttons[9]){
+    if(!selected.getBack()){
+        for(int i=0;i<9;i++){
+            buttons[i].draw(buttons[i].getColor(), vex::color::white, vex::fontType::mono20, buttons[i].getName());
+            buttons[i].setChosen(false);
+        }
+        selected.draw(vex::color(0xffe000), vex::color::white, vex::fontType::mono20, selected.getName());
+        selected.setChosen(true);
     }
-    selected.draw(vex::color(0xffe000), vex::color::white, vex::fontType::mono20, selected.getName());
-    selected.setChosen(true);
 }
 
 /// @brief Show all the buttons
 /// @param buttons List of 9 buttons to show
 void showAutonSelectionScreen(Button buttons[9]){
     Brain.Screen.clearScreen();
+    Text header = Text("Select an Autonomous Route", 1, 1, vex::fontType::mono30, vex::color::white);
+    header.printText();
     for(int i=0;i<9;i++){
         if(buttons[i].isChosen())
             buttons[i].draw(vex::color(0xffe000), vex::color::white, vex::fontType::mono20, buttons[i].getName());
@@ -115,4 +121,27 @@ int checkButtonsPress(Button buttons[9]){
         }
     }
     return -1;
+}
+
+void createPreautonScreen(Button &autonButton, Text &selectedLabel){
+    autonButton = Button("Options", vex::color(0xffe000), 360, 180);
+    selectedLabel = Text("FillerText" , 10, 4, vex::mono20, vex::color::white);
+    //Create Text
+    //Create ARC logo
+}
+
+void showPreautonScreen(Button &autonButton, Text &selectedLabel, std::string route){
+    Brain.Screen.clearScreen();
+    autonButton.draw(autonButton.getColor(), vex::color::white, vex::fontType::mono20, autonButton.getName());
+    
+    Brain.Screen.setFillColor(vex::color::black);
+    selectedLabel.setWords("Route Selected: " + route);
+    selectedLabel.printText();
+}
+
+bool checkPreautonButton(Button autonButton){
+    if(autonButton.checkPress()){
+        return true;
+    }
+    return false;
 }
