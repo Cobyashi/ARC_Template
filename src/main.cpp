@@ -44,6 +44,8 @@ void pre_auton(void) {
   // showPreautonScreen(selectionButton, selectionLabel, buttons[lastPressed].getName());
   // showAutonSelectionScreen(buttons);
 
+  Controller1.Screen.print(buttons[lastPressed].getName().c_str());
+
   while(1){
     showPreautonScreen(selectionButton, selectionLabel, buttons[lastPressed].getName());
     while(currentScreen == START_SCREEN){
@@ -61,6 +63,9 @@ void pre_auton(void) {
         temp = checkButtonsPress(buttons);
         if(temp >= 0 && temp < 8){
           lastPressed = temp;
+          Controller1.Screen.clearLine();
+          Controller1.Screen.setCursor(1, 1);
+          Controller1.Screen.print(buttons[lastPressed].getName().c_str());
         }
       }
       if(temp == 8)

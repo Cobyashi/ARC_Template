@@ -51,4 +51,5 @@ int checkButtonsPress(Button buttons[9]);
 void createPreautonScreen(Button &autonButton, Text &selectedLabel);
 void showPreautonScreen(Button &autonButton, Text &selectedLabel, std::string route);
 bool checkPreautonButton(Button autonButton);
+void drawBackground();
 
