@@ -16,6 +16,40 @@ inertialSensor(inertial(inertialPORT))
     this->maxVoltage = maxVoltage;
 }
 
+/// @brief Sets the PID constants for the Drive distance 
+/// @param Kp Proportion Constant
+/// @param Ki Integral Constant
+/// @param Kd Derivative Constant
+/// @param settleError The Error reached when settle should start
+/// @param timeToSettle The time in milliseconds to settle
+/// @param endTime The total run time in milliseconds
+void Drive::setDriveConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime)
+{
+    driveKp = Kp;
+    driveKi = Ki;
+    driveKd = Kd;
+    driveSettleError = settleError;
+    driveTimeToSettle = timeToSettle;
+    driveEndTime = endTime;
+}
+
+/// @brief Sets the PID constants for the turn angle
+/// @param Kp Proportion Constant
+/// @param Ki Integral Constant
+/// @param Kd Derivative Constant
+/// @param settleError The Error reached when settle should start
+/// @param timeToSettle The time in milliseconds to settle
+/// @param endTime The total run time in milliseconds
+void Drive::setTurnConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime)
+{
+    turnKp = Kp;
+    turnKi = Ki;
+    turnKd = Kd;
+    turnSettleError = settleError;
+    turnTimeToSettle = timeToSettle;
+    turnEndTime = endTime;
+}
+
 
 void Drive::arcade()
 {
@@ -193,21 +227,15 @@ void Drive::turn(float turnDegrees){
     }
 }
 
-void Drive::turnDegrees(float degrees){
-    // float curHeading = getHeading();
-    // turn_to_angle(curHeading+degrees, curHeading);
-}
-
-
 /// @brief Turns to an absolute specific angle
 /// @param desiredHeading Desired facing angle
 /// @param currentHeading Current facing angle
-void Drive::turnToAngle(float desiredHeading, float currentHeading){
-    PID turnPID(0, 0, 0, 100);
+void Drive::turnToAngle(float angle){
+    PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
     float output;
-    if((currentHeading-desiredHeading)+180.0 < (currentHeading-desiredHeading)-180.0){
+    if((inertialSensor.heading()-angle)+180.0 < (inertialSensor.heading()-angle)-180.0){
         //Turn clockwise
-        output = turnPID.compute(desiredHeading-currentHeading);
+        output = turnPID.compute(angle-inertialSensor.heading());
         while(!turnPID.isSettled()){
             leftDrive.spin(forward, output, volt);
             rightDrive.spin(reverse, output, volt);
@@ -215,7 +243,7 @@ void Drive::turnToAngle(float desiredHeading, float currentHeading){
         }
     }else{
         //Turn counterclockwise
-        output = turnPID.compute(desiredHeading-currentHeading);
+        output = turnPID.compute(angle-inertialSensor.heading());
         while(!turnPID.isSettled()){
             leftDrive.spin(reverse, output, volt);
             rightDrive.spin(forward, output, volt);
@@ -236,7 +264,7 @@ void Drive::moveToPosition(float desX, float desY){
     float distance = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
     float angle = atan(deltaX/deltaY) * (180.0/M_PI);
 
-    turnToAngle(angle, odometry.getHeading());
+    turnToAngle(angle);
     driveDistance(distance);
     //Update position    
 }
