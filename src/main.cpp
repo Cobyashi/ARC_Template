@@ -19,27 +19,61 @@ Drive chassis(motor_group(L1, L2), motor_group(R1, R2), PORT6, 3, 1, 12);
 
 
 void pre_auton(void) {
+  enum preAutonStates{START_SCREEN = 0, SELECTION_SCREEN = 1};
+  int currentScreen = START_SCREEN;
+
   gyro1.calibrate();
   forwardR.resetPosition();
   lateral.resetPosition();
 
   vex::color colors[8] = {vex::color::red, vex::color::red, vex::color::red, vex::color::red, 
-                       vex::color::blue, vex::color::blue, vex::color::blue, vex::color::blue};
+                          vex::color::blue, vex::color::blue, vex::color::blue, vex::color::blue};
   std::string names[8] = {"Auton 1", "Auton 2", "Auton 3", "Auton 4", 
                           "Auton 5", "Auton 6", "Auton 7", "Auton 8"};
   Button buttons[9];
   createAutonButtons(colors, names, buttons);
+  buttons[0].setChosen(true);
 
-  showAutonSelectionScreen(buttons);
+  Text selectionLabel;
+  Button selectionButton;
+  createPreautonScreen(selectionButton, selectionLabel);
+  
+  int lastPressed = 0;
+  int temp;
 
-  Button lastPressed = buttons[0];
+  // showPreautonScreen(selectionButton, selectionLabel, buttons[lastPressed].getName());
+  // showAutonSelectionScreen(buttons);
+
+  Controller1.Screen.print(buttons[lastPressed].getName().c_str());
+
   while(1){
-    if(Brain.Screen.pressing()){
-      checkButtonsPress(buttons, &lastPressed);
+    showPreautonScreen(selectionButton, selectionLabel, buttons[lastPressed].getName());
+    while(currentScreen == START_SCREEN){
+      if(Brain.Screen.pressing()){
+        if(checkPreautonButton(selectionButton)){
+          currentScreen = SELECTION_SCREEN;
+        }
+      }
+      wait(10, msec);
+    }
+
+    showAutonSelectionScreen(buttons);
+    while(currentScreen == SELECTION_SCREEN){
+      if(Brain.Screen.pressing()){
+        temp = checkButtonsPress(buttons);
+        if(temp >= 0 && temp < 8){
+          lastPressed = temp;
+          Controller1.Screen.clearLine();
+          Controller1.Screen.setCursor(1, 1);
+          Controller1.Screen.print(buttons[lastPressed].getName().c_str());
+        }
+      }
+      if(temp == 8)
+        currentScreen = START_SCREEN;
+      wait(10, msec);
     }
     wait(10, msec);
   }
-
 }
 
 
