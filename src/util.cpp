@@ -9,15 +9,15 @@
 /// @return Returns the input that has been clamped between min and max
 float clamp(float input, float min, float max)
 {
-    return input < min ? min : input;
+    // return input < min ? min : input;
 
-    return input > max ? max : input;
+    // return input > max ? max : input;
     
-    // if(input < min)
-    //     return min;
-    // if(input > max)
-    //     return max;
-    // return input;
+    if(input < min)
+        return min;
+    if(input > max)
+        return max;
+    return input;
 }
 
 

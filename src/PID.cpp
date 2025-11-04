@@ -50,7 +50,7 @@ float PID::compute(float error)
     float time = deltaTime;
     integral += error;
 
-    derivative = error - prevError;
+    derivative = (error - prevError) / time;
 
     // Checks if the error has crossed 0, and if it has, it eliminates the integral term.
     if ((error > 0 && prevError < 0) || (error < 0 && prevError > 0)){ 
