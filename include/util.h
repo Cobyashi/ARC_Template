@@ -24,4 +24,7 @@ float degToInches(float deg, float wheelDiameter);
 
 float degToRad(float degrees);
 
+float reduce_negative_180_to_180(float angle);
+
 void writeToCard(std::string filename, std::string text);
+void writeToCard(std::string filename, float number);

@@ -156,7 +156,6 @@ void Drive::driveDistance(float distance)
     
     // Sets the starting variables for the Position and Heading
     float startPosition = getCurrentMotorPosition();
-    float currentPosition = startPosition;
     float startHeading = inertialSensor.heading();
 
     // Updates the distance to match the current position of the robot
@@ -194,7 +193,7 @@ void Drive::driveDistance(float distance)
 /// @param turnDegrees The number of degrees the robot turns (0-359)
 void Drive::turn(float turnDegrees){
     
-    PID turn_PID(1.00, 0.00, 0.00, 100);
+    PID turn_PID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
 
     float output;
     float angle;
@@ -232,24 +231,23 @@ void Drive::turn(float turnDegrees){
 /// @param currentHeading Current facing angle
 void Drive::turnToAngle(float angle){
     PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
-    float output;
-    if((inertialSensor.heading()-angle)+180.0 < (inertialSensor.heading()-angle)-180.0){
-        //Turn clockwise
-        output = turnPID.compute(angle-inertialSensor.heading());
-        while(!turnPID.isSettled()){
-            leftDrive.spin(forward, output, volt);
-            rightDrive.spin(reverse, output, volt);
-            task::sleep(10);
-        }
-    }else{
-        //Turn counterclockwise
-        output = turnPID.compute(angle-inertialSensor.heading());
-        while(!turnPID.isSettled()){
-            leftDrive.spin(reverse, output, volt);
-            rightDrive.spin(forward, output, volt);
-            task::sleep(10);
-        }
+    while(!turnPID.isSettled())
+    {
+        //float error = fmod(angle - inertialSensor.heading(), 180);
+        float error = reduce_negative_180_to_180(angle - fmod(inertialSensor.rotation(),360));
+
+        Brain.Screen.clearScreen();
+        Brain.Screen.setCursor(1,0);
+        Brain.Screen.print(error);
+        
+        writeToCard("text3.csv", error);
+
+        float output = turnPID.compute(error);
+        output = clamp(output, -maxVoltage, maxVoltage);
+        driveMotors(output, -output);
+        task::sleep(10);
     }
+    driveMotors(0,0);
 }
 
 /// @brief Turns sharply to a specific location and moves to it

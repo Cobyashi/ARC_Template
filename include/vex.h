@@ -20,6 +20,7 @@
 #include "Odom.h"
 #include "images.h"
 #include "screen.h"
+#include "auton.h"
 
 
 #define waitUntil(condition)                                                   \

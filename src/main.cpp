@@ -17,8 +17,11 @@ competition Competition;
 
 Drive chassis(motor_group(L1, L2), motor_group(R1, R2), PORT6, 3, 1, 12);
 
+bool isInCompetition = false;
 
-void pre_auton(void) {
+void pre_auton(void) 
+{
+  setDriveConstants();
   enum preAutonStates{START_SCREEN = 0, SELECTION_SCREEN = 1};
   int currentScreen = START_SCREEN;
 
@@ -46,7 +49,7 @@ void pre_auton(void) {
 
   Controller1.Screen.print(buttons[lastPressed].getName().c_str());
 
-  while(1){
+  while(!isInCompetition){
     showPreautonScreen(selectionButton, selectionLabel, buttons[lastPressed].getName());
     while(currentScreen == START_SCREEN){
       if(Brain.Screen.pressing()){
@@ -74,14 +77,16 @@ void pre_auton(void) {
     }
     wait(10, msec);
   }
+  Brain.Screen.clearScreen();
 }
 
 
 void autonomous(void) {
-
-  Brain.Screen.print("Is in autonomous.");
+  isInCompetition = true;
+  Brain.Screen.clearScreen();
   //drawLogo();
-  chassis.turnToAngle(90);
+  setDriveConstants();
+  chassis.turnToAngle(180);
 }
 
 

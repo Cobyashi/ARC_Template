@@ -53,12 +53,28 @@ float degToRad(float degrees){
     return degrees*(M_PI/180.0);
 }
 
+float reduce_negative_180_to_180(float angle) {
+  while(!(angle >= -180 && angle < 180)) {
+    if( angle < -180 ) { angle += 360; }
+    if(angle >= 180) { angle -= 360; }
+  }
+  return(angle);
+}
+
 /// @brief Saves information to the SD card
 /// @param filename
 /// @param text Text to save
+// template <typename T>
 void writeToCard(std::string filename, std::string text){
     std::fstream file;
     file.open(filename, std::ios::out | std::ios::app);
     file << text << std::endl;
+    file.close();
+}
+
+void writeToCard(std::string filename, float number){
+    std::fstream file;
+    file.open(filename, std::ios::out | std::ios::app);
+    file << number << ",";
     file.close();
 }
