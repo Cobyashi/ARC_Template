@@ -44,9 +44,6 @@ void pre_auton(void)
   int lastPressed = 0;
   int temp;
 
-  // showPreautonScreen(selectionButton, selectionLabel, buttons[lastPressed].getName());
-  // showAutonSelectionScreen(buttons);
-
   Controller1.Screen.print(buttons[lastPressed].getName().c_str());
 
   while(!isInCompetition){
