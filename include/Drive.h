@@ -26,6 +26,9 @@ class Drive
 
     Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage);
 
+    void setDriveConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
+    void setTurnConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
+
     void arcade();
     void tank();
 
@@ -40,10 +43,11 @@ class Drive
     void brake(bool left, bool right, brakeType);
 
     void driveDistance(float distance);
+    void driveDistance(float distance, float maxVoltage);
 
     void turn(float turnDegrees);
-    void turnDegrees(float degrees);
-    void turnToAngle(float desired_heading, float current_heading);
+    void turnToAngle(float angle);
+
     void moveToPosition(float, float);
     void bezierTurn(float, float, float, float, float, float, int);
 };
