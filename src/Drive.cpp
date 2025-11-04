@@ -230,20 +230,24 @@ void Drive::turn(float turnDegrees){
 /// @param desiredHeading Desired facing angle
 /// @param currentHeading Current facing angle
 void Drive::turnToAngle(float angle){
+    angle = reduce_negative_180_to_180(angle);
     PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
     while(!turnPID.isSettled())
     {
-        //float error = fmod(angle - inertialSensor.heading(), 180);
-        float error = reduce_negative_180_to_180(angle - fmod(inertialSensor.rotation(),360));
+        float error = reduce_negative_180_to_180(angle - inertialSensor.heading());
 
         Brain.Screen.clearScreen();
         Brain.Screen.setCursor(1,0);
-        Brain.Screen.print(error);
+        Brain.Screen.print(inertialSensor.heading());
         
-        writeToCard("text3.csv", error);
+        writeToCard("error.csv", error);
+        writeToCard("heading.csv", inertialSensor.heading());
 
         float output = turnPID.compute(error);
         output = clamp(output, -maxVoltage, maxVoltage);
+
+        writeToCard("output.csv", output);
+
         driveMotors(output, -output);
         task::sleep(10);
     }
