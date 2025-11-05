@@ -89,39 +89,39 @@ void autonomous(void) {
   setDriveConstants();
   chassis.turnToAngle(180);
 
-  Brain.Screen.print("Is in autonomous.");
-  drawLogo();
+  // Brain.Screen.print("Is in autonomous.");
+  // drawLogo();
 
 
-  switch (lastPressed) {
-  case 1:
-    Auton_1();
-    break;
-  case 2:
-    Auton_2();
-    break;
-  case 3:
-    Auton_3;
-    break;
-  case 4:
-    Auton_4();
-    break;
-  case 5:
-    Auton_5();
-    break;
-  case 6:
-    Auton_6();
-    break;
-  case 7:
-    Auton_7();
-    break;
-  case 8:
-    Auton_8();
-    break;
-  default:
-    DefaultAuton();
-    break;
-}
+//   switch (lastPressed) {
+//   case 1:
+//     Auton_1();
+//     break;
+//   case 2:
+//     Auton_2();
+//     break;
+//   case 3:
+//     Auton_3;
+//     break;
+//   case 4:
+//     Auton_4();
+//     break;
+//   case 5:
+//     Auton_5();
+//     break;
+//   case 6:
+//     Auton_6();
+//     break;
+//   case 7:
+//     Auton_7();
+//     break;
+//   case 8:
+//     Auton_8();
+//     break;
+//   default:
+//     DefaultAuton();
+//     break;
+// }
 }
 
 

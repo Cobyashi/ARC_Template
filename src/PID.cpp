@@ -47,10 +47,11 @@ PID::PID(float Kp, float Ki, float Kd, float settleError, float timeToSettle, fl
 /// @return the output of the PID formula
 float PID::compute(float error)
 {
-    float time = deltaTime;
+    // float time = deltaTime;
+    float time = 10;
     integral += error;
 
-    derivative = (error - prevError) / time;
+    derivative = (error - prevError);
 
     // Checks if the error has crossed 0, and if it has, it eliminates the integral term.
     if ((error > 0 && prevError < 0) || (error < 0 && prevError > 0)){ 
