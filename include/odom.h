@@ -28,8 +28,15 @@ class Odom
         float forwardLeftRotationDistance;
         float lateralRotationDistance;
 
+        //Variables for two pods at 45
+        //In inches
+        float wheelDiameter45;
+        float leftRotationDistance;
+        float rightRotationDistance;
+
         Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, float lateralWheelDiameter, float forwardRightRotationDistance, float forwardLeftRotationDistance, float lateralRotationDistance);
         Odom(float forwardWheelDiameter, float lateralWheelDiameter, float forwardRotationDistance, float lateralRotationDistance);
+        Odom(float wheelDiameter45, float leftRotationDistance, float rightRotationDistance);
 
         void resetRotation();
 

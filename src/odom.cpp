@@ -29,6 +29,12 @@ Odom::Odom(float forwardWheelDiameter, float lateralWheelDiameter, float forward
     this->lateralRotationDistance = lateralRotationDistance;
 }
 
+Odom::Odom(float wheelDiameter45, float leftRotationDistance, float rightRotationDistance){
+    this->wheelDiameter45 = wheelDiameter45;
+    this->leftRotationDistance = leftRotationDistance;
+    this->rightRotationDistance = rightRotationDistance;
+}
+
 
 /// @brief Sets all rotation degrees to 0.0
 void Odom::resetRotation(){
@@ -100,7 +106,7 @@ void Odom::updatePositionTwoForward(float currentForwardRightDegrees, float curr
 
     //Update x and y positions and heading
     float avgHeading = degToRad(getHeading()+deltaHeading/2.0);
-    float globalDeltaX = deltaX * cos(avgHeading) + deltaY * sin(avgHeading);
+    float globalDeltaX = deltaX * cos(avgHeading) - deltaY * sin(avgHeading);
     float globalDeltaY = deltaX * sin(avgHeading) + deltaY * cos(avgHeading);
     setPosition((globalDeltaX+getXPosition()), (globalDeltaY+getYPosition()), (heading+deltaHeading));
     
@@ -144,7 +150,7 @@ void Odom::updatePositionOneForward(float currentForwardDegrees, float currentLa
 
     //Update x and y positions and heading
     float avgHeading = degToRad(getHeading()+deltaHeading/2.0);
-    float globalDeltaX = deltaX * cos(avgHeading) + deltaY * sin(avgHeading);
+    float globalDeltaX = deltaX * cos(avgHeading) - deltaY * sin(avgHeading);
     float globalDeltaY = deltaX * sin(avgHeading) + deltaY * cos(avgHeading);
     setPosition((globalDeltaX+getXPosition()), (globalDeltaY+getYPosition()), headingGyro);
     
@@ -156,34 +162,32 @@ void Odom::updatePositionOneForward(float currentForwardDegrees, float currentLa
 
 void Odom::updatePositionTwoAt45(float currentLeftDegrees, float currentRightDegrees, float headingGyro){
     //Get current positions based on rotation sensors
-    float currentRightPosition = degToInches(currentRightDegrees, forwardRightWheelDiameter);
-    float currentLeftPosition = degToInches(currentLeftDegrees, lateralWheelDiameter);
+    float currentRightPosition = degToInches(currentRightDegrees, wheelDiameter45);
+    float currentLeftPosition = degToInches(currentLeftDegrees, wheelDiameter45);
 
     //Get positions since last update
-    float oldRightPosition = degToInches(forwardDegreesR, forwardRightWheelDiameter);
-    float oldLeftPosition = degToInches(forwardDegreesL, forwardLeftWheelDiameter);
+    float oldRightPosition = degToInches(forwardDegreesR, wheelDiameter45);
+    float oldLeftPosition = degToInches(forwardDegreesL, wheelDiameter45);
 
     //Get the change based on rotations
     float deltaRight = currentRightPosition - oldRightPosition;
     float deltaLeft = currentLeftPosition - oldLeftPosition;
 
-    //Gives answer in radians
-    float deltaY = 0;
-    float deltaX = 0;
-
     float deltaHeading = headingGyro - heading;
 
-    if(fabs(deltaHeading) < 0.01){
-        deltaY=deltaRight;
-        deltaX=deltaLeft;
-    }else{
-        deltaY = (deltaLeft + deltaRight) / sqrt(2.0);
-        deltaX = (deltaLeft - deltaRight) / sqrt(2.0);
+    if(fabs(deltaHeading) > 0.01){
+        //THIS MAY NEED TO BE += INSTEAD
+        deltaLeft -= leftRotationDistance*degToRad(deltaHeading);
+        deltaRight -= rightRotationDistance*degToRad(deltaHeading);
     }
+
+    //Gives answer in radians
+    float deltaY = (deltaLeft + deltaRight) / sqrt(2.0);
+    float deltaX = (deltaLeft - deltaRight) / sqrt(2.0);
 
     //Update x and y positions and heading
     float avgHeading = degToRad(getHeading()+deltaHeading/2.0);
-    float globalDeltaX = deltaX * cos(avgHeading) + deltaY * sin(avgHeading);
+    float globalDeltaX = deltaX * cos(avgHeading) - deltaY * sin(avgHeading);
     float globalDeltaY = deltaX * sin(avgHeading) + deltaY * cos(avgHeading);
     setPosition((globalDeltaX+getXPosition()), (globalDeltaY+getYPosition()), headingGyro);
     
