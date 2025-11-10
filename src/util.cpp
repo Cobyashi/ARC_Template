@@ -9,10 +9,6 @@
 /// @return Returns the input that has been clamped between min and max
 float clamp(float input, float min, float max)
 {
-    // return input < min ? min : input;
-
-    // return input > max ? max : input;
-    
     if(input < min)
         return min;
     if(input > max)
@@ -53,26 +49,33 @@ float degToRad(float degrees){
     return degrees*(M_PI/180.0);
 }
 
-float reduce_negative_180_to_180(float angle) {
-  while(!(angle >= -180 && angle < 180)) {
-    if( angle < -180 ) { angle += 360; }
-    if(angle >= 180) { angle -= 360; }
-  }
-  return(angle);
+float inTermsOfNegative180To180(float angle) 
+{
+    while(!(angle >= -180 && angle < 180)) 
+    {
+        if( angle < -180 )
+            angle += 360;
+        if(angle >= 180)
+            angle -= 360;
+    }
+
+    return angle;
 }
 
 /// @brief Saves information to the SD card
 /// @param filename
 /// @param text Text to save
 // template <typename T>
-void writeToCard(std::string filename, std::string text){
+void writeToCard(std::string filename, std::string text)
+{
     std::fstream file;
     file.open(filename, std::ios::out | std::ios::app);
     file << text << std::endl;
     file.close();
 }
 
-void writeToCard(std::string filename, float number){
+void writeToCard(std::string filename, float number)
+{
     std::fstream file;
     file.open(filename, std::ios::out | std::ios::app);
     file << number << ",";

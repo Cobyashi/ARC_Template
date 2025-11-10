@@ -24,7 +24,7 @@ class Drive
 
     float predictedAngle;
 
-    Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage);
+    Drive(motor_group leftDrive, motor_group rightDrive, int32_t inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage);
 
     void setDriveConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
     void setTurnConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
