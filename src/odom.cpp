@@ -1,4 +1,4 @@
-#include "Odom.h"
+#include "odom.h"
 
 /// @brief Constructor for odometry with two forward rotation sensors
 /// @param forwardRightWheelDiameter Right side forward rotation wheel diameter
@@ -34,6 +34,14 @@ Odom::Odom(float wheelDiameter45, float leftRotationDistance, float rightRotatio
     this->leftRotationDistance = leftRotationDistance;
     this->rightRotationDistance = rightRotationDistance;
 }
+
+Odom::Odom(){
+    this->forwardRightWheelDiameter = 2.0;
+    this->forwardRightRotationDistance = 0.0;
+    this->lateralWheelDiameter = 2.0;
+    this->lateralRotationDistance = 0.0;
+}
+
 
 
 /// @brief Sets all rotation degrees to 0.0

@@ -18,7 +18,7 @@
 
 #include "PID.h"
 #include "Drive.h"
-#include "Odom.h"
+#include "odom.h"
 #include "images.h"
 #include "screen.h"
 #include "auton.h"

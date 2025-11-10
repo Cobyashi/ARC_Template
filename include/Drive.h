@@ -20,7 +20,7 @@ class Drive
     float driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime;
     float turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime;
 
-    Odom chassisOdometry;
+    Odom chassisOdometry = Odom();
     int odomType = odomType;
         
     public:

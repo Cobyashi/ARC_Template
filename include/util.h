@@ -28,3 +28,7 @@ void writeToCard(std::string filename, std::string text);
 void writeToCard(std::string filename, float number);
 
 enum ODOM_TYPE{NO_ODOM=0, HORIZONTAL_AND_VERTICAL=1, TWO_VERTICAL=2, TWO_AT_45=3};
+
+float wheelDiameter45 = 2.0; 
+float leftRotationDistance = 1.5;
+float rightRotationDistance = 1.5;

@@ -18,7 +18,7 @@ motor L2 = motor(PORT1, ratio6_1, true);
 ///////////////////////////////////////////
 
 //////////// Odometry Sensors ////////////
-
+//TODO: CHANGE THE NAMES OF THESE
 rotation forwardR = rotation(PORT5);
 rotation lateral = rotation(PORT4);
 
