@@ -6,7 +6,7 @@
 /// @param gyro The Port where the inertial sensor is 
 /// @param wheel_diameter The diameter size of the wheel in inches
 /// @param max_voltage The maximum amount of the voltage used in the drivebase (1 - 12)
-Drive::Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage) : 
+Drive::Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage, int odomType) : 
 leftDrive(leftDrive), 
 rightDrive(rightDrive),
 inertialSensor(inertial(inertialPORT))
@@ -14,6 +14,22 @@ inertialSensor(inertial(inertialPORT))
     this->wheelDiameter = wheelDiameter;
     this->wheelRatio = wheelRatio;
     this->maxVoltage = maxVoltage;
+    this->odomType = odomType;
+
+    switch(odomType){
+        case NO_ODOM:
+            // this->chassisOdometry = Odom(leftDriveWheelDiameter, rightDriveWheelDiameter, 0, leftDriveDistFromCenter, rightDriveDistFromCenter, 0);
+            break;
+        case HORIZONTAL_AND_VERTICAL:
+            // this->chassisOdometry = Odom(forwardWheelDiameter, lateralWheelDiameter, forwardRotationDistance, lateralRotationDistance);
+            break;
+        case TWO_VERTICAL:
+            // Not yet implemented
+            break;
+        case TWO_AT_45:
+            // this->chassisOdometry = Odom(wheelDiameter45, leftRotationDistance, rightRotationDistance);
+            break;
+    }
 }
 
 /// @brief Sets the PID constants for the Drive distance 
@@ -236,9 +252,6 @@ void Drive::turnToAngle(float angle){
     {
         float error = reduce_negative_180_to_180(gyro1.heading()-angle);
 
-        // writeToCard("error.csv", error);
-        // writeToCard("heading.csv", inertialSensor.heading());
-
         float output = turnPID.compute(error);
 
         Brain.Screen.clearScreen();
@@ -259,17 +272,26 @@ void Drive::turnToAngle(float angle){
 /// @param desX Desired X position
 /// @param desY Desired Y position
 void Drive::moveToPosition(float desX, float desY){
-    Odom odometry(1,1,1,1,1,1); //FIXME - Put correct values in
-    
     //Update position
-    float deltaX = odometry.getXPosition()-desX;
-    float deltaY = odometry.getYPosition()-desY;
+    updatePosition();
+    float deltaX = chassisOdometry.getXPosition()-desX;
+    float deltaY = chassisOdometry.getYPosition()-desY;
     float distance = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
     float angle = atan(deltaX/deltaY) * (180.0/M_PI);
 
     turnToAngle(angle);
     driveDistance(distance);
-    //Update position    
+    //Update position
+    updatePosition();
+}
+
+void Drive::turnToPosition(float desX, float desY){
+    updatePosition();
+    float deltaX = chassisOdometry.getXPosition()-desX;
+    float deltaY = chassisOdometry.getYPosition()-desY;
+    float angle = atan(deltaX/deltaY) * (180.0/M_PI);
+    turnToAngle(angle);
+    updatePosition();
 }
 
 /// @brief Turns along a set curve
@@ -299,4 +321,31 @@ void Drive::bezierTurn(float curX, float curY, float midX, float midY, float des
 
     delete [] pts;
 
+}
+
+void Drive::updatePosition(float x, float y, float heading){
+    switch(odomType){
+        case NO_ODOM:
+            break;
+        case HORIZONTAL_AND_VERTICAL:
+            chassisOdometry.updatePositionOneForward(x, y, heading);
+            break;
+        case TWO_VERTICAL:
+            chassisOdometry.updatePositionTwoForward(x, y, heading);
+            break;
+        case TWO_AT_45:
+           chassisOdometry.updatePositionTwoAt45(x, y, heading);
+            break;
+    }
+}
+
+void Drive::updatePosition(){
+    float x = chassisOdometry.getXPosition();
+    float y = chassisOdometry.getYPosition();
+    float heading = chassisOdometry.getHeading();
+    updatePosition(x, y, heading);
+}
+
+void Drive::setPosition(float x, float y, float heading){
+    chassisOdometry.setPosition(x, y, heading);
 }

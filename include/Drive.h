@@ -20,11 +20,14 @@ class Drive
     float driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime;
     float turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime;
 
+    Odom chassisOdometry;
+    int odomType = odomType;
+        
     public:
 
     float predictedAngle;
 
-    Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage);
+    Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage, int odomType);
 
     void setDriveConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
     void setTurnConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
@@ -49,5 +52,12 @@ class Drive
     void turnToAngle(float angle);
 
     void moveToPosition(float, float);
+    void turnToPosition(float desX, float desY);
+
     void bezierTurn(float, float, float, float, float, float, int);
+
+    void updatePosition(float x, float y, float heading);
+    void updatePosition();
+    void setPosition(float x, float y, float heading);
+
 };

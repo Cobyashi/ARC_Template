@@ -26,3 +26,5 @@ float reduce_negative_180_to_180(float angle);
 
 void writeToCard(std::string filename, std::string text);
 void writeToCard(std::string filename, float number);
+
+enum ODOM_TYPE{NO_ODOM=0, HORIZONTAL_AND_VERTICAL=1, TWO_VERTICAL=2, TWO_AT_45=3};
