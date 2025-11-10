@@ -37,9 +37,9 @@ void Button::draw(vex::color backgroundColor, vex::color textColor, vex::fontTyp
 /// @return True if it has, false otherwise
 bool Button::checkPress(){
     if((Brain.Screen.xPosition() >= x && Brain.Screen.xPosition() <= x+width) &&
-       (Brain.Screen.yPosition() >= (y-10) && Brain.Screen.yPosition() <= (y-10)+height)){
-        return true;
-    }
+        (Brain.Screen.yPosition() >= (y-10) && Brain.Screen.yPosition() <= (y-10)+height))
+            return true;
+    
     return false;
 }
 
@@ -47,7 +47,7 @@ bool Button::checkPress(){
 /// @param words Words to be printed
 /// @param x X location
 /// @param y Y location
-/// @param fontsize a vex::fontType font size
+/// @param fontSize a vex::fontType font size
 /// @param textColor a vex::color color
 Text::Text(std::string words, int x, int y, vex::fontType fontSize, vex::color textColor){
     this->words = words;
@@ -124,14 +124,14 @@ int checkButtonsPress(Button buttons[9]){
     return -1;
 }
 
-void createPreautonScreen(Button &autonButton, Text &selectedLabel){
+void createPreAutonScreen(Button &autonButton, Text &selectedLabel){
     autonButton = Button("Options", vex::color(0xffe000), 360, 180);
     selectedLabel = Text("FillerText" , 10, 4, vex::mono20, vex::color::white);
     //Create Text
     //Create ARC logo
 }
 
-void showPreautonScreen(Button &autonButton, Text &selectedLabel, std::string route){
+void showPreAutonScreen(Button &autonButton, Text &selectedLabel, std::string route){
     Brain.Screen.clearScreen();
     drawBackground();
     autonButton.draw(autonButton.getColor(), vex::color::white, vex::fontType::mono20, autonButton.getName());
@@ -141,7 +141,7 @@ void showPreautonScreen(Button &autonButton, Text &selectedLabel, std::string ro
     selectedLabel.printText();
 }
 
-bool checkPreautonButton(Button autonButton){
+bool checkPreAutonButton(Button autonButton){
     if(autonButton.checkPress()){
         return true;
     }

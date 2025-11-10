@@ -3,8 +3,9 @@
 /// @brief Constructor
 /// @param leftDrive Left side motors of the drive base
 /// @param rightDrive Right side motors of the drive base
-/// @param gyro The Port where the inertial sensor is 
-/// @param wheel_diameter The diameter size of the wheel in inches
+/// @param inertialPort The Port where the inertial sensor is 
+/// @param wheelDiameter The diameter size of the wheel in inches
+/// @param wheelRatio   
 /// @param max_voltage The maximum amount of the voltage used in the drivebase (1 - 12)
 Drive::Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage, int odomType) : 
 leftDrive(leftDrive), 
@@ -246,11 +247,11 @@ void Drive::turn(float turnDegrees){
 /// @param desiredHeading Desired facing angle
 /// @param currentHeading Current facing angle
 void Drive::turnToAngle(float angle){
-    angle = reduce_negative_180_to_180(angle);
+    angle = inTermsOfNegative180To180(angle);
     PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle*10, turnEndTime);
     do
     {
-        float error = reduce_negative_180_to_180(gyro1.heading()-angle);
+        float error = inTermsOfNegative180To180(gyro1.heading()-angle);
 
         float output = turnPID.compute(error);
 

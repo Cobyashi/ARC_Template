@@ -48,8 +48,8 @@ void createAutonButtons(vex::color colors[8], std::string names[8], Button butto
 void clickButton(Button &selected, Button buttons[9]);
 void showAutonSelectionScreen(Button buttons[9]);
 int checkButtonsPress(Button buttons[9]);
-void createPreautonScreen(Button &autonButton, Text &selectedLabel);
-void showPreautonScreen(Button &autonButton, Text &selectedLabel, std::string route);
-bool checkPreautonButton(Button autonButton);
+void createPreAutonScreen(Button &autonButton, Text &selectedLabel);
+void showPreAutonScreen(Button &autonButton, Text &selectedLabel, std::string route);
+bool checkPreAutonButton(Button autonButton);
 void drawBackground();
 
