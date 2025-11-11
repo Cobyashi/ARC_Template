@@ -192,19 +192,19 @@ void setDriveTrainConstants()
 {
     // Set the Drive PID values for the DriveTrain
     chassis.setDriveConstants(
-        5, // Kp - Proportion Constant
-        1, // Ki - Integral Constant
-        15, // Kd - Derivative Constant
-        0.5, // Settle Error
+        0.2, // Kp - Proportion Constant
+        0.0, // Ki - Integral Constant
+        0, // Kd - Derivative Constant
+        0.05, // Settle Error
         300, // Time to Settle
-        30000 // End Time
+        300000 // End Time
     );
 
     // Set the Turn PID values for the DriveTrain
     chassis.setTurnConstants(
-        0.1,    // Kp - Proportion Constant
+        0.5,    // Kp - Proportion Constant
         0,      // Ki - Integral Constant
-        0,      // Kd - Derivative Constant 
+        0.1,      // Kd - Derivative Constant 
         0.5,    // Settle Error
         300,    // Time to Settle
         3000    // End Time

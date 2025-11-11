@@ -51,7 +51,7 @@ float PID::compute(float error)
     float time = 10;
     integral += error;
 
-    derivative = (error - prevError);
+    derivative = error - prevError;
 
     // Checks if the error has crossed 0, and if it has, it eliminates the integral term.
     if ((error > 0 && prevError < 0) || (error < 0 && prevError > 0)){ 

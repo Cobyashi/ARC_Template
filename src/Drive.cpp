@@ -17,7 +17,7 @@ inertialSensor(inertial(inertialPORT))
     this->maxVoltage = maxVoltage;
     this->odomType = odomType;
 
-    // this->chassisOdometry = Odom(wheelDiameter45, leftRotationDistance, rightRotationDistance);
+    this->chassisOdometry = Odom(2, 1.5, 1.5);
 
     // switch(odomType){
     //     case NO_ODOM:
@@ -172,7 +172,7 @@ void Drive::driveDistance(float distance)
     // Creates PID objects for linear and angular output
     //float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime
     PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
-    PID angularPID(turnKp, turnKi, turnKp, turnSettleError, turnTimeToSettle, turnEndTime);
+    PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
     
     updatePosition();
     // Sets the starting variables for the Position and Heading
@@ -185,9 +185,12 @@ void Drive::driveDistance(float distance)
     //  Loops while the linear PID has not yet settled
     while(!linearPID.isSettled())
     {
+        updatePosition();
         // Updates the Error for the linear values and the angular values
         float linearError = distance - getCurrentMotorPosition();
         float angularError = degTo180(startHeading - gyro1.heading());
+
+        writeToCard("error.csv", linearError);
 
         // Sets the linear output and angular output to the output of the error passed through the PID compute functions
         float linearOutput = linearPID.compute(linearError);
