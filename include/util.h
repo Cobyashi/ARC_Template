@@ -1,10 +1,11 @@
 #pragma once
 #include <ostream>
 #include <math.h>
+#include <cmath>
 #include <fstream>
 
 
-/// @brief Clamps the input inbetween the min and max value
+/// @brief Clamps the input in between the min and max value
 /// @param input The value being clamped
 /// @param min The minimum value that the output can be
 /// @param max The maximum value that the output can be

@@ -1,4 +1,4 @@
-#include "vex.h"
+#include "robot-config.h"
 
 ////////////// DO NOT REMOVE //////////////
 

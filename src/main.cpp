@@ -8,6 +8,9 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include "screen.h"
+#include "util.h"
+#include "Drive.h"
 
 using namespace vex;
 
@@ -35,11 +38,25 @@ using namespace vex;
 
 //////////////////////////////////////////////////////////////////////
 
+///////////////////////// Prototypes /////////////////////////////////
+
+void setDriveTrainConstants();
+void Auton_1();
+void Auton_2();
+void Auton_3();
+void Auton_4();
+void Auton_5();
+void Auton_6();
+void Auton_7();
+void Auton_8();
+
+//////////////////////////////////////////////////////////////////////
+
 
 /// @brief Runs before the competition starts
 void preAuton() 
 {
-  setDriveConstants();
+  setDriveTrainConstants();
   enum preAutonStates{START_SCREEN = 0, SELECTION_SCREEN = 1};
   int currentScreen = START_SCREEN;
   int lastPressed = 0;
@@ -102,9 +119,10 @@ void autonomous()
 {
   isInAuton = true;
   chassis.setPosition(0,0,0);
-  chassis.driveDistance(12);
-  chassis.turnToAngle(90);
-  chassis.driveDistance(12);
+  chassis.driveDistance(15);
+  //chassis.turnToAngle(90);
+  //chassis.driveDistance(12);
+  //chassis.moveToPosition(0,0);
 
   // switch (lastPressed) 
   // {
@@ -166,4 +184,79 @@ int main()
   {
     wait(100, msec);
   }
+}
+
+
+/// @brief Sets the PID values for the DriveTrain
+void setDriveTrainConstants()
+{
+    // Set the Drive PID values for the DriveTrain
+    chassis.setDriveConstants(
+        5, // Kp - Proportion Constant
+        1, // Ki - Integral Constant
+        15, // Kd - Derivative Constant
+        0.5, // Settle Error
+        300, // Time to Settle
+        30000 // End Time
+    );
+
+    // Set the Turn PID values for the DriveTrain
+    chassis.setTurnConstants(
+        0.1,    // Kp - Proportion Constant
+        0,      // Ki - Integral Constant
+        0,      // Kd - Derivative Constant 
+        0.5,    // Settle Error
+        300,    // Time to Settle
+        3000    // End Time
+    );
+    
+}
+
+/// @brief Auton Slot 1 - Write code for route within this function.
+void Auton_1()
+{
+    Brain.Screen.print("Auton 1 running.");
+}
+
+/// @brief Auton Slot 2 - Write code for route within this function.
+void Auton_2()
+{
+    Brain.Screen.print("Auton 2 running.");
+}
+
+/// @brief Auton Slot 3 - Write code for route within this function.
+void Auton_3()
+{
+    Brain.Screen.print("Auton 3 running.");
+}
+
+/// @brief Auton Slot 4 - Write code for route within this function.
+void Auton_4()
+{
+    Brain.Screen.print("Auton 4 running.");
+}
+
+/// @brief Auton Slot 5 - Write code for route within this function.
+void Auton_5()
+{
+    Brain.Screen.print("Auton 5 running.");
+}
+
+/// @brief Auton Slot 6 - Write code for route within this function.
+void Auton_6()
+{
+    Brain.Screen.print("Auton 6 running.");
+}
+
+/// @brief Auton Slot 7 - Write code for route within this function.
+void Auton_7()
+{
+    Brain.Screen.print("Auton 7 running.");
+}
+
+/// @brief Auton Slot 8 - Write code for route within this function.
+void Auton_8()
+{
+    Brain.Screen.print("Auton 8 running.");
+    
 }

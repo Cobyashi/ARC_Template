@@ -170,13 +170,14 @@ void Drive::brake(bool left, bool right, brakeType type)
 void Drive::driveDistance(float distance)
 {
     // Creates PID objects for linear and angular output
-    PID linearPID(10, 0.05, 25, 0.5, 2, 30000);
-    PID angularPID(1.5, 0, 1, 1, 1, 30000);
+    //float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime
+    PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
+    PID angularPID(turnKp, turnKi, turnKp, turnSettleError, turnTimeToSettle, turnEndTime);
     
     updatePosition();
     // Sets the starting variables for the Position and Heading
     float startPosition = getCurrentMotorPosition();
-    float startHeading = inertialSensor.heading();
+    float startHeading = gyro1.heading();
 
     // Updates the distance to match the current position of the robot
     distance += startPosition;
@@ -186,7 +187,7 @@ void Drive::driveDistance(float distance)
     {
         // Updates the Error for the linear values and the angular values
         float linearError = distance - getCurrentMotorPosition();
-        float angularError = degTo180(startHeading - inertialSensor.heading());
+        float angularError = degTo180(startHeading - gyro1.heading());
 
         // Sets the linear output and angular output to the output of the error passed through the PID compute functions
         float linearOutput = linearPID.compute(linearError);
@@ -203,7 +204,7 @@ void Drive::driveDistance(float distance)
         Brain.Screen.clearScreen();
     }
     // Stops the motors once PID has settled
-    brake();
+    //brake();
     updatePosition();
 }
 

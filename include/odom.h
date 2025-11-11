@@ -1,8 +1,6 @@
 #pragma once
 
-#include "vex.h"
-
-using namespace vex;
+#include "util.h"
 
 class Odom
 {

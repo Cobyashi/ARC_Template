@@ -1,6 +1,8 @@
 #pragma once
 
 #include "vex.h"
+#include "odom.h"
+#include "PID.h"
 
 using namespace vex;
 

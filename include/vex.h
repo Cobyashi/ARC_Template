@@ -14,14 +14,6 @@
 #include "v5_vcs.h"
 
 #include "robot-config.h"
-#include "util.h"
-#include "odom.h"
-
-#include "PID.h"
-#include "Drive.h"
-#include "images.h"
-#include "screen.h"
-#include "auton.h"
 
 
 #define waitUntil(condition)                                                   \
