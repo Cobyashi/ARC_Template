@@ -1,5 +1,4 @@
 #pragma once
-#include "vex.h"
 #include "deltaTime.h"
 
 //PID Class

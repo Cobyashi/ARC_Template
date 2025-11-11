@@ -1,7 +1,6 @@
 #pragma once
 
 #include "vex.h"
-#include "util.h"
 
 using namespace vex;
 
@@ -20,8 +19,8 @@ class Drive
     float driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime;
     float turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime;
 
-    Odom chassisOdometry = Odom();
-    int odomType = odomType;
+    Odom chassisOdometry;
+    int odomType;
         
     public:
 

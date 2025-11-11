@@ -34,10 +34,10 @@ class Odom
         float leftRotationDistance;
         float rightRotationDistance;
 
+        Odom();
         Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, float lateralWheelDiameter, float forwardRightRotationDistance, float forwardLeftRotationDistance, float lateralRotationDistance);
         Odom(float forwardWheelDiameter, float lateralWheelDiameter, float forwardRotationDistance, float lateralRotationDistance);
         Odom(float wheelDiameter45, float leftRotationDistance, float rightRotationDistance);
-        Odom();
 
         void resetRotation();
 

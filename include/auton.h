@@ -1,9 +1,7 @@
 #pragma once
-#include "vex.h"
 #include "Drive.h"
 
-class Drive;
-extern Drive chassis;
+Drive chassis;
 
 void setDriveConstants();
 
