@@ -276,7 +276,7 @@ void Drive::moveToPosition(float desX, float desY){
     updatePosition();
 }
 
-void Drive::driveDistanceWithHeading(float distance){
+void Drive::driveDistanceWithOdom(float distance){
     // Creates PID objects for linear and angular output
     //float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime
     PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
@@ -288,12 +288,15 @@ void Drive::driveDistanceWithHeading(float distance){
     float yToGo = sin(degToRad(gyro1.heading()))* distance;
     float startHeading = gyro1.heading();
 
+    float targetX = chassisOdometry.getXPosition() + xToGo;
+    float targetY = chassisOdometry.getYPosition() + yToGo;
+
     //  Loops while the linear PID has not yet settled
     while(!linearPID.isSettled())
     {
         updatePosition();
         // Updates the Error for the linear values and the angular values
-        float linearError = sqrt(pow(xToGo, 2.0) + pow(yToGo, 2.0));
+        float linearError = sqrt(pow(targetX - chassisOdometry.getXPosition(), 2.0) + pow(targetY - chassisOdometry.getYPosition(), 2.0));
         float angularError = degTo180(startHeading - gyro1.heading());
 
         xToGo = cos(degToRad(gyro1.heading())) * linearError;
