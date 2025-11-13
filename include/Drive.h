@@ -48,6 +48,8 @@ class Drive
 
     void driveDistance(float distance);
     void driveDistance(float distance, float maxVoltage);
+    void driveDistanceWithHeading(float distance);
+
 
     void turn(float turnDegrees);
     void turnToAngle(float angle);
@@ -57,7 +59,6 @@ class Drive
 
     void bezierTurn(float, float, float, float, float, float, int);
 
-    void updatePosition(float x, float y, float heading);
     void updatePosition();
     void setPosition(float x, float y, float heading);
 
