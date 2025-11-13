@@ -35,6 +35,14 @@ inertialSensor(inertial(inertialPORT))
     // }
 }
 
+void Drive::setMaxVoltage(float volts){
+    maxVoltage = volts;
+}
+
+float Drive::getMaxVoltage(){
+    return maxVoltage;
+}
+
 /// @brief Sets the PID constants for the Drive distance 
 /// @param Kp Proportion Constant
 /// @param Ki Integral Constant
@@ -220,7 +228,7 @@ void Drive::turn(float turnDegrees){
 void Drive::turnToAngle(float angle){
     updatePosition();
     angle = inTermsOfNegative180To180(angle);
-    PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle*10, turnEndTime);
+    PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
     do
     {
         float error = inTermsOfNegative180To180(gyro1.heading()-angle);
