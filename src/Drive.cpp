@@ -254,7 +254,7 @@ void Drive::turnToAngle(float angle, float maxVoltage)
 {
     updatePosition();
     angle = inTermsOfNegative180To180(angle);
-    PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle*10, turnEndTime);
+    PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
     do
     {
         float error = inTermsOfNegative180To180(gyro1.heading()-angle);

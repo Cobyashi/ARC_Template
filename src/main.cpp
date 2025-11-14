@@ -118,8 +118,11 @@ void preAuton()
 void autonomous() 
 {
   isInAuton = true;
+
+  setDriveTrainConstants();
   chassis.setPosition(0,0,0);
-  chassis.driveDistance(15);
+  // chassis.driveDistanceWithOdom(15);
+  chassis.moveToPosition(12,12);
   //chassis.turnToAngle(90);
   //chassis.driveDistance(12);
   //chassis.moveToPosition(0,0);
@@ -192,9 +195,9 @@ void setDriveTrainConstants()
 {
     // Set the Drive PID values for the DriveTrain
     chassis.setDriveConstants(
-        0.2, // Kp - Proportion Constant
+        0.15, // Kp - Proportion Constant
         0.0, // Ki - Integral Constant
-        0, // Kd - Derivative Constant
+        0.25, // Kd - Derivative Constant
         0.05, // Settle Error
         300, // Time to Settle
         300000 // End Time
@@ -202,7 +205,7 @@ void setDriveTrainConstants()
 
     // Set the Turn PID values for the DriveTrain
     chassis.setTurnConstants(
-        0.5,    // Kp - Proportion Constant
+        0.3,    // Kp - Proportion Constant
         0,      // Ki - Integral Constant
         0.1,      // Kd - Derivative Constant 
         0.5,    // Settle Error
