@@ -14,7 +14,8 @@ inertialSensor(inertial(inertialPORT))
 {
     this->wheelDiameter = wheelDiameter;
     this->wheelRatio = wheelRatio;
-    this->maxVoltage = maxVoltage;
+    this->driveMaxVoltage = maxVoltage;
+    this->turnMaxVoltage = maxVoltage;
     this->odomType = odomType;
 
     this->chassisOdometry = Odom(2, 1.5, 1.5);
@@ -33,6 +34,16 @@ inertialSensor(inertial(inertialPORT))
     //         this->chassisOdometry = Odom(wheelDiameter45, leftRotationDistance, rightRotationDistance);
     //         break;
     // }
+}
+
+void Drive::setDriveMaxVoltage(float maxVoltage)
+{
+    driveMaxVoltage = maxVoltage;
+}
+
+void Drive::setTurnMaxVoltage(float maxVoltage)
+{
+    turnMaxVoltage = maxVoltage;
 }
 
 /// @brief Sets the PID constants for the Drive distance 
@@ -169,6 +180,14 @@ void Drive::brake(bool left, bool right, brakeType type)
 /// @param distance The distance to drive in inches
 void Drive::driveDistance(float distance)
 {
+    driveDistance(distance, driveMaxVoltage);
+}
+
+/// @brief Uses the drivetrain to drive the given distance in inches
+/// @param distance The distance to drive in inches
+/// @param maxVoltage The max amount of voltage used to drive
+void Drive::driveDistance(float distance, float maxVoltage)
+{
     // Creates PID objects for linear and angular output
     //float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime
     PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
@@ -208,16 +227,31 @@ void Drive::driveDistance(float distance)
     updatePosition();
 }
 
-/// @brief Turns the robot a set amount of degrees using odometry
-/// @param turnDegrees The number of degrees the robot turns (0-359)
+/// @brief Turns the robot a set amount of degrees
+/// @param turnDegrees A number in degrees the robot should rotate
 void Drive::turn(float turnDegrees){
     turnToAngle(turnDegrees + gyro1.heading());
 }
 
+/// @brief Turns the robot a set amount of degrees
+/// @param turnDegrees A number in degrees the robot should rotate
+/// @param maxVoltage The max amount of voltage used to turn
+void Drive::turn(float turnDegrees, float maxVoltage){
+    turnToAngle(turnDegrees + gyro1.heading(), maxVoltage);
+}
+
 /// @brief Turns to an absolute specific angle
-/// @param desiredHeading Desired facing angle
-/// @param currentHeading Current facing angle
-void Drive::turnToAngle(float angle){
+/// @param angle The angle to turn to in degrees (0 - 360)
+void Drive::turnToAngle(float angle)
+{
+    turnToAngle(angle, turnMaxVoltage);
+}
+
+/// @brief Turns to an absolute specific angle
+/// @param angle The angle to turn to in degrees (0 - 360)
+/// @param maxVoltage The max amount of voltage used to turn
+void Drive::turnToAngle(float angle, float maxVoltage)
+{
     updatePosition();
     angle = inTermsOfNegative180To180(angle);
     PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle*10, turnEndTime);
@@ -263,8 +297,8 @@ void Drive::moveToPosition(float desX, float desY){
         float angularOutput = angularPID.compute(angularError);
 
         // Clamps the values of the output to fit within the -12 to 12 volt limit of the vex motors
-        linearOutput = clamp(linearOutput, -maxVoltage, maxVoltage);
-        angularOutput = clamp(angularOutput, -maxVoltage, maxVoltage);
+        linearOutput = clamp(linearOutput, -driveMaxVoltage, driveMaxVoltage);
+        angularOutput = clamp(angularOutput, -driveMaxVoltage, driveMaxVoltage);
 
         // Drives motors according to the linear Output and includes the linear Output to keep the robot in a straight path relative to is start heading
         driveMotors(linearOutput - angularOutput, linearOutput + angularOutput);
@@ -307,8 +341,8 @@ void Drive::driveDistanceWithOdom(float distance){
         float angularOutput = angularPID.compute(angularError);
 
         // Clamps the values of the output to fit within the -12 to 12 volt limit of the vex motors
-        linearOutput = clamp(linearOutput, -maxVoltage, maxVoltage);
-        angularOutput = clamp(angularOutput, -maxVoltage, maxVoltage);
+        linearOutput = clamp(linearOutput, -driveMaxVoltage, driveMaxVoltage);
+        angularOutput = clamp(angularOutput, -driveMaxVoltage, driveMaxVoltage);
 
         // Drives motors according to the linear Output and includes the linear Output to keep the robot in a straight path relative to is start heading
         driveMotors(linearOutput - angularOutput, linearOutput + angularOutput);

@@ -15,7 +15,9 @@ class Drive
     motor_group leftDrive, rightDrive;
     inertial inertialSensor;
 
-    float maxVoltage;
+    float driveMaxVoltage;
+    float turnMaxVoltage;
+
     float wheelRatio, wheelDiameter;
 
     float driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime;
@@ -29,6 +31,9 @@ class Drive
     float predictedAngle;
 
     Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage, int odomType);
+
+    void setDriveMaxVoltage(float maxVoltage);
+    void setTurnMaxVoltage(float maxVoltage);
 
     void setDriveConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
     void setTurnConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
@@ -52,7 +57,10 @@ class Drive
 
 
     void turn(float turnDegrees);
+    void turn(float turnDegrees, float maxVoltage);
+
     void turnToAngle(float angle);
+    void turnToAngle(float angle, float maxVoltage);
 
     void moveToPosition(float, float);
     void turnToPosition(float desX, float desY);
