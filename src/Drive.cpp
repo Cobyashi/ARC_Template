@@ -347,6 +347,8 @@ void Drive::driveDistanceWithOdom(float distance){
         // Drives motors according to the linear Output and includes the linear Output to keep the robot in a straight path relative to is start heading
         driveMotors(linearOutput - angularOutput, linearOutput + angularOutput);
 
+        std::cout << "POS: " << chassisOdometry.getXPosition() << ", " << chassisOdometry.getYPosition() << std::endl;
+
         wait(10, msec);
     }
     // Stops the motors once PID has settled
@@ -414,6 +416,7 @@ void Drive::updatePosition(){
             chassisOdometry.updatePositionTwoForward(right, left, heading);
             break;
         case TWO_AT_45:
+            std::cout << "TWOAT45" << std::endl;
             left = forwardR.position(degrees);
             right = lateral.position(degrees);
             heading = gyro1.heading();

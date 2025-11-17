@@ -29,7 +29,7 @@ using namespace vex;
   (
     motor_group(L1, L2), // Left drive train motors
     motor_group(R1, R2), // Right drive train motors
-    PORT6,               // Inertial Sensor Port
+    PORT20,               // Inertial Sensor Port
     3,                   // The diameter size of the wheel in inches
     1,                   // 
     12,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
@@ -118,11 +118,13 @@ void preAuton()
 void autonomous() 
 {
   isInAuton = true;
+  forwardR.resetPosition();
+  lateral.resetPosition();
 
   setDriveTrainConstants();
   chassis.setPosition(0,0,0);
-  // chassis.driveDistanceWithOdom(15);
-  chassis.moveToPosition(12,12);
+  chassis.driveDistanceWithOdom(15);
+  // chassis.moveToPosition(12,12);
   //chassis.turnToAngle(90);
   //chassis.driveDistance(12);
   //chassis.moveToPosition(0,0);
