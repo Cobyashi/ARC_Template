@@ -37,7 +37,7 @@ float degTo180(float angle)
 /// @return Returns the distance in Inches.
 float degToInches(float deg, float wheelDiameter)
 {
-    return (deg / 360) * M_PI * wheelDiameter;
+    return (deg / 360) * (M_PI * wheelDiameter);
 }
 
 /// @brief Converts degrees to inches

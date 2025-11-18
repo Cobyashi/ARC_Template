@@ -30,9 +30,9 @@ using namespace vex;
     motor_group(L1, L2), // Left drive train motors
     motor_group(R1, R2), // Right drive train motors
     PORT20,               // Inertial Sensor Port
-    3,                   // The diameter size of the wheel in inches
+    3.25,             // The diameter size of the wheel in inches
     1,                   // 
-    12,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
+    6,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
     odomType
   );
 
@@ -120,14 +120,13 @@ void autonomous()
   isInAuton = true;
   forwardR.resetPosition();
   lateral.resetPosition();
+  gyro1.resetHeading();
 
   setDriveTrainConstants();
   chassis.setPosition(0,0,0);
-  chassis.driveDistanceWithOdom(15);
-  // chassis.moveToPosition(12,12);
-  //chassis.turnToAngle(90);
-  //chassis.driveDistance(12);
-  //chassis.moveToPosition(0,0);
+  // chassis.driveDistanceWithOdom(24);
+  chassis.moveToPosition(24,24);
+  // chassis.turnToAngle(45);
 
   // switch (lastPressed) 
   // {
@@ -197,19 +196,19 @@ void setDriveTrainConstants()
 {
     // Set the Drive PID values for the DriveTrain
     chassis.setDriveConstants(
-        0.15, // Kp - Proportion Constant
+        0.4,  // Kp - Proportion Constant
         0.0, // Ki - Integral Constant
-        0.25, // Kd - Derivative Constant
+        0.0, // Kd - Derivative Constant
         0.05, // Settle Error
         300, // Time to Settle
-        300000 // End Time
+        0 // End Time
     );
 
     // Set the Turn PID values for the DriveTrain
     chassis.setTurnConstants(
         0.3,    // Kp - Proportion Constant
         0,      // Ki - Integral Constant
-        0.1,      // Kd - Derivative Constant 
+        0,      // Kd - Derivative Constant 
         0.5,    // Settle Error
         300,    // Time to Settle
         3000    // End Time

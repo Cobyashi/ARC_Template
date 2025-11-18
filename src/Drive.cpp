@@ -18,7 +18,7 @@ inertialSensor(inertial(inertialPORT))
     this->turnMaxVoltage = maxVoltage;
     this->odomType = odomType;
 
-    this->chassisOdometry = Odom(2, 1.5, 1.5);
+    this->chassisOdometry = Odom(2, -1.0, -1.0);
 
     // switch(odomType){
     //     case NO_ODOM:
@@ -218,10 +218,17 @@ void Drive::driveDistance(float distance, float maxVoltage)
         angularOutput = clamp(angularOutput, -maxVoltage, maxVoltage);
 
         // Drives motors according to the linear Output and includes the linear Output to keep the robot in a straight path relative to is start heading
-        driveMotors(linearOutput - angularOutput, linearOutput + angularOutput);
+        driveMotors(linearOutput + angularOutput, linearOutput - angularOutput);
 
+        std::cout << "DRTR: " << getCurrentMotorPosition()-startPosition << std::endl;
+        std::cout << "POS: " << chassisOdometry.getXPosition() << ", " << chassisOdometry.getYPosition() << std::endl;
+        std::cout << "LE: " << linearError << std::endl;
+        std::cout << "OUT: " << linearOutput << std::endl;
         wait(10, msec);
     }
+    std::cout << "OUT OF PID LOOP" << std::endl;
+
+    
     // Stops the motors once PID has settled
     //brake();
     updatePosition();
@@ -260,7 +267,7 @@ void Drive::turnToAngle(float angle, float maxVoltage)
         float error = inTermsOfNegative180To180(gyro1.heading()-angle);
         float output = turnPID.compute(error);
         output = clamp(output, -maxVoltage, maxVoltage);
-        driveMotors(output, -output);
+        driveMotors(-output, output);
         task::sleep(10);
     }while(!turnPID.isSettled());
     driveMotors(0,0);
@@ -280,8 +287,6 @@ void Drive::moveToPosition(float desX, float desY){
     
     updatePosition();
     // Sets the starting variables for the Position and Heading
-    float startX = chassisOdometry.getXPosition();
-    float startY = chassisOdometry.getYPosition();
     float startHeading = gyro1.heading();
 
     //  Loops while the linear PID has not yet settled
@@ -301,9 +306,10 @@ void Drive::moveToPosition(float desX, float desY){
         angularOutput = clamp(angularOutput, -driveMaxVoltage, driveMaxVoltage);
 
         // Drives motors according to the linear Output and includes the linear Output to keep the robot in a straight path relative to is start heading
-        driveMotors(linearOutput - angularOutput, linearOutput + angularOutput);
+        driveMotors(linearOutput + angularOutput, linearOutput - angularOutput);
 
         wait(10, msec);
+        std::cout << linearError << std::endl;
     }
     // Stops the motors once PID has settled
     //brake();
@@ -345,9 +351,10 @@ void Drive::driveDistanceWithOdom(float distance){
         angularOutput = clamp(angularOutput, -driveMaxVoltage, driveMaxVoltage);
 
         // Drives motors according to the linear Output and includes the linear Output to keep the robot in a straight path relative to is start heading
-        driveMotors(linearOutput - angularOutput, linearOutput + angularOutput);
+        driveMotors(linearOutput + angularOutput, linearOutput - angularOutput);
 
         std::cout << "POS: " << chassisOdometry.getXPosition() << ", " << chassisOdometry.getYPosition() << std::endl;
+        std::cout << "LE: " << linearError << std::endl;
 
         wait(10, msec);
     }
@@ -416,7 +423,6 @@ void Drive::updatePosition(){
             chassisOdometry.updatePositionTwoForward(right, left, heading);
             break;
         case TWO_AT_45:
-            std::cout << "TWOAT45" << std::endl;
             left = forwardR.position(degrees);
             right = lateral.position(degrees);
             heading = gyro1.heading();
