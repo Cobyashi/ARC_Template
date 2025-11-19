@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Organization:       Autonomous Robotics Club (ARC)                      */
-/*    Authors:            Coby Smith and Joesph Dye                           */
+/*    Authors:            Coby Smith and Joseph Dye                           */
 /*    Created:            9/9/2024                                            */
 /*    Description:        ARC Template                                        */
 /*                                                                            */
