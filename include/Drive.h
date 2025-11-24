@@ -30,7 +30,7 @@ class Drive
 
     float predictedAngle;
 
-    Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage, int odomType);
+    Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage, int odomType, float odomWheelDiameter, float odomPod1Offset, float odomPod2Offset);
 
     void setDriveMaxVoltage(float maxVoltage);
     void setTurnMaxVoltage(float maxVoltage);

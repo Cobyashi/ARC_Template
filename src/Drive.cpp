@@ -7,7 +7,7 @@
 /// @param wheelDiameter The diameter size of the wheel in inches
 /// @param wheelRatio   
 /// @param max_voltage The maximum amount of the voltage used in the drivebase (1 - 12)
-Drive::Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage, int odomType) : 
+Drive::Drive(motor_group leftDrive, motor_group rightDrive, int inertialPORT, float wheelDiameter, float wheelRatio, float maxVoltage, int odomType, float odomWheelDiameter, float odomPod1Offset, float odomPod2Offset ) : 
 leftDrive(leftDrive), 
 rightDrive(rightDrive),
 inertialSensor(inertial(inertialPORT))
@@ -18,22 +18,22 @@ inertialSensor(inertial(inertialPORT))
     this->turnMaxVoltage = maxVoltage;
     this->odomType = odomType;
 
-    this->chassisOdometry = Odom(2, -1.0, -1.0);
+    // this->chassisOdometry = Odom(2, -1.0, -1.0);
 
-    // switch(odomType){
-    //     case NO_ODOM:
-    //         // this->chassisOdometry = Odom(leftDriveWheelDiameter, rightDriveWheelDiameter, 0, leftDriveDistFromCenter, rightDriveDistFromCenter, 0);
-    //         break;
-    //     case HORIZONTAL_AND_VERTICAL:
-    //         // this->chassisOdometry = Odom(forwardWheelDiameter, lateralWheelDiameter, forwardRotationDistance, lateralRotationDistance);
-    //         break;
-    //     case TWO_VERTICAL:
-    //         // Not yet implemented
-    //         break;
-    //     case TWO_AT_45:
-    //         this->chassisOdometry = Odom(wheelDiameter45, leftRotationDistance, rightRotationDistance);
-    //         break;
-    // }
+    switch(odomType){
+        case NO_ODOM:
+            this->chassisOdometry = Odom(wheelDiameter, wheelDiameter, 0, odomPod1Offset, odomPod2Offset, 0);
+            break;
+        case HORIZONTAL_AND_VERTICAL:
+            this->chassisOdometry = Odom(odomWheelDiameter, odomWheelDiameter, odomPod1Offset, odomPod2Offset);
+            break;
+        case TWO_VERTICAL:
+            // Not yet implemented
+            break;
+        case TWO_AT_45:
+            this->chassisOdometry = Odom(odomWheelDiameter, odomPod1Offset, odomPod2Offset);
+            break;
+    }
 }
 
 void Drive::setDriveMaxVoltage(float maxVoltage)
@@ -85,8 +85,8 @@ void Drive::arcade()
 {
     int leftY = Controller1.Axis3.position(percent);
     int rightX = Controller1.Axis1.position(percent);
-    leftDrive.spin(forward, leftY-rightX, percent);
-    rightDrive.spin(forward, leftY+rightX, percent);
+    leftDrive.spin(forward, leftY+rightX, percent);
+    rightDrive.spin(forward, leftY-rightX, percent);
 }
 
 
@@ -196,7 +196,7 @@ void Drive::driveDistance(float distance, float maxVoltage)
     updatePosition();
     // Sets the starting variables for the Position and Heading
     float startPosition = getCurrentMotorPosition();
-    float startHeading = gyro1.heading();
+    float startHeading = inertial1.heading();
 
     // Updates the distance to match the current position of the robot
     distance += startPosition;
@@ -207,7 +207,7 @@ void Drive::driveDistance(float distance, float maxVoltage)
         updatePosition();
         // Updates the Error for the linear values and the angular values
         float linearError = distance - getCurrentMotorPosition();
-        float angularError = degTo180(startHeading - gyro1.heading());
+        float angularError = degTo180(startHeading - inertial1.heading());
 
         // Sets the linear output and angular output to the output of the error passed through the PID compute functions
         float linearOutput = linearPID.compute(linearError);
@@ -219,14 +219,8 @@ void Drive::driveDistance(float distance, float maxVoltage)
 
         // Drives motors according to the linear Output and includes the linear Output to keep the robot in a straight path relative to is start heading
         driveMotors(linearOutput + angularOutput, linearOutput - angularOutput);
-
-        std::cout << "DRTR: " << getCurrentMotorPosition()-startPosition << std::endl;
-        std::cout << "POS: " << chassisOdometry.getXPosition() << ", " << chassisOdometry.getYPosition() << std::endl;
-        std::cout << "LE: " << linearError << std::endl;
-        std::cout << "OUT: " << linearOutput << std::endl;
         wait(10, msec);
     }
-    std::cout << "OUT OF PID LOOP" << std::endl;
 
     
     // Stops the motors once PID has settled
@@ -237,14 +231,14 @@ void Drive::driveDistance(float distance, float maxVoltage)
 /// @brief Turns the robot a set amount of degrees
 /// @param turnDegrees A number in degrees the robot should rotate
 void Drive::turn(float turnDegrees){
-    turnToAngle(turnDegrees + gyro1.heading());
+    turnToAngle(turnDegrees + inertial1.heading());
 }
 
 /// @brief Turns the robot a set amount of degrees
 /// @param turnDegrees A number in degrees the robot should rotate
 /// @param maxVoltage The max amount of voltage used to turn
 void Drive::turn(float turnDegrees, float maxVoltage){
-    turnToAngle(turnDegrees + gyro1.heading(), maxVoltage);
+    turnToAngle(turnDegrees + inertial1.heading(), maxVoltage);
 }
 
 /// @brief Turns to an absolute specific angle
@@ -264,7 +258,7 @@ void Drive::turnToAngle(float angle, float maxVoltage)
     PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
     do
     {
-        float error = inTermsOfNegative180To180(gyro1.heading()-angle);
+        float error = inTermsOfNegative180To180(inertial1.heading()-angle);
         float output = turnPID.compute(error);
         output = clamp(output, -maxVoltage, maxVoltage);
         driveMotors(-output, output);
@@ -287,7 +281,7 @@ void Drive::moveToPosition(float desX, float desY){
     
     updatePosition();
     // Sets the starting variables for the Position and Heading
-    float startHeading = gyro1.heading();
+    float startHeading = inertial1.heading();
 
     //  Loops while the linear PID has not yet settled
     while(!linearPID.isSettled())
@@ -295,7 +289,7 @@ void Drive::moveToPosition(float desX, float desY){
         updatePosition();
         // Updates the Error for the linear values and the angular values
         float linearError = sqrt(pow(desX-chassisOdometry.getXPosition(), 2.0) + pow(desY-chassisOdometry.getYPosition(), 2.0));
-        float angularError = degTo180(startHeading - gyro1.heading());
+        float angularError = degTo180(startHeading - inertial1.heading());
 
         // Sets the linear output and angular output to the output of the error passed through the PID compute functions
         float linearOutput = linearPID.compute(linearError);
@@ -308,11 +302,14 @@ void Drive::moveToPosition(float desX, float desY){
         // Drives motors according to the linear Output and includes the linear Output to keep the robot in a straight path relative to is start heading
         driveMotors(linearOutput + angularOutput, linearOutput - angularOutput);
 
+        // std::cout << chassisOdometry.getXPosition() << ", " << chassisOdometry.getYPosition() << std::endl;
+        std::cout << linearOutput << std::endl;
+        
         wait(10, msec);
-        std::cout << linearError << std::endl;
     }
     // Stops the motors once PID has settled
-    //brake();
+    // brake();
+    std::cout << "OUT OF LOOP" << std::endl;
     updatePosition();
 }
 
@@ -324,9 +321,9 @@ void Drive::driveDistanceWithOdom(float distance){
     
     updatePosition();
     // Sets the starting variables for the Position and Heading
-    float xToGo = cos(degToRad(gyro1.heading()))* distance;
-    float yToGo = sin(degToRad(gyro1.heading()))* distance;
-    float startHeading = gyro1.heading();
+    float xToGo = cos(degToRad(inertial1.heading()))* distance;
+    float yToGo = sin(degToRad(inertial1.heading()))* distance;
+    float startHeading = inertial1.heading();
 
     float targetX = chassisOdometry.getXPosition() + xToGo;
     float targetY = chassisOdometry.getYPosition() + yToGo;
@@ -337,10 +334,10 @@ void Drive::driveDistanceWithOdom(float distance){
         updatePosition();
         // Updates the Error for the linear values and the angular values
         float linearError = sqrt(pow(targetX - chassisOdometry.getXPosition(), 2.0) + pow(targetY - chassisOdometry.getYPosition(), 2.0));
-        float angularError = degTo180(startHeading - gyro1.heading());
+        float angularError = degTo180(startHeading - inertial1.heading());
 
-        xToGo = cos(degToRad(gyro1.heading())) * linearError;
-        yToGo = sin(degToRad(gyro1.heading())) * linearError;
+        xToGo = cos(degToRad(inertial1.heading())) * linearError;
+        yToGo = sin(degToRad(inertial1.heading())) * linearError;
 
         // Sets the linear output and angular output to the output of the error passed through the PID compute functions
         float linearOutput = linearPID.compute(linearError);
@@ -352,9 +349,6 @@ void Drive::driveDistanceWithOdom(float distance){
 
         // Drives motors according to the linear Output and includes the linear Output to keep the robot in a straight path relative to is start heading
         driveMotors(linearOutput + angularOutput, linearOutput - angularOutput);
-
-        std::cout << "POS: " << chassisOdometry.getXPosition() << ", " << chassisOdometry.getYPosition() << std::endl;
-        std::cout << "LE: " << linearError << std::endl;
 
         wait(10, msec);
     }
@@ -395,10 +389,12 @@ void Drive::bezierTurn(float curX, float curY, float midX, float midY, float des
         nextX = (pow(1-pts[i], 2)*curX) + (2*(1-pts[i])*pts[i]*midX) + (pow(pts[i], 2)*desX);
         nextY = (pow(1-pts[i], 2)*curY) + (2*(1-pts[i])*pts[i]*midY) + (pow(pts[i], 2)*desY);  
         moveToPosition(nextX, nextY);
+        std::cout << i << std::endl;
+        std::cout << nextX << ", " << nextY << std::endl;
     }
 
     delete [] pts;
-
+    std::cout << "Deleted Points" << std::endl;
 }
 
 void Drive::updatePosition(){
@@ -407,25 +403,25 @@ void Drive::updatePosition(){
         case NO_ODOM:
             left = leftDrive.position(degrees);
             right = rightDrive.position(degrees);
-            heading = gyro1.heading();
+            heading = inertial1.heading();
             chassisOdometry.updatePositionTwoForward(right, left, heading);
             break;
         case HORIZONTAL_AND_VERTICAL:
-            left = forwardR.position(degrees);
-            right = lateral.position(degrees);
-            heading = gyro1.heading();
+            left = rotation1.position(degrees);
+            right = rotation2.position(degrees);
+            heading = inertial1.heading();
             chassisOdometry.updatePositionOneForward(left, right, heading);
             break;
         case TWO_VERTICAL:
-            left = forwardR.position(degrees);
-            right = lateral.position(degrees);
-            heading = gyro1.heading();
+            left = rotation1.position(degrees);
+            right = rotation2.position(degrees);
+            heading = inertial1.heading();
             chassisOdometry.updatePositionTwoForward(right, left, heading);
             break;
         case TWO_AT_45:
-            left = forwardR.position(degrees);
-            right = lateral.position(degrees);
-            heading = gyro1.heading();
+            left = rotation1.position(degrees);
+            right = rotation2.position(degrees);
+            heading = inertial1.heading();
             chassisOdometry.updatePositionTwoAt45(left, right, heading);
             break;
     }

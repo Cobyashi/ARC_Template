@@ -19,13 +19,13 @@ motor L2 = motor(PORT4, ratio6_1, false);
 
 //////////// Odometry Sensors ////////////
 //TODO: CHANGE THE NAMES OF THESE
-rotation forwardR = rotation(PORT18);
-rotation lateral = rotation(PORT17);
+rotation rotation1 = rotation(PORT18);
+rotation rotation2 = rotation(PORT17);
 
 /////////////////////////////////////////
 
 //////////// Inertial Sensors ////////////
 
-inertial gyro1 = inertial(PORT20);
+inertial inertial1 = inertial(PORT20);
 
 /////////////////////////////////////////

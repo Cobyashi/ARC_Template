@@ -30,10 +30,13 @@ using namespace vex;
     motor_group(L1, L2), // Left drive train motors
     motor_group(R1, R2), // Right drive train motors
     PORT20,               // Inertial Sensor Port
-    3.25,             // The diameter size of the wheel in inches
+    3.25,              // The diameter size of the wheel in inches
     1,                   // 
     6,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
-    odomType
+    odomType,
+    2,                  //Odometry wheel diameter (set to zero if no odom)
+    -1.0,               //Odom pod1 offset 
+    -1.0                //Odom pod1 offset
   );
 
 //////////////////////////////////////////////////////////////////////
@@ -62,9 +65,9 @@ void preAuton()
   int lastPressed = 0;
 
   // Calibrates/Resets the Brains sensors before the competition
-  gyro1.calibrate();
-  forwardR.resetPosition();
-  lateral.resetPosition();
+  inertial1.calibrate();
+  rotation1.resetPosition();
+  rotation2.resetPosition();
 
   vex::color colors[8] = {vex::color::red, vex::color::red, vex::color::red, vex::color::red, 
                           vex::color::blue, vex::color::blue, vex::color::blue, vex::color::blue};
@@ -118,14 +121,16 @@ void preAuton()
 void autonomous() 
 {
   isInAuton = true;
-  forwardR.resetPosition();
-  lateral.resetPosition();
-  gyro1.resetHeading();
+  rotation1.resetPosition();
+  rotation2.resetPosition();
+  inertial1.resetHeading();
 
   setDriveTrainConstants();
   chassis.setPosition(0,0,0);
+
+  chassis.bezierTurn(0,0,5,5,2,12,7);
   // chassis.driveDistanceWithOdom(24);
-  chassis.moveToPosition(24,24);
+  // chassis.moveToPosition(24,24);
   // chassis.turnToAngle(45);
 
   // switch (lastPressed) 
@@ -198,10 +203,10 @@ void setDriveTrainConstants()
     chassis.setDriveConstants(
         0.4,  // Kp - Proportion Constant
         0.0, // Ki - Integral Constant
-        0.0, // Kd - Derivative Constant
-        0.05, // Settle Error
+        0.1, // Kd - Derivative Constant
+        0.5, // Settle Error
         300, // Time to Settle
-        0 // End Time
+        5000 // End Time
     );
 
     // Set the Turn PID values for the DriveTrain

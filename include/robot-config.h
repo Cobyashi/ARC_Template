@@ -17,7 +17,7 @@ extern motor L2;
 extern motor_group rightDrive;
 extern motor_group leftDrive;
 
-extern rotation forwardR;
-extern rotation lateral;
+extern rotation rotation1;
+extern rotation rotation2;
 
-extern inertial gyro1;
+extern inertial inertial1;
