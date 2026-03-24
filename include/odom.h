@@ -14,6 +14,10 @@ class Odom
         float xPosition;
         float yPosition;
         float heading;
+
+        float prevX;
+        float prevY;
+        float prevHeading;
     
     public:
         //Wheel diameters for the odometry pods
@@ -33,7 +37,8 @@ class Odom
         float rightRotationDistance;
 
         Odom();
-        Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, float lateralWheelDiameter, float forwardRightRotationDistance, float forwardLeftRotationDistance, float lateralRotationDistance);
+        Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, float lateralWheelDiameter, float forwardRightRotationDistance, 
+             float forwardLeftRotationDistance, float lateralRotationDistance);
         Odom(float forwardWheelDiameter, float lateralWheelDiameter, float forwardRotationDistance, float lateralRotationDistance);
         Odom(float wheelDiameter45, float leftRotationDistance, float rightRotationDistance);
 

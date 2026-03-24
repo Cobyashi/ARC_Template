@@ -67,7 +67,37 @@ float PID::compute(float error)
         timeSpentSettled = 0;
 
     runTime += time;
-    
+        
+    return output;
+}
+
+float PID::computeDebug(float error)
+{
+    // float time = deltaTime;
+    static int i = 0;
+    float time = 10;
+    integral += error;
+
+    derivative = error - prevError;
+
+    // Checks if the error has crossed 0, and if it has, it eliminates the integral term.
+    if ((error > 0 && prevError < 0) || (error < 0 && prevError > 0)){ 
+        integral = 0; 
+    }
+
+    output = Kp*error + Ki*integral + Kd*derivative;
+    prevError = error;
+
+    if(fabs(error) < settleError){
+        std::cout << error << std::endl;
+        timeSpentSettled += time;
+    }else
+        timeSpentSettled = 0;
+
+    runTime += time;
+    if(i++ % 10 == 0)
+        std::cout << error << std::endl;
+        
     return output;
 }
 
@@ -75,11 +105,16 @@ float PID::compute(float error)
 /// @return Returns TRUE if settled, Returns FALSE if not settled
 bool PID::isSettled()
 {
-    if(runTime > endTime && endTime != 0)
+    if(runTime > endTime && endTime != 0){
+        std::cout << "TIMEOUT------------------" << std::endl;
         return true;
-
-    if(timeSpentSettled > timeToSettle)
+    }
+        
+    if(timeSpentSettled > timeToSettle){
+        std::cout << "SETTLED-----------------" << std::endl;
         return true;
+    }
+        
     else
         return false;
 }

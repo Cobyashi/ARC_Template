@@ -11,7 +11,7 @@ class Button{
         Button(){};
         Button(std::string name, vex::color color, int x, int y, int width, int height);
 
-        void draw(vex::color backgroundColor, vex::color textColor, vex::fontType fontSize, std::string text);
+        void draw(vex::color backgroundColor, vex::color textColor, vex::fontType fontSize, std::string text, int yOffset, int xOffset);
 
         bool checkPress();
         
@@ -48,8 +48,8 @@ void createAutonButtons(vex::color colors[8], std::string names[8], Button butto
 void clickButton(Button &selected, Button buttons[9]);
 void showAutonSelectionScreen(Button buttons[9]);
 int checkButtonsPress(Button buttons[9]);
-void createPreAutonScreen(Button &autonButton, Text &selectedLabel);
-void showPreAutonScreen(Button &autonButton, Text &selectedLabel, std::string route);
-bool checkPreAutonButton(Button autonButton);
+void createPreAutonScreen(Button startScreenButtons[5], Text &selectedLabel, Text &configLabel);
+void showPreAutonScreen(Button startScreenButtons[5], Text &selectedLabel, Text &configLabel, std::string route, int teamColor, int driver);
+bool checkPreAutonButtons(Button startScreenButtons[5], int &teamColor, int &driver, Text &configLabel);
 void drawBackground();
 

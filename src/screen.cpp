@@ -1,5 +1,7 @@
 #include "screen.h"
 
+// ----------------+ Button Class +---------------- //
+
 /// @brief Button Constructor
 /// @param name Button label
 /// @param color Color of the button
@@ -23,13 +25,13 @@ Button::Button(std::string name, vex::color color, int x, int y, int width=90, i
 /// @param textColor Color of the text
 /// @param fontSize a vex::fontType font size
 /// @param text Button label
-void Button::draw(vex::color backgroundColor, vex::color textColor, vex::fontType fontSize, std::string text){
+void Button::draw(vex::color backgroundColor, vex::color textColor, vex::fontType fontSize, std::string text, int yOffset=1, int xOffset=2){
     // Brain.Screen.setPenColor(backgroundColor);
     Brain.Screen.setPenColor(textColor);
     Brain.Screen.setFillColor(backgroundColor);
     Brain.Screen.drawRectangle(x, y-10, width, height);
     Brain.Screen.setFont(fontSize);
-    Brain.Screen.setCursor((y/20)+1, (x/10)+2);
+    Brain.Screen.setCursor((y/20)+yOffset, (x/10)+xOffset);
     Brain.Screen.print(text.c_str());
 }
 
@@ -42,6 +44,8 @@ bool Button::checkPress(){
     
     return false;
 }
+
+// ----------------+ Text Class +---------------- //
 
 /// @brief Constructor for text object
 /// @param words Words to be printed
@@ -65,6 +69,8 @@ void Text::printText(){
     Brain.Screen.print(words.c_str());
 }
 
+// ----------------+ Screen Functions +---------------- //
+
 /// @brief Creates all 9 buttons for the autonomous route selection screen
 /// @param colors Colors of the buttons
 /// @param names Names to be put on the buttons
@@ -83,7 +89,7 @@ void createAutonButtons(vex::color colors[8], std::string names[8], Button butto
 
 /// @brief Chooses one button for selection
 /// @param button Button selected
-/// @param oldSelected Previously chosen button
+/// @param buttons list of buttons
 void clickButton(Button &selected, Button buttons[9]){
     if(!selected.getBack()){
         for(int i=0;i<9;i++){
@@ -93,6 +99,27 @@ void clickButton(Button &selected, Button buttons[9]){
         selected.draw(vex::color(0xffe000), vex::color::white, vex::fontType::mono20, selected.getName());
         selected.setChosen(true);
     }
+}
+
+/// @brief Chooses one button for selection
+/// @param button Button selected
+/// @param buttons list of buttons
+void clickButtonStartScreen(int selectedIndex, Button buttons[5]){
+    if(selectedIndex == 1){
+        buttons[2].draw(buttons[2].getColor(), vex::color::white, vex::fontType::mono20, buttons[2].getName(), 2, 3);
+        buttons[2].setChosen(false);
+    }else if(selectedIndex == 2){
+        buttons[1].draw(buttons[1].getColor(), vex::color::white, vex::fontType::mono20, buttons[1].getName(), 2, 3);
+        buttons[1].setChosen(false);
+    }else if(selectedIndex == 3){
+        buttons[4].draw(buttons[4].getColor(), vex::color::white, vex::fontType::mono20, buttons[4].getName(), 2, 3);
+        buttons[4].setChosen(false);
+    }else if(selectedIndex == 4){
+        buttons[3].draw(buttons[3].getColor(), vex::color::white, vex::fontType::mono20, buttons[3].getName(), 2, 3);
+        buttons[3].setChosen(false);
+    }
+    buttons[selectedIndex].draw(vex::color(0xffe000), vex::color::white, vex::fontType::mono20, buttons[selectedIndex].getName(), 2, 3);
+    buttons[selectedIndex].setChosen(true);
 }
 
 /// @brief Show all the buttons
@@ -124,27 +151,66 @@ int checkButtonsPress(Button buttons[9]){
     return -1;
 }
 
-void createPreAutonScreen(Button &autonButton, Text &selectedLabel){
-    autonButton = Button("Options", vex::color(0xffe000), 360, 180);
+void createPreAutonScreen(Button startScreenButtons[5], Text &selectedLabel, Text &configLabel){
+    startScreenButtons[0] = Button("Options", vex::color(0xffe000), 360, 180);
+    startScreenButtons[1] = Button("Red", vex::color::red, 30, 60, 90, 100);
+    startScreenButtons[1].setChosen(true);
+    startScreenButtons[2] = Button("Blue", vex::color::blue, 140, 60, 90, 100);
+    startScreenButtons[3] = Button("Elliot", vex::color(0xc2c2c2), 250, 60, 90, 100);
+    startScreenButtons[3].setChosen(true);
+    startScreenButtons[4] = Button("Jacob", vex::color(0xc2c2c2), 360, 60, 90, 100);
     selectedLabel = Text("FillerText" , 10, 4, vex::mono20, vex::color::white);
-    //Create Text
-    //Create ARC logo
+    configLabel = Text("FillerText", 11, 4, vex::mono20, vex::color::white);
 }
 
-void showPreAutonScreen(Button &autonButton, Text &selectedLabel, std::string route){
+void showPreAutonScreen(Button startScreenButtons[5], Text &selectedLabel, Text &configLabel, std::string route, int teamColor, int driver){
     Brain.Screen.clearScreen();
     drawBackground();
-    autonButton.draw(autonButton.getColor(), vex::color::white, vex::fontType::mono20, autonButton.getName());
-    
+    startScreenButtons[0].draw(vex::color(0xffe000), vex::color::white, vex::fontType::mono20, startScreenButtons[0].getName());
+    for(int i=1;i<5;i++){
+        if(startScreenButtons[i].isChosen())
+            startScreenButtons[i].draw(vex::color(0xffe000), vex::color::white, vex::fontType::mono20, startScreenButtons[i].getName(), 2,3);
+        else
+            startScreenButtons[i].draw(startScreenButtons[i].getColor(), vex::color::white, vex::fontType::mono20, startScreenButtons[i].getName(), 2, 3);       
+    }
+            
     Brain.Screen.setFillColor(vex::color(0x723A86));
     selectedLabel.setWords("Route Selected: " + route);
     selectedLabel.printText();
+
+    std::string colorString = teamColor ? "Blue" : "Red";
+    std::string driverString = driver ? "Jacob        " : "Elliot        ";
+    configLabel.setWords("Config: " + colorString + " - " + driverString);
+    configLabel.printText();
 }
 
-bool checkPreAutonButton(Button autonButton){
-    if(autonButton.checkPress()){
+bool checkPreAutonButtons(Button startScreenButtons[5], int &teamColor, int &driver, Text &configLabel){
+    if(startScreenButtons[0].checkPress()){
         return true;
+    }else{
+        for(int i=1;i<5;i++){
+            if(startScreenButtons[i].checkPress()){
+                clickButtonStartScreen(i, startScreenButtons);
+            }
+        }
+        if(startScreenButtons[1].isChosen()){
+            teamColor = 0;
+        }else{
+            teamColor = 1;
+        }
+        if(startScreenButtons[3].isChosen()){
+            driver = 0;
+        }else{
+            driver = 1;
+        }
     }
+
+    Brain.Screen.setFillColor(vex::color(0x723A86));
+    std::string colorString = teamColor ? "Blue" : "Red";
+    std::string driverString = driver ? "Jacob        " : "Elliot        ";
+    configLabel.setWords("Config: " + colorString + " - " + driverString);
+    configLabel.printText();
+
     return false;
 }
 
