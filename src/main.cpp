@@ -12,6 +12,7 @@
 #include "util.h"
 #include "Drive.h"
 #include "semiPIDTuner.h"
+#include "pidTests.h"
 #include "images.h"
 
 using namespace vex;
@@ -57,6 +58,7 @@ void Auton_6();
 void Auton_7();
 void Auton_8();
 void semiPIDTest();
+void pidTests();
 
 //////////////////////////////////////////////////////////////////////
 
@@ -144,6 +146,7 @@ void autonomous()
   setDriveTrainConstants();
   chassis.setPosition(0,0,0);
 
+  //pidTest();
 
   switch (lastPressed) 
   {
@@ -299,4 +302,20 @@ void semiPIDTest(){
   */
   PIDTuner tuner(chassis);
   tuner.run();
+}
+
+void pidTest(){
+  
+  /*
+      To use one of the tests below, just uncoment the test below and uncomment //pidTest() in Autonomous()
+  */
+  
+  
+   smallDrivingTest(chassis);
+  // largeDrivingTest(chassis);
+  // mixedDrivingTest(chassis, 20);
+  
+  // smallTurningTest(chassis);
+  // largeTurningTest(chassis);
+  // mixedTurningTest(chassis, 20);
 }
