@@ -30,18 +30,32 @@ using namespace vex;
   int driver = 0; 
 
   // Define Values for the Chassis here:
-  Drive chassis
+  // Drive chassis
+  // (
+  //   motor_group(L1, L2), // Left drive train motors
+  //   motor_group(R1, R2), // Right drive train motors
+  //   PORT20,               // Inertial Sensor Port
+  //   3.25,              // The diameter size of the wheel in inches
+  //   1,                   // 
+  //   6,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
+  //   odomType,
+  //   2,                  //Odometry wheel diameter (set to zero if no odom)
+  //   -1.0,               //Odom pod1 offset 
+  //   -1.0                //Odom pod1 offset
+  // );
+
+    Drive chassis
   (
-    motor_group(L1, L2), // Left drive train motors
-    motor_group(R1, R2), // Right drive train motors
+    motor_group(LFT, LFB, LBB, LBT), // Left drive train motors
+    motor_group(RFT, RFB, RBB, RBT), // Right drive train motors
     PORT20,               // Inertial Sensor Port
-    3.25,              // The diameter size of the wheel in inches
+    2.66,              // The diameter size of the wheel in inches
     1,                   // 
-    6,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
+    12,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
     odomType,
-    2,                  //Odometry wheel diameter (set to zero if no odom)
-    -1.0,               //Odom pod1 offset 
-    -1.0                //Odom pod1 offset
+    1.955,                  //Odometry wheel diameter (set to zero if no odom)
+    -1.28,               //Odom pod1 offset 
+    -1.28                //Odom pod1 offset
   );
 
 //////////////////////////////////////////////////////////////////////
@@ -182,6 +196,13 @@ void autonomous()
 /// @brief Runs during the UserControl section of the competition
 void usercontrol() 
 {
+
+  std::cout << "Starting User Control" << std::endl;
+  // chassis.driveDistanceWithOdom(24);
+  // std::cout << "Finished first move" << std::endl;
+  semiPIDTest();
+  std::cout << "Finished semi PID Test" << std::endl;
+  
   // User control code here, inside the loop
   while (1) {
 

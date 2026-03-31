@@ -100,6 +100,9 @@ class PIDTuner {
         //Draws Edit Int Screen on Controlller for parameters settleTime and endTime 
         void drawEditInt();
 
+        void exportCurrentProfile();
+
+        
         //Runs the actual Drive Test
         void runTest();
 

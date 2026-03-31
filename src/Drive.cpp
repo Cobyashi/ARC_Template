@@ -1,8 +1,93 @@
 #include "Drive.h"
+#include <array>
+#include <cmath>
 
 /* ================= */
 /* DRIVE CONSTRUCTOR */
 /* ================= */
+
+
+
+
+std::array<float, 9> kDistances = {3.0f, 6.0f, 12.0f, 18.0f, 24.0f, 30.0f, 36.0f, 48.0f, 72.0f};
+
+static int getClosestDistanceProfileIndex(float distance) {
+    const float target = std::fabs(distance);
+    int closestIndex = 0;
+    float bestDelta = std::fabs(target - kDistances[0]);
+
+    for (int i = 1; i < static_cast<int>(kDistances.size()); ++i) {
+        const float delta = std::fabs(target - kDistances[i]);
+        if (delta < bestDelta) {
+            bestDelta = delta;
+            closestIndex = i;
+        }
+    }
+
+    return closestIndex;
+}
+
+static std::array<PID, 9> createDrivePIDProfiles() {
+
+    // Update these PID objects with your tuned values for each distance bucket.
+    return {
+        {
+        //PID(Kp, Ki, Kd, settleError, timeToSettle, endTime)
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 3 inches
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 6 inches
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 12 inches
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 18 inches
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 24 inches
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 30 inches
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 36 inches
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 48 inches
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f)   // 72 inches
+        }
+    };
+}
+
+
+
+std::array<float, 8> kTurnAngles = {5.0f, 10.0f, 30.0f, 45.0f, 90.0f, 180.0f, 270.0f, 360.0f};
+
+static int getClosestTurnProfileIndex(float angle) {
+    const float target = std::fabs(angle);
+    int closestIndex = 0;
+    float bestDelta = std::fabs(target - kTurnAngles[0]);
+
+    for (int i = 1; i < static_cast<int>(kTurnAngles.size()); ++i) {
+        const float delta = std::fabs(target - kTurnAngles[i]);
+        if (delta < bestDelta) {
+            bestDelta = delta;
+            closestIndex = i;
+        }
+    }
+
+    return closestIndex;
+}
+
+static std::array<PID, 8> createTurnPIDProfiles() {
+
+
+    // Update these PID objects with your tuned values for each turn bucket.
+    return {
+        {
+        // PID(Kp, Ki, Kd, settleError, timeToSettle, endTime)
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 5 degrees
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 10 degrees
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 30 degrees
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 45 degrees
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 90 degrees
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 180 degrees
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 270 degrees
+        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f)   // 360 degrees
+        }
+    };
+}
+
+
+
+
 
 /// @brief Constructor
 /// @param leftDrive Left side motors of the drive base
@@ -212,7 +297,9 @@ void Drive::turnToAngle(float angle, float maxVoltage)
 {
     updatePosition();
     angle = inTermsOfNegative180To180(angle);
-    PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
+    const int profileIndex = getClosestTurnProfileIndex(angle);
+    std::array<PID, 8> turnProfiles = createTurnPIDProfiles();
+    PID turnPID = turnProfiles[profileIndex];
     do
     {
         float error = inTermsOfNegative180To180(inertial1.heading()-angle);
@@ -251,7 +338,9 @@ void Drive::turnToAngle(float angle, float maxVoltage)
 void Drive::turnToAngle(float angle, float maxVoltage, float endTime){
     updatePosition();
     angle = inTermsOfNegative180To180(angle);
-    PID turnPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, endTime);
+    const int profileIndex = getClosestTurnProfileIndex(angle);
+    std::array<PID, 8> turnProfiles = createTurnPIDProfiles();
+    PID turnPID = turnProfiles[profileIndex];
     do
     {
         float error = inTermsOfNegative180To180(inertial1.heading()-angle);
@@ -350,8 +439,12 @@ void Drive::driveDistance(float distance, float maxVoltage)
 {
     // Creates PID objects for linear and angular output
     //float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime
-    PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
+// Creates PID objects for linear and angular output
+    const int profileIndex = getClosestDistanceProfileIndex(distance);
+    std::array<PID, 9> driveProfiles = createDrivePIDProfiles();
+    PID linearPID = driveProfiles[profileIndex];
     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
+
     
     updatePosition();
     // Sets the starting variables for the Position and Heading
@@ -392,7 +485,9 @@ void Drive::driveDistance(float distance, float maxVoltage)
 /// @param distance How far the robot (in inches) needs to drive
 void Drive::driveDistanceWithOdom(float distance){
     //Creates PID objects for linear and angular output
-    PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
+    const int profileIndex = getClosestDistanceProfileIndex(distance);
+    std::array<PID, 9> driveProfiles = createDrivePIDProfiles();
+    PID linearPID = driveProfiles[profileIndex];
     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
 
     updatePosition();
@@ -450,7 +545,9 @@ void Drive::driveDistanceWithOdom(float distance){
 /// @param timeLimit The maximum time allowed to drive
 void Drive::driveDistanceWithOdom(float distance, float timeLimit){
     // Creates PID objects for linear and angular output
-    PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, timeLimit);
+    const int profileIndex = getClosestDistanceProfileIndex(distance);
+    std::array<PID, 9> driveProfiles = createDrivePIDProfiles();
+    PID linearPID = driveProfiles[profileIndex];
     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
 
     updatePosition();
@@ -510,7 +607,9 @@ void Drive::driveDistanceWithOdom(float distance, float timeLimit){
 /// @param maxVoltage The maximum voltage the robot can run at
 void Drive::driveDistanceWithOdom(float distance, float timeLimit, float maxVoltage){
     // Creates PID objects for linear and angular output
-    PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, timeLimit);
+    const int profileIndex = getClosestDistanceProfileIndex(distance);
+    std::array<PID, 9> driveProfiles = createDrivePIDProfiles();
+    PID linearPID = driveProfiles[profileIndex];
     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
 
     updatePosition();
@@ -572,7 +671,9 @@ void Drive::driveDistanceWithOdom(float distance, float timeLimit, float maxVolt
 /// @param settleError How big the settle error is to allow the robot to settle
 void Drive::driveDistanceWithOdom(float distance, float timeLimit, float maxVoltage, float settleTime, float settleError){
     // Creates PID objects for linear and angular output
-    PID linearPID(driveKp, driveKi, driveKd, settleError, settleTime, timeLimit);
+    const int profileIndex = getClosestDistanceProfileIndex(distance);
+    std::array<PID, 9> driveProfiles = createDrivePIDProfiles();
+    PID linearPID = driveProfiles[profileIndex];
     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
 
     updatePosition();

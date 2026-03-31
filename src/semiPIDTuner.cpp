@@ -2,8 +2,8 @@
 #include <cstdio>
 
 /// @brief Sets the Values for both Drive_Distances and Turn_Distances
-const int PIDTuner::DRIVE_DISTANCES[] = {3, 6, 12, 24, 36, 48, 72};
-const int PIDTuner::NUM_DRIVE_DISTANCES = 7;
+const int PIDTuner::DRIVE_DISTANCES[] = {3, 6, 12, 18, 24, 30, 36, 48, 72};
+const int PIDTuner::NUM_DRIVE_DISTANCES = 9;
 const int PIDTuner::TURN_DISTANCES[] = {5, 10, 30, 45, 90, 180, 270, 360};
 const int PIDTuner::NUM_TURN_DISTANCES = 8;
 
@@ -135,7 +135,7 @@ void PIDTuner::openEditScreen() {
             break;
         case 3:
             editLabel      = "Err";
-            editFloatValue   = p.settleError;
+            editFloatValue = p.settleError;
             editFineStep   = 0.05f;
             editCoarseStep = 0.5f;
             editFloatMin   = 0.0f;
@@ -173,9 +173,9 @@ void PIDTuner::saveEditScreen() {
         case 0: p.kP           = editFloatValue; break;
         case 1: p.kI           = editFloatValue; break;
         case 2: p.kD           = editFloatValue; break;
-        case 3: p.settleError = editFloatValue; break;
-        case 4: p.timeToSettle = editIntVal;   break;
-        case 5: p.endTime      = editIntVal;   break;
+        case 3: p.settleError  = editFloatValue; break;
+        case 4: p.timeToSettle = editIntVal;     break;
+        case 5: p.endTime      = editIntVal;     break;
     }
 }
 
@@ -204,7 +204,7 @@ void PIDTuner::drawMain() {
  
     // Row 3: hints
     //Controller1.Screen.setCursor(2,15);
-    Controller1.Screen.print(" R2=Run");
+    Controller1.Screen.print(" R2=Run, B=Save");
     Controller1.Screen.setCursor(3, 1);
     Controller1.Screen.print("A=Edit UD=%s LR=sel", unit);
 }
@@ -252,6 +252,32 @@ void PIDTuner::drawEditInt() {
     Controller1.Screen.setCursor(3, 1);
     Controller1.Screen.print("Hold UD=%dms",
                               editCoarseStepI);
+}
+
+/// @brief Exports the current selected PID profile as one line for Drive.cpp
+void PIDTuner::exportCurrentProfile() {
+    ParameterSet& p = activeParams();
+    const int* distances = activeDistances();
+
+    Controller1.Screen.clearScreen();
+    Controller1.Screen.setCursor(1, 1);
+    Controller1.Screen.print("Exported current");
+    Controller1.Screen.setCursor(2, 1);
+    Controller1.Screen.print("Check terminal");
+
+    if (currentMode == MODE_DRIVE) {
+        printf("\nPID(%.4ff, %.4ff, %.4ff, %.4ff, %.1ff, %.1ff),  // %d inches\n",
+               p.kP, p.kI, p.kD, p.settleError,
+               (float)p.timeToSettle, (float)p.endTime,
+               distances[distIndx]);
+    } else {
+        printf("\nPID(%.4ff, %.4ff, %.4ff, %.4ff, %.1ff, %.1ff),  // %d degrees\n",
+               p.kP, p.kI, p.kD, p.settleError,
+               (float)p.timeToSettle, (float)p.endTime,
+               distances[distIndx]);
+    }
+
+    wait(1200, msec);
 }
 
 /// @brief Gets the currentMode and drives or turns the robot in the correct direction
@@ -309,38 +335,39 @@ void PIDTuner::run() {
  
             // ── MAIN ──────────────────────────────────────────────────────
             case SCR_MAIN:
-                if (edge.R2) { runTest(); redraw = true; break; }
- 
-                // Move field selection — clamped
-                if (edge.Left   && fieldSelector > 0) { fieldSelector--; changed = true; }
-                if (edge.Right && fieldSelector < 5) { fieldSelector++; changed = true; }
- 
-                // Cycle distance — clamped
-                maxDist = activeNumDistances();
-                if (edge.Up && distIndx < maxDist - 1) { distIndx++; changed = true; }
-                if (edge.Down  && distIndx > 0)                  { distIndx--; changed = true; }
- 
-                // Switch mode
-                if (edge.R1) { 
-                    currentMode = MODE_DRIVE; 
-                    if (distIndx >= NUM_DRIVE_DISTANCES)
-                        distIndx = NUM_DRIVE_DISTANCES -1;
-                    changed = true; 
-                }
-                if (edge.L1) { 
-                    currentMode = MODE_TURN;  
-                    if (distIndx >= NUM_TURN_DISTANCES)
-                        distIndx = NUM_TURN_DISTANCES -1;
-                    changed = true; 
-                }
- 
-                // Open edit screen
-                if (edge.A) { openEditScreen(); redraw = true; break; }
- 
-                if (changed) redraw = true;
-                if (redraw)  { drawMain(); redraw = false; }
-                break;
- 
+                    if (edge.R2) { runTest(); redraw = true; break; }
+                    if (edge.B) { exportCurrentProfile(); redraw = true; break; }
+
+                    // Move field selection — clamped
+                    if (edge.Left   && fieldSelector > 0) { fieldSelector--; changed = true; }
+                    if (edge.Right && fieldSelector < 5) { fieldSelector++; changed = true; }
+
+                    // Cycle distance — clamped
+                    maxDist = activeNumDistances();
+                    if (edge.Up && distIndx < maxDist - 1) { distIndx++; changed = true; }
+                    if (edge.Down  && distIndx > 0) { distIndx--; changed = true; }
+
+                    // Switch mode
+                    if (edge.R1) {
+                        currentMode = MODE_DRIVE;
+                        if (distIndx >= NUM_DRIVE_DISTANCES)
+                            distIndx = NUM_DRIVE_DISTANCES -1;
+                        changed = true;
+                    }
+                    if (edge.L1) {
+                        currentMode = MODE_TURN;
+                        if (distIndx >= NUM_TURN_DISTANCES)
+                            distIndx = NUM_TURN_DISTANCES -1;
+                        changed = true;
+                    }
+                
+                    // Open edit screen
+                    if (edge.A) { openEditScreen(); redraw = true; break; }
+                
+                    if (changed) redraw = true;
+                    if (redraw)  { drawMain(); redraw = false; }
+                    break;
+                
             // ── EDIT FLOAT ────────────────────────────────────────────────
             case SCR_EDIT_FLOAT:
                 // Increment hold timers for held buttons, reset if released
