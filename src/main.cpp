@@ -80,7 +80,7 @@ void pidTests();
 /// @brief Runs before the competition starts
 void preAuton() 
 {
-  setDriveTrainConstants();
+  //setDriveTrainConstants();
 
   chassis.brake(coast);       // make sure they aren’t holding weirdly
   chassis.driveMotors(0, 0);  
@@ -157,7 +157,7 @@ void autonomous()
   rotation2.resetPosition();
   inertial1.resetHeading();
 
-  setDriveTrainConstants();
+  //setDriveTrainConstants();
   chassis.setPosition(0,0,0);
 
   //pidTest();
@@ -198,8 +198,8 @@ void usercontrol()
 {
 
   std::cout << "Starting User Control" << std::endl;
-  // chassis.driveDistanceWithOdom(24);
-  // std::cout << "Finished first move" << std::endl;
+  chassis.driveDistanceWithOdom(6);
+  std::cout << "Finished first move" << std::endl;
   semiPIDTest();
   std::cout << "Finished semi PID Test" << std::endl;
   
@@ -230,6 +230,14 @@ int main()
   }
 }
 
+/*
+
+
+// Do we want to build this into a optional PID so that if a team doesn't want to use the multiple profiles 
+// and just wants to set one set of PID values, they can do that?
+
+//They can also just reduce the number of profiles to 1 and it would work the same as a normal PID
+
 
 /// @brief Sets the PID values for the DriveTrain
 void setDriveTrainConstants()
@@ -255,6 +263,8 @@ void setDriveTrainConstants()
     );
     
 }
+*/
+
 
 /// @brief Auton Slot 1 - Write code for route within this function.
 void Auton_1()

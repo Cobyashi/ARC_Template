@@ -99,6 +99,13 @@ int PIDTuner::activeNumDistances() const{
 void PIDTuner::applyParamsToChassis(){
     chassis.setDriveConstants(driveParameters.kP, driveParameters.kI, driveParameters.kD, driveParameters.settleError, driveParameters.timeToSettle, driveParameters.endTime);
     chassis.setTurnConstants(turnParameters.kP, turnParameters.kI, turnParameters.kD, turnParameters.settleError, turnParameters.timeToSettle, turnParameters.endTime);
+    
+    const float selectedTarget = static_cast<float>(activeDistances()[distIndx]);
+    if (currentMode == MODE_DRIVE) {
+        chassis.setDriveProfileForDistance(selectedTarget, driveParameters.kP, driveParameters.kI, driveParameters.kD, driveParameters.settleError, driveParameters.timeToSettle, driveParameters.endTime);
+    } else {
+        chassis.setTurnProfileForAngle(selectedTarget, turnParameters.kP, turnParameters.kI, turnParameters.kD, turnParameters.settleError, turnParameters.timeToSettle, turnParameters.endTime);
+    }
 }
 
 /// @brief Opens the editor for the specific paramater chosen (P, I, D, settleError, settleTime, endTime)

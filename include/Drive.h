@@ -36,6 +36,8 @@ class Drive
 
         void setDriveConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
         void setTurnConstants(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
+        void setDriveProfileForDistance(float distance, float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
+        void setTurnProfileForAngle(float angle, float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
 
         void arcade();
         void tank();

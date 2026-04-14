@@ -8,10 +8,28 @@
 
 
 
-
+/// @brief Creates a array that holds the distances that the drive PID can be tuned for
+/// @param distance The distance to drive in inches
 std::array<float, 9> kDistances = {3.0f, 6.0f, 12.0f, 18.0f, 24.0f, 30.0f, 36.0f, 48.0f, 72.0f};
 
-static int getClosestDistanceProfileIndex(float distance) {
+// Tuned drive profiles are stored globally so the tuner can update one bucket at runtime.
+std::array<PID, 9> drivePIDProfiles = {{
+    // PID(Kp, Ki, Kd, settleError, timeToSettle, endTime)
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 3 inches
+    PID(1.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 6 inches
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 12 inches
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 18 inches
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 24 inches
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 30 inches
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 36 inches
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 48 inches
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f)   // 72 inches
+}};
+
+/// @brief Selects the PID array index that is closest to the target distance
+/// @param distance The distance to drive in inches
+/// @return The index of the closest PID profile
+int getClosestDistanceProfileIndex(float distance) {
     const float target = std::fabs(distance);
     int closestIndex = 0;
     float bestDelta = std::fabs(target - kDistances[0]);
@@ -27,30 +45,34 @@ static int getClosestDistanceProfileIndex(float distance) {
     return closestIndex;
 }
 
-static std::array<PID, 9> createDrivePIDProfiles() {
-
-    // Update these PID objects with your tuned values for each distance bucket.
-    return {
-        {
-        //PID(Kp, Ki, Kd, settleError, timeToSettle, endTime)
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 3 inches
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 6 inches
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 12 inches
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 18 inches
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 24 inches
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 30 inches
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 36 inches
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 48 inches
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f)   // 72 inches
-        }
-    };
+/// @brief Retrieves the array with the PID profile for driving distances
+/// @return An array of PID profiles for each distance
+const std::array<PID, 9>& getDrivePIDProfiles() {
+    return drivePIDProfiles;
 }
 
 
-
+/// @brief Creates a array that holds the angles that the turn PID can be tuned for
+/// @param angle The angle to turn in degrees
 std::array<float, 8> kTurnAngles = {5.0f, 10.0f, 30.0f, 45.0f, 90.0f, 180.0f, 270.0f, 360.0f};
 
-static int getClosestTurnProfileIndex(float angle) {
+// Tuned turn profiles are stored globally so the tuner can update one bucket at runtime.
+std::array<PID, 8> turnPIDProfiles = {{
+    // PID(Kp, Ki, Kd, settleError, timeToSettle, endTime)
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 5 degrees
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 10 degrees
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 30 degrees
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 45 degrees
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 90 degrees
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 180 degrees
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 270 degrees
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f)   // 360 degrees
+}};
+
+/// @brief Selects the PID array index that is closest to the target angle
+/// @param angle The angle to turn in degrees
+/// @return The index of the closest PID profile
+int getClosestTurnProfileIndex(float angle) {
     const float target = std::fabs(angle);
     int closestIndex = 0;
     float bestDelta = std::fabs(target - kTurnAngles[0]);
@@ -66,23 +88,10 @@ static int getClosestTurnProfileIndex(float angle) {
     return closestIndex;
 }
 
-static std::array<PID, 8> createTurnPIDProfiles() {
-
-
-    // Update these PID objects with your tuned values for each turn bucket.
-    return {
-        {
-        // PID(Kp, Ki, Kd, settleError, timeToSettle, endTime)
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 5 degrees
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 10 degrees
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 30 degrees
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 45 degrees
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 90 degrees
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 180 degrees
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 270 degrees
-        PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f)   // 360 degrees
-        }
-    };
+/// @brief Retrieves the array with the PID profile for turning angles
+/// @return An array of PID profiles for each angle
+const std::array<PID, 8>& getTurnPIDProfiles() {
+    return turnPIDProfiles;
 }
 
 
@@ -182,6 +191,26 @@ void Drive::setTurnConstants(float Kp, float Ki, float Kd, float settleError, fl
 
 }
 
+/// @brief Sets a drive PID profile for the closest distance bucket
+/// @param distance Target distance in inches used to pick the profile bucket
+void Drive::setDriveProfileForDistance(float distance, float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime)
+{
+    const int profileIndex = getClosestDistanceProfileIndex(distance);
+    //drivePIDProfiles[profileIndex] = PID(Kp, Ki, Kd, settleError, timeToSettle, endTime); // This line causes assignment error if PID is non-assignable
+    // Workaround: reconstruct in-place if possible
+    drivePIDProfiles[profileIndex].~PID();
+    new (&drivePIDProfiles[profileIndex]) PID(Kp, Ki, Kd, settleError, timeToSettle, endTime);
+}
+
+/// @brief Sets a turn PID profile for the closest angle bucket
+/// @param angle Target angle in degrees used to pick the profile bucket
+void Drive::setTurnProfileForAngle(float angle, float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime)
+{
+    const int profileIndex = getClosestTurnProfileIndex(angle);
+    turnPIDProfiles[profileIndex].~PID();
+    new (&turnPIDProfiles[profileIndex]) PID(Kp, Ki, Kd, settleError, timeToSettle, endTime);
+}
+
 
 /* =========== */
 /* DRIVE TYPES */
@@ -192,6 +221,7 @@ void Drive::arcade()
 {
     int leftY = 0;
     int rightX = 0;
+    
     if(Controller1.Axis3.position(percent) >= 0)
         leftY = pow(Controller1.Axis3.position(percent),2)/100;
     else
@@ -298,7 +328,7 @@ void Drive::turnToAngle(float angle, float maxVoltage)
     updatePosition();
     angle = inTermsOfNegative180To180(angle);
     const int profileIndex = getClosestTurnProfileIndex(angle);
-    std::array<PID, 8> turnProfiles = createTurnPIDProfiles();
+    std::array<PID, 8> turnProfiles = getTurnPIDProfiles();
     PID turnPID = turnProfiles[profileIndex];
     do
     {
@@ -339,7 +369,7 @@ void Drive::turnToAngle(float angle, float maxVoltage, float endTime){
     updatePosition();
     angle = inTermsOfNegative180To180(angle);
     const int profileIndex = getClosestTurnProfileIndex(angle);
-    std::array<PID, 8> turnProfiles = createTurnPIDProfiles();
+    std::array<PID, 8> turnProfiles = getTurnPIDProfiles();
     PID turnPID = turnProfiles[profileIndex];
     do
     {
@@ -438,11 +468,10 @@ void Drive::driveDistance(float distance)
 void Drive::driveDistance(float distance, float maxVoltage)
 {
     // Creates PID objects for linear and angular output
-    //float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime
-// Creates PID objects for linear and angular output
+    // float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime
+    // Creates PID objects for linear and angular output
     const int profileIndex = getClosestDistanceProfileIndex(distance);
-    std::array<PID, 9> driveProfiles = createDrivePIDProfiles();
-    PID linearPID = driveProfiles[profileIndex];
+    PID linearPID = getDrivePIDProfiles()[profileIndex];
     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
 
     
@@ -486,8 +515,7 @@ void Drive::driveDistance(float distance, float maxVoltage)
 void Drive::driveDistanceWithOdom(float distance){
     //Creates PID objects for linear and angular output
     const int profileIndex = getClosestDistanceProfileIndex(distance);
-    std::array<PID, 9> driveProfiles = createDrivePIDProfiles();
-    PID linearPID = driveProfiles[profileIndex];
+    PID linearPID = getDrivePIDProfiles()[profileIndex];
     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
 
     updatePosition();
@@ -546,8 +574,7 @@ void Drive::driveDistanceWithOdom(float distance){
 void Drive::driveDistanceWithOdom(float distance, float timeLimit){
     // Creates PID objects for linear and angular output
     const int profileIndex = getClosestDistanceProfileIndex(distance);
-    std::array<PID, 9> driveProfiles = createDrivePIDProfiles();
-    PID linearPID = driveProfiles[profileIndex];
+    PID linearPID = getDrivePIDProfiles()[profileIndex];
     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
 
     updatePosition();
@@ -608,8 +635,7 @@ void Drive::driveDistanceWithOdom(float distance, float timeLimit){
 void Drive::driveDistanceWithOdom(float distance, float timeLimit, float maxVoltage){
     // Creates PID objects for linear and angular output
     const int profileIndex = getClosestDistanceProfileIndex(distance);
-    std::array<PID, 9> driveProfiles = createDrivePIDProfiles();
-    PID linearPID = driveProfiles[profileIndex];
+    PID linearPID = getDrivePIDProfiles()[profileIndex];
     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
 
     updatePosition();
@@ -672,8 +698,7 @@ void Drive::driveDistanceWithOdom(float distance, float timeLimit, float maxVolt
 void Drive::driveDistanceWithOdom(float distance, float timeLimit, float maxVoltage, float settleTime, float settleError){
     // Creates PID objects for linear and angular output
     const int profileIndex = getClosestDistanceProfileIndex(distance);
-    std::array<PID, 9> driveProfiles = createDrivePIDProfiles();
-    PID linearPID = driveProfiles[profileIndex];
+    PID linearPID = getDrivePIDProfiles()[profileIndex];
     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
 
     updatePosition();
