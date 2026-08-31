@@ -30,20 +30,6 @@ using namespace vex;
   int driver = 0; 
 
   // Define Values for the Chassis here:
-  // Drive chassis
-  // (
-  //   motor_group(L1, L2), // Left drive train motors
-  //   motor_group(R1, R2), // Right drive train motors
-  //   PORT20,               // Inertial Sensor Port
-  //   3.25,              // The diameter size of the wheel in inches
-  //   1,                   // 
-  //   6,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
-  //   odomType,
-  //   2,                  //Odometry wheel diameter (set to zero if no odom)
-  //   -1.0,               //Odom pod1 offset 
-  //   -1.0                //Odom pod1 offset
-  // );
-
     Drive chassis
   (
     motor_group(LFT, LFB, LBB, LBT), // Left drive train motors
@@ -196,13 +182,6 @@ void autonomous()
 /// @brief Runs during the UserControl section of the competition
 void usercontrol() 
 {
-
-  std::cout << "Starting User Control" << std::endl;
-  chassis.driveDistanceWithOdom(6);
-  std::cout << "Finished first move" << std::endl;
-  semiPIDTest();
-  std::cout << "Finished semi PID Test" << std::endl;
-  
   // User control code here, inside the loop
   while (1) {
 
@@ -230,40 +209,7 @@ int main()
   }
 }
 
-/*
 
-
-// Do we want to build this into a optional PID so that if a team doesn't want to use the multiple profiles 
-// and just wants to set one set of PID values, they can do that?
-
-//They can also just reduce the number of profiles to 1 and it would work the same as a normal PID
-
-
-/// @brief Sets the PID values for the DriveTrain
-void setDriveTrainConstants()
-{
-    // Set the Drive PID values for the DriveTrain
-    chassis.setDriveConstants(
-        0.4,  // Kp - Proportion Constant
-        0.0, // Ki - Integral Constant
-        0.1, // Kd - Derivative Constant
-        0.5, // Settle Error
-        300, // Time to Settle
-        5000 // End Time
-    );
-
-    // Set the Turn PID values for the DriveTrain
-    chassis.setTurnConstants(
-        0.3,    // Kp - Proportion Constant
-        0,      // Ki - Integral Constant
-        0,      // Kd - Derivative Constant 
-        0.5,    // Settle Error
-        300,    // Time to Settle
-        3000    // End Time
-    );
-    
-}
-*/
 
 
 /// @brief Auton Slot 1 - Write code for route within this function.

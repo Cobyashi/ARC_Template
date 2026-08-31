@@ -8,22 +8,22 @@
 
 
 
-/// @brief Creates a array that holds the distances that the drive PID can be tuned for
+/// @brief Creates a array that holds the distances that the drive PID can be tuned for, Reducing the number of profiles to 1 will make it work the same as every other PID
 /// @param distance The distance to drive in inches
 std::array<float, 9> kDistances = {3.0f, 6.0f, 12.0f, 18.0f, 24.0f, 30.0f, 36.0f, 48.0f, 72.0f};
 
 // Tuned drive profiles are stored globally so the tuner can update one bucket at runtime.
 std::array<PID, 9> drivePIDProfiles = {{
     // PID(Kp, Ki, Kd, settleError, timeToSettle, endTime)
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 3 inches
-    PID(1.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 6 inches
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 12 inches
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 18 inches
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 24 inches
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 30 inches
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 36 inches
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 48 inches
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f)   // 72 inches
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f) 
 }};
 
 /// @brief Selects the PID array index that is closest to the target distance
@@ -59,14 +59,14 @@ std::array<float, 8> kTurnAngles = {5.0f, 10.0f, 30.0f, 45.0f, 90.0f, 180.0f, 27
 // Tuned turn profiles are stored globally so the tuner can update one bucket at runtime.
 std::array<PID, 8> turnPIDProfiles = {{
     // PID(Kp, Ki, Kd, settleError, timeToSettle, endTime)
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 5 degrees
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 10 degrees
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 30 degrees
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 45 degrees
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 90 degrees
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 180 degrees
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  // 270 degrees
-    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f)   // 360 degrees
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f),  
+    PID(0.0f, 0.0000f, 0.0f, 0.0f, 0.0f, 0.0f)   
 }};
 
 /// @brief Selects the PID array index that is closest to the target angle
@@ -505,8 +505,8 @@ void Drive::driveDistance(float distance, float maxVoltage)
     }
 
     
-    // Stops the motors once PID has settled
-    //brake();
+    //Stops the motors once PID has settled
+    brake();
     updatePosition();
 }
 
@@ -622,7 +622,7 @@ void Drive::driveDistanceWithOdom(float distance, float timeLimit){
         wait(10, msec);
     }
 
-    // Make absolutely sure we stop
+    
     brake();
     driveMotors(0, 0);
     updatePosition();
@@ -683,7 +683,7 @@ void Drive::driveDistanceWithOdom(float distance, float timeLimit, float maxVolt
         wait(10, msec);
     }
 
-    // Make absolutely sure we stop
+    
     brake();
     driveMotors(0, 0);
     updatePosition();
@@ -746,7 +746,7 @@ void Drive::driveDistanceWithOdom(float distance, float timeLimit, float maxVolt
         wait(10, msec);
     }
 
-    // Make absolutely sure we stop
+    
     brake();
     driveMotors(0, 0);
     updatePosition();

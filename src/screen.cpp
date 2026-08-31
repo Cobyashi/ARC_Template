@@ -156,9 +156,9 @@ void createPreAutonScreen(Button startScreenButtons[5], Text &selectedLabel, Tex
     startScreenButtons[1] = Button("Red", vex::color::red, 30, 60, 90, 100);
     startScreenButtons[1].setChosen(true);
     startScreenButtons[2] = Button("Blue", vex::color::blue, 140, 60, 90, 100);
-    startScreenButtons[3] = Button("Elliot", vex::color(0xc2c2c2), 250, 60, 90, 100);
+    startScreenButtons[3] = Button("Drive21", vex::color(0xc2c2c2), 250, 60, 90, 100);
     startScreenButtons[3].setChosen(true);
-    startScreenButtons[4] = Button("Jacob", vex::color(0xc2c2c2), 360, 60, 90, 100);
+    startScreenButtons[4] = Button("Driver2", vex::color(0xc2c2c2), 360, 60, 90, 100);
     selectedLabel = Text("FillerText" , 10, 4, vex::mono20, vex::color::white);
     configLabel = Text("FillerText", 11, 4, vex::mono20, vex::color::white);
 }
@@ -179,7 +179,7 @@ void showPreAutonScreen(Button startScreenButtons[5], Text &selectedLabel, Text 
     selectedLabel.printText();
 
     std::string colorString = teamColor ? "Blue" : "Red";
-    std::string driverString = driver ? "Jacob        " : "Elliot        ";
+    std::string driverString = driver ? "Driver1        " : "Driver2        ";
     configLabel.setWords("Config: " + colorString + " - " + driverString);
     configLabel.printText();
 }
@@ -207,7 +207,7 @@ bool checkPreAutonButtons(Button startScreenButtons[5], int &teamColor, int &dri
 
     Brain.Screen.setFillColor(vex::color(0x723A86));
     std::string colorString = teamColor ? "Blue" : "Red";
-    std::string driverString = driver ? "Jacob        " : "Elliot        ";
+    std::string driverString = driver ? "Driver1        " : "Driver2        ";
     configLabel.setWords("Config: " + colorString + " - " + driverString);
     configLabel.printText();
 
