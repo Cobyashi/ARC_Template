@@ -68,27 +68,6 @@ float inTermsOfNegative180To180(float angle)
     return angle;
 }
 
-/// @brief Saves information to the SD card
-/// @param filename
-/// @param text Text to save
-void writeToCard(std::string filename, std::string text)
-{
-    std::fstream file;
-    file.open(filename, std::ios::out | std::ios::app);
-    file << text;
-    file.close();
-}
-/// @brief Saves information to the SD card
-/// @param filename 
-/// @param number Number to save
-void writeToCard(std::string filename, float number)
-{
-    std::fstream file;
-    file.open(filename, std::ios::out | std::ios::app);
-    file << number;
-    file.close();
-}
-
 /// @brief Used for separating csv values
 /// @param filename
 void writeCommaToCard(std::string filename)
@@ -105,5 +84,17 @@ void writeNewLineToCard(std::string filename){
     std::fstream file;
     file.open(filename, std::ios::out | std::ios::app);
     file << std::endl;
+    file.close();
+}
+
+/// @brief Saves information to the SD card
+/// @param filename 
+/// @param number Number to save
+template <typename T>
+void writeToCard(std::string filename, T input)
+{
+    std::fstream file;
+    file.open(filename, std::ios::out | std::ios::app);
+    file << input;
     file.close();
 }

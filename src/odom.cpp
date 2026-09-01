@@ -1,4 +1,5 @@
 #include "odom.h"
+#include <iostream>
 
 /// @brief Constructor for odometry with two forward rotation sensors
 /// @param forwardRightWheelDiameter Right side forward rotation wheel diameter
@@ -7,7 +8,8 @@
 /// @param forwardRightRotationDistance Distance the forward right wheel is from the center (in)
 /// @param forwardLeftRotationDistance Distance the forward left wheel is from the center (in)
 /// @param lateralRotationDistance Distance the lateral wheel is from the center (in)
-Odom::Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, float lateralWheelDiameter, float forwardRightRotationDistance, float forwardLeftRotationDistance, float lateralRotationDistance){
+Odom::Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, float lateralWheelDiameter, 
+           float forwardRightRotationDistance, float forwardLeftRotationDistance, float lateralRotationDistance){
     this->forwardRightWheelDiameter = forwardRightWheelDiameter;
     this->forwardLeftWheelDiameter = forwardLeftWheelDiameter;
     this->lateralWheelDiameter = lateralWheelDiameter;
@@ -15,7 +17,7 @@ Odom::Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, floa
     this->forwardLeftRotationDistance = forwardLeftRotationDistance;
     this->lateralRotationDistance = lateralRotationDistance;     
 
-}
+} 
 
 /// @brief Constructor for odometry with one forward rotation sensor
 /// @param forwardWheelDiameter Forward rotation wheel diameter 
@@ -60,10 +62,16 @@ float Odom::getForwardLeftDegrees(){ return forwardDegreesL; }
 float Odom::getLateralDegrees(){ return lateralDegrees; }
 
 //Mutators
-void Odom::setPosition(float xPosition, float yPosition, float heading = 0.0){
+void Odom::setPosition(float xPosition, float yPosition, float heading){
+    this->prevX = this->xPosition;
+    this->prevY = this->yPosition;
+    this->prevHeading = this->heading;
+    
     this->xPosition = xPosition;
     this->yPosition = yPosition;
     this->heading = heading;
+    if (!heading)
+        this->heading = 0;
 }
 void Odom::setHeading(float heading){
     this->heading = heading;
@@ -104,7 +112,7 @@ void Odom::updatePositionTwoForward(float currentForwardRightDegrees, float curr
     float deltaX;
     float deltaHeading = (deltaForwardLeft-deltaForwardRight)/(forwardLeftRotationDistance+forwardRightRotationDistance);
     
-    if(deltaHeading==0.0){
+    if(deltaHeading < 0.01){
         deltaX=deltaLateral;
         deltaY=deltaForwardRight;
     }else{
@@ -181,26 +189,28 @@ void Odom::updatePositionTwoAt45(float currentLeftDegrees, float currentRightDeg
     float deltaRight = currentRightPosition - oldRightPosition;
     float deltaLeft = currentLeftPosition - oldLeftPosition;
 
-    float deltaHeading = headingGyro - heading;
+    float deltaHeading = degTo180(headingGyro - heading);
 
+
+    //taking this out make turning x accurate
     if(fabs(deltaHeading) > 0.01){
         //THIS MAY NEED TO BE += INSTEAD
         deltaLeft -= leftRotationDistance*degToRad(deltaHeading);
         deltaRight += rightRotationDistance*degToRad(deltaHeading);
     }
 
-    //Gives answer in radians
-    float deltaY = (deltaLeft + deltaRight) / sqrt(2.0);
-    float deltaX = (deltaLeft - deltaRight) / sqrt(2.0) * -1;
+    float deltaX = (deltaLeft + deltaRight) / sqrt(2);
+    float deltaY = (deltaLeft - deltaRight) / 1.343503;
 
     //Update x and y positions and heading
     float avgHeading = degToRad(getHeading()+deltaHeading/2.0);
-    float globalDeltaX = deltaX * cos(avgHeading) - deltaY * sin(avgHeading);
-    float globalDeltaY = deltaX * sin(avgHeading) + deltaY * cos(avgHeading);
+    float globalDeltaY = deltaX * cos(avgHeading) - deltaY * sin(avgHeading);
+    float globalDeltaX = deltaX * sin(avgHeading) + deltaY * cos(avgHeading);
+
     setPosition((globalDeltaX+getXPosition()), (globalDeltaY+getYPosition()), headingGyro);
     
     //Update variables to store new location information
-    forwardDegreesR = currentRightDegrees;
-    forwardDegreesL = currentLeftDegrees;
-    heading = headingGyro;
+    this->forwardDegreesR = currentRightDegrees;
+    this->forwardDegreesL = currentLeftDegrees;
+    this->heading = headingGyro;
 }

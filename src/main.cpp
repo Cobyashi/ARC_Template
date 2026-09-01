@@ -11,6 +11,9 @@
 #include "screen.h"
 #include "util.h"
 #include "Drive.h"
+#include "semiPIDTuner.h"
+#include "pidTests.h"
+#include "images.h"
 
 using namespace vex;
 
@@ -23,20 +26,22 @@ using namespace vex;
 
   bool isInAuton = false;
   int lastPressed = 0;
+  int teamColor = 0; 
+  int driver = 0; 
 
   // Define Values for the Chassis here:
-  Drive chassis
+    Drive chassis
   (
-    motor_group(L1, L2), // Left drive train motors
-    motor_group(R1, R2), // Right drive train motors
+    motor_group(LFT, LFB, LBB, LBT), // Left drive train motors
+    motor_group(RFT, RFB, RBB, RBT), // Right drive train motors
     PORT20,               // Inertial Sensor Port
-    3.25,              // The diameter size of the wheel in inches
+    2.66,              // The diameter size of the wheel in inches
     1,                   // 
-    6,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
+    12,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
     odomType,
-    2,                  //Odometry wheel diameter (set to zero if no odom)
-    -1.0,               //Odom pod1 offset 
-    -1.0                //Odom pod1 offset
+    1.955,                  //Odometry wheel diameter (set to zero if no odom)
+    -1.28,               //Odom pod1 offset 
+    -1.28                //Odom pod1 offset
   );
 
 //////////////////////////////////////////////////////////////////////
@@ -52,6 +57,8 @@ void Auton_5();
 void Auton_6();
 void Auton_7();
 void Auton_8();
+void semiPIDTest();
+void pidTests();
 
 //////////////////////////////////////////////////////////////////////
 
@@ -59,10 +66,13 @@ void Auton_8();
 /// @brief Runs before the competition starts
 void preAuton() 
 {
-  setDriveTrainConstants();
+  //setDriveTrainConstants();
+
+  chassis.brake(coast);       // make sure they aren’t holding weirdly
+  chassis.driveMotors(0, 0);  
+
   enum preAutonStates{START_SCREEN = 0, SELECTION_SCREEN = 1};
   int currentScreen = START_SCREEN;
-  int lastPressed = 0;
 
   // Calibrates/Resets the Brains sensors before the competition
   inertial1.calibrate();
@@ -71,28 +81,34 @@ void preAuton()
 
   vex::color colors[8] = {vex::color::red, vex::color::red, vex::color::red, vex::color::red, 
                           vex::color::blue, vex::color::blue, vex::color::blue, vex::color::blue};
-  std::string names[8] = {"Auton 1", "Auton 2", "Auton 3", "Auton 4", 
-                          "Auton 5", "Auton 6", "Auton 7", "Auton 8"};
+  std::string names[8] = {"NONE", "NONE", "NONE", "NONE", 
+                          "NONE", "NONE", "NONE", "NONE"};
   Button buttons[9];
   createAutonButtons(colors, names, buttons);
   buttons[0].setChosen(true);
 
   Text selectionLabel;
-  Button selectionButton;
-  createPreAutonScreen(selectionButton, selectionLabel);
+  Text configLabel;
+  Button startScreenButtons[5];
+  createPreAutonScreen(startScreenButtons, selectionLabel, configLabel);
   
-  //int lastPressed = 0;
   int temp;
 
   Controller1.Screen.print(buttons[lastPressed].getName().c_str());
 
   while(!isInAuton){
-    showPreAutonScreen(selectionButton, selectionLabel, buttons[lastPressed].getName());
+    showPreAutonScreen(startScreenButtons, selectionLabel, configLabel, buttons[lastPressed].getName(), teamColor, driver);
     while(currentScreen == START_SCREEN){
       if(Brain.Screen.pressing()){
-        if(checkPreAutonButton(selectionButton)){
+        if(checkPreAutonButtons(startScreenButtons, teamColor, driver, configLabel)){
           currentScreen = SELECTION_SCREEN;
         }
+        Controller1.Screen.clearLine();
+        Controller1.Screen.setCursor(1, 1);
+        std::string colorString = teamColor ? "Blue" : "Red";
+        std::string driverString = driver ? "Driver1" : "Driver2";
+        std::string controllerPrint = buttons[lastPressed].getName() + " - " + colorString + " - " + driverString;
+        Controller1.Screen.print(controllerPrint.c_str());
       }
       wait(10, msec);
     }
@@ -105,7 +121,10 @@ void preAuton()
           lastPressed = temp;
           Controller1.Screen.clearLine();
           Controller1.Screen.setCursor(1, 1);
-          Controller1.Screen.print(buttons[lastPressed].getName().c_str());
+          std::string colorString = teamColor ? "Blue" : "Red";
+          std::string driverString = driver ? "Driver1" : "Driver2";
+          std::string controllerPrint = buttons[lastPressed].getName() + " - " + colorString + " - " + driverString;
+          Controller1.Screen.print(controllerPrint.c_str());
         }
       }
       if(temp == 8)
@@ -114,7 +133,6 @@ void preAuton()
     }
     wait(10, msec);
   }
-  Brain.Screen.clearScreen();
 }
 
 /// @brief Runs during the Autonomous Section of the Competition
@@ -125,44 +143,40 @@ void autonomous()
   rotation2.resetPosition();
   inertial1.resetHeading();
 
-  setDriveTrainConstants();
+  //setDriveTrainConstants();
   chassis.setPosition(0,0,0);
 
-  chassis.bezierTurn(0,0,5,5,2,12,7);
-  // chassis.driveDistanceWithOdom(24);
-  // chassis.moveToPosition(24,24);
-  // chassis.turnToAngle(45);
+  //pidTest();
 
-  // switch (lastPressed) 
-  // {
-  //   case 1:
-  //     Auton_1();
-  //     break;
-  //   case 2:
-  //     Auton_2();
-  //     break;
-  //   case 3:
-  //     Auton_3;
-  //     break;
-  //   case 4:
-  //     Auton_4();
-  //     break;
-  //   case 5:
-  //     Auton_5();
-  //     break;
-  //   case 6:
-  //     Auton_6();
-  //     break;
-  //   case 7:
-  //     Auton_7();
-  //     break;
-  //   case 8:
-  //     Auton_8();
-  //     break;
-  //   default:
-  //     DefaultAuton();
-  //     break;
-  // }
+  switch (lastPressed) 
+  {
+    case 1:
+      Auton_1();
+      break;
+    case 2:
+      Auton_2();
+      break;
+    case 3:
+      Auton_3();
+      break;
+    case 4:
+      Auton_4();
+      break;
+    case 5:
+      Auton_5();
+      break;
+    case 6:
+      Auton_6();
+      break;
+    case 7:
+      Auton_7();
+      break;
+    case 8:
+      Auton_8();
+      break;
+    default:
+      break;
+  }
 }
 
 /// @brief Runs during the UserControl section of the competition
@@ -196,30 +210,7 @@ int main()
 }
 
 
-/// @brief Sets the PID values for the DriveTrain
-void setDriveTrainConstants()
-{
-    // Set the Drive PID values for the DriveTrain
-    chassis.setDriveConstants(
-        0.4,  // Kp - Proportion Constant
-        0.0, // Ki - Integral Constant
-        0.1, // Kd - Derivative Constant
-        0.5, // Settle Error
-        300, // Time to Settle
-        5000 // End Time
-    );
 
-    // Set the Turn PID values for the DriveTrain
-    chassis.setTurnConstants(
-        0.3,    // Kp - Proportion Constant
-        0,      // Ki - Integral Constant
-        0,      // Kd - Derivative Constant 
-        0.5,    // Settle Error
-        300,    // Time to Settle
-        3000    // End Time
-    );
-    
-}
 
 /// @brief Auton Slot 1 - Write code for route within this function.
 void Auton_1()
@@ -268,4 +259,40 @@ void Auton_8()
 {
     Brain.Screen.print("Auton 8 running.");
     
+}
+
+/// @brief Runs the semi-automatic PID Test
+void semiPIDTest(){
+  /*
+  --------Buttons--------
+
+  R2 - Drive the Robot (Robot alternates between driving forward and backwards automatically)
+  R1/L1 - Swap between drive PID and turn PID
+  UP/Down Arrows - Change the drive or turn distance / Adjust the variable values 
+  Left/Right Arrows - Change the variable to change (P, I, D, settleError, settleTime, and endTime)
+  A - Enter into a variable to be able to change it (Will not be able to use R2 while in this)
+  B - Exit and Save a variable (able to use R2 after this)
+
+  --------To Use--------
+  Go into userControl and uncomment (Remove //) semiPIDTest();
+  Then run the normal user-control and the controller screen will show the test
+  */
+  PIDTuner tuner(chassis);
+  tuner.run();
+}
+
+void pidTest(){
+  
+  /*
+      To use one of the tests below, just uncoment the test below and uncomment //pidTest() in Autonomous()
+  */
+  
+  
+   smallDrivingTest(chassis);
+  // largeDrivingTest(chassis);
+  // mixedDrivingTest(chassis, 20);
+  
+  // smallTurningTest(chassis);
+  // largeTurningTest(chassis);
+  // mixedTurningTest(chassis, 20);
 }

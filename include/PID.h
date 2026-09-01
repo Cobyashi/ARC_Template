@@ -23,6 +23,7 @@ class PID
     PID(float Kp, float Ki, float Kd, float settleError, float timeToSettle, float endTime);
 
     float compute(float error);
+    float computeDebug(float error);
 
     bool isSettled();
 
